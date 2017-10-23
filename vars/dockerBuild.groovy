@@ -20,12 +20,6 @@ def call(body) {
                 }
             }
         }
-        stage("Deploy ${config.imageName}") {
-            sh 'echo "Deploying Docker Container..."'
-        }
-        stage("Test ${config.imageName}") {
-            sh 'echo "Executing test cases..."'
-        }
 
         //Do not push images for PR builds
         if (!isPullRequest()) {
