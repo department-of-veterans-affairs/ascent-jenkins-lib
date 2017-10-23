@@ -37,5 +37,13 @@ In order to use this library you will need to configure it as a Global Library w
 1. Enter 'ascent-jenkins-lib' as the __Repository__
 
 # Referencing from your Jenkinsfile
+To use this shared library you will need to reference it from the Jenkinsfile in your source code repository. This can be done by adding the following line to the beginning of your Jenkinsfile. In this example the name given to the shared library is `ascent`, change this value to match the name you gave the shared library.
+```groovy
+@Library('ascent') _
+```
 
-## Pipelines
+## Project Types
+This library supports pipelines for the following project types:
+* [Java Library](docs/library.md)
+* [Docker Image](docs/docker.md)
+* [Microservice](docs/microservice.md)
