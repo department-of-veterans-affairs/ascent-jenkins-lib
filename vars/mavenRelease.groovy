@@ -11,6 +11,10 @@ def call(body) {
     }
 
     if (!isPullRequest() && currentBuild.result == null) {
+        stage('Ready for Release?') {
+            //Make sure any parallel stages join here before releasing
+        }
+
         //Create a milestone that will abort older builds when a newer build passes this stage.
         milestone()
         def versions = input(id: "versions", message: "Release this build?", parameters: [
@@ -43,6 +47,7 @@ def call(body) {
                     //Compare to master branch to look for any unmerged changes
                     def commitsBehind = sh(returnStdout: true, script: "git rev-list --right-only --count HEAD...remotes/origin/master").trim().toInteger()
                     if (commitsBehind > 0) {
+                        echo "Master Branch has changesets not included on this branch. Please merge master into your branch before releaseing."
                         error("Master Branch has changesets not included on this branch. Please merge master into your branch before releaseing.")
                     } else {
                         echo "Branch is up to date with changesets on master. Proceeding with release..."

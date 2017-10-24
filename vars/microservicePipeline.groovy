@@ -49,10 +49,6 @@ def call(body) {
                     }
 
                     parallel builds
-
-                    stage('Docker Builds Complete') {
-                        echo 'Docker builds are complete.'
-                    }
                 }
             }
         } finally {
