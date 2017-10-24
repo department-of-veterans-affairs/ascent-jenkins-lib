@@ -74,6 +74,7 @@ def call(body) {
                 //Tag release
                 sh "git tag -a ${versions['release']} -m \"Release version ${versions['release']}\""
                 //Commit changes locally
+                sh "git status"
                 sh "git commit -a -m \"Releasing version ${versions['release']}\""
             }
 
@@ -86,6 +87,7 @@ def call(body) {
                 //Set the next dev version
                 sh "${mvnCmd} org.codehaus.mojo:versions-maven-plugin:2.5::set -DnewVersion=${versions['development']}"
                 //Commit changes locally
+                sh "git status"
                 sh "git commit -a -m \"Preparing POMs for next development version ${versions['development']}\""
 
                 //Push to Github
