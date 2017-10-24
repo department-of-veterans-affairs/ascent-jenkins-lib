@@ -1,6 +1,9 @@
 # ascent-jenkins-lib
 Shared Library for Jenkins Pipelines
 
+# Sonar Configuration
+On your Sonar server you will need to install the following plugins:
+* [GitHub Plugin](https://docs.sonarqube.org/display/PLUG/GitHub+Plugin)
 
 # Jenkins Configuration
 On your Master Jenkins server you will need to install the following plugins:
@@ -9,9 +12,13 @@ On your Master Jenkins server you will need to install the following plugins:
 * envinject
 * sonar
 
-# Sonar Configuration
-On your Sonar server you will need to install the following plugins:
-* [GitHub Plugin](https://docs.sonarqube.org/display/PLUG/GitHub+Plugin)
+## Credentials
+The following credentials will need to be setup in Jenkins:
+| Credential ID  | Credential Type | Notes
+| ------------- | ------------- | -------------- |
+| nexus  | username/password | |
+| docker-repository | username/password  | |
+| aws | username/password | The username should be your ACCESS_ID and the password is the SECRET_KEY value |
 
 ## Global properties
 Open the `/configure` url for your Jenkins Master server and add the following Global Properties:
