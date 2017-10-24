@@ -17,8 +17,8 @@ def call(body) {
         //If there is a pom file in this project then use its version, otherwise default to the branch name
         if (config.version == null) {
             if (fileExists('pom.xml')) {
-                pom = readMavenPom file: 'pom.xml'
-                config.version = pom.version
+                pom = readMavenPom(file: 'pom.xml')
+                config.version = pom.version ?: env.BRANCH_NAME
             } else {
                 config.version = env.BRANCH_NAME
             }
