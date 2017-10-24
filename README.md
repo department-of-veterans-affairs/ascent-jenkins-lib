@@ -11,6 +11,7 @@ On your Master Jenkins server you will need to install the following plugins:
 * github-branch-source
 * envinject
 * sonar
+* pipeline-utilities-steps
 
 ## Credentials
 The following credentials will need to be setup in Jenkins:
