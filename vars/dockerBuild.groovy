@@ -37,7 +37,7 @@ def call(body) {
             stage("Push ${config.imageName} to Registry") {
                 docker.withServer("${env.DOCKER_HOST}") {
                     docker.withRegistry("${env.DOCKER_REPOSITORY_URL}", 'docker-repository') {
-                        def image = docker.build("${config.imageName}:${config.version")
+                        def image = docker.build("${config.imageName}:${config.version}")
                         image.push()
                         if (env.BRANCH_NAME == 'development') {
                             image.push('latest')
