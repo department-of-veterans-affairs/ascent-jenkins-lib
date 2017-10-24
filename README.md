@@ -4,7 +4,14 @@ Shared Library for Jenkins Pipelines
 
 # Jenkins Configuration
 On your Master Jenkins server you will need to install the following plugins:
-* 
+* docker-workflow
+* github-branch-source
+* envinject
+* sonar
+
+# Sonar Configuration
+On your Sonar server you will need to install the following plugins:
+* [GitHub Plugin](https://docs.sonarqube.org/display/PLUG/GitHub+Plugin)
 
 ## Global properties
 Open the `/configure` url for your Jenkins Master server and add the following Global Properties:
