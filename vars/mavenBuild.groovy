@@ -82,14 +82,14 @@ def call(body) {
 
         //Only run the Sonar quality gate and deploy stage for non PR builds
         if (!isPullRequest()) {
-            // stage("Quality Gate") {
-            //     timeout(time: 15, unit: 'MINUTES') {
-            //         def qg = waitForQualityGate()
-            //         if (qg.status != 'OK') {
-            //             error "Pipeline aborted due to quality gate failure: ${qg.status}"
-            //         }
-            //     }
-            // }
+            stage("Quality Gate") {
+                timeout(time: 15, unit: 'MINUTES') {
+                    def qg = waitForQualityGate()
+                    if (qg.status != 'OK') {
+                        error "Pipeline aborted due to quality gate failure: ${qg.status}"
+                    }
+                }
+            }
 
             stage('Deploy to Repository') {
                 withCredentials([usernamePassword(credentialsId: 'nexus', usernameVariable: 'DEPLOY_USER', passwordVariable: 'DEPLOY_PASSWORD')]) {
