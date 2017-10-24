@@ -14,6 +14,7 @@ On your Master Jenkins server you will need to install the following plugins:
 
 ## Credentials
 The following credentials will need to be setup in Jenkins:
+
 | Credential ID  | Credential Type | Notes
 | ------------- | ------------- | -------------- |
 | nexus  | username/password | |
