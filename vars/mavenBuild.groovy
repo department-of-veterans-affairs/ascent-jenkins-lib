@@ -42,7 +42,7 @@ def call(body) {
         } finally {
             step([$class: 'JUnitResultArchiver', testResults: '**/surefire-reports/*.xml', healthScaleFactor: 1.0, allowEmptyResults: true])
             if (currentBuild.result == 'UNSTABLE') {
-                error("There were failed unit tests.")
+                return
             }
         }
 

@@ -34,19 +34,22 @@ def call(body) {
                     directory = config.directory
                 }
 
-                def builds = [:]
-                for (x in config.dockerBuilds.keySet()) {
-                    def image = x
-                    builds[image] = {
-                        echo "Image Name: ${image}"
-                        dockerBuild {
-                            directory = config.dockerBuilds[image]
-                            imageName = image
+                echo "Build Result is: ${currentBuild.result}"
+                if (currentBuild.result == null) {
+                    def builds = [:]
+                    for (x in config.dockerBuilds.keySet()) {
+                        def image = x
+                        builds[image] = {
+                            echo "Image Name: ${image}"
+                            dockerBuild {
+                                directory = config.dockerBuilds[image]
+                                imageName = image
+                            }
                         }
                     }
-                }
 
-                parallel builds
+                    parallel builds
+                }
             }
         } finally {
             //Send build notifications if needed
