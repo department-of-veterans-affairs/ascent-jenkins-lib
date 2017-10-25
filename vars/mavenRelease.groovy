@@ -94,7 +94,7 @@ def call(body) {
                     sh "git commit -a -m \"Preparing POMs for next development version ${versions['development']}\""
 
                     //Push to Github
-                    sh "git status"
+                    sh "git push"
                 }
             }
         }
