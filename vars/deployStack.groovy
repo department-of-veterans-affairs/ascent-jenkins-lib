@@ -33,12 +33,10 @@ def call(body) {
         withCredentials([string(credentialsId: 'jenkins-vault', variable: 'JENKINS_VAULT_TOKEN')]) {
             vaultToken = sh(returnStdout: true, script: "curl -k -s --header \"X-Vault-Token: ${JENKINS_VAULT_TOKEN}\" --request POST --data '{\"display_name\": \"testenv\"}' ${env.VAULT_ADDR}/v1/auth/token/create/ascent | jq '.auth.client_token'").trim()
         }
-        echo "Vault Token: ${vaultToken}"
     }
 
     stage("Deploying Stack: ${stackName}") {
         withEnv(["VAULT_TOKEN=${vaultToken}"]) {
-            echo "Vault Token: ${env.VAULT_TOKEN}"
             sh "docker --host ${config.dockerHost} stack deploy ${dockerFiles} ${stackName}"
         }
 
@@ -48,8 +46,11 @@ def call(body) {
             def deployDone = false
             waitUntil {
                 sleep(30)
+                sh(script: "docker --host ${config.dockerHost} stack ps ${stackName} --format {{.CurrentState}}")
                 def result = sh(returnStdout: true, script: "docker --host ${config.dockerHost} stack ps ${stackName} --format {{.CurrentState}}")
-                return !(result.contains('Failed') || result.contains('Preparing') || result.contains('Starting'))
+                deployDone = !(result.contains('Failed') || result.contains('Preparing') || result.contains('Starting'))
+                echo "Deployment is done: ${deployDone}"
+                return deployDone;
             }
         }
         echo 'Containers are successfully deployed'
