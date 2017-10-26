@@ -46,7 +46,7 @@ def call(body) {
             def deployDone = false
             waitUntil {
                 sleep(30)
-                def result = sh(returnStdout: true, script: "docker stack ps ${stackName} --format {{.CurrentState}}")
+                def result = sh(returnStdout: true, script: "docker --host ${config.dockerHost} stack ps ${stackName} --format {{.CurrentState}}")
                 return !(result.contains('Failed') || result.contains('Preparing') || result.contains('Starting'))
             }
         }
