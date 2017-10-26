@@ -49,6 +49,17 @@ def call(body) {
                     }
 
                     parallel builds
+
+                    if (!isPullRequest() && config.testEnvironment != null) {
+                        //Deploy to CI for automated testing
+                        deployStack {
+                            composeFiles = config.testEnvironment
+                        }
+
+                        //TODO Launch Test cases here
+
+                        undeployStack {}
+                    }
                 }
             }
         } finally {
@@ -57,19 +68,8 @@ def call(body) {
         }
     }
 
-    if (config.composeFiles != null) {
-        //Deploy to CI for automated testing
-        deployStack {
-            composeFiles = config.testEnvironment
-        }
-
-        //TODO Launch Test cases here
-
-        undeployStack {}
-    }
-
-    mavenRelease {
-        directory = config.directory
-    }
+    // mavenRelease {
+    //     directory = config.directory
+    // }
 
 }
