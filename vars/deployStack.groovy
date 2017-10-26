@@ -31,8 +31,7 @@ def call(body) {
 
     stage("Requesting Vault Token for application") {
         withCredentials([string(credentialsId: 'jenkins-vault', variable: 'JENKINS_VAULT_TOKEN')]) {
-            vaultToken = sh(returnStdout: true, script: "curl -k -s --header \"X-Vault-Token: ${JENKINS_VAULT_TOKEN}\" --request POST --data '{\"display_name\": \"testenv\"}' ${env.VAULT_ADDR}/v1/auth/token/create/ascent").trim()
-            vaultToken = sh(returnStdout: true, script: "jq '.auth.client_token' ${vaultToken}")
+            vaultToken = sh(returnStdout: true, script: "curl -k -s --header \"X-Vault-Token: ${JENKINS_VAULT_TOKEN}\" --request POST --data '{\"display_name\": \"testenv\"}' ${env.VAULT_ADDR}/v1/auth/token/create/ascent" | jq '.auth.client_token').trim()
         }
         echo "Vault Token: ${vaultToken}"
     }
