@@ -51,14 +51,16 @@ def call(body) {
                     parallel builds
 
                     if (!isPullRequest() && config.testEnvironment != null) {
-                        //Deploy to CI for automated testing
-                        deployStack {
-                            composeFiles = config.testEnvironment
+                        try {
+                            //Deploy to CI for automated testing
+                            deployStack {
+                                composeFiles = config.testEnvironment
+                            }
+
+                            //TODO Launch Test cases here
+                        } finally {
+                            undeployStack {}
                         }
-
-                        //TODO Launch Test cases here
-
-                        undeployStack {}
                     }
                 }
             }
