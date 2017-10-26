@@ -44,10 +44,10 @@ def call(body) {
         echo 'Wating for containers to finish deploying...'
         timeout(time: 10, unit: 'MINUTES') {
             def deployDone = false
-            waitUntil(deployDone) {
-                sleep(60)
+            waitUntil {
+                sleep(30)
                 def result = sh(returnStdout: true, script: "docker stack ps ${stackName} --format {{.CurrentState}}")
-                deployDone = !(result.contains('Failed') || result.contains('Preparing') || result.contains('Starting'))
+                return !(result.contains('Failed') || result.contains('Preparing') || result.contains('Starting'))
             }
         }
         echo 'Containers are successfully deployed'
