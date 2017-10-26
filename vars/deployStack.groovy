@@ -8,7 +8,7 @@ def call(body) {
 
     def config = [:]
     def vaultToken = null
-    def stackName = env.JOB_NAME + '-' + env.BRANCH_NAME + '-' + env.BUILD_NUMBER
+    def stackName = (env.JOB_NAME + '-' + env.BRANCH_NAME + '-' + env.BUILD_NUMBER).replaceAll('/', '.')
     def dockerFiles = ""
     body.resolveStrategy = Closure.DELEGATE_FIRST
     body.delegate = config

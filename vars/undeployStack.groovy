@@ -7,7 +7,7 @@
 def call(body) {
 
     def config = [:]
-    def stackName = env.JOB_NAME + '-' + env.BRANCH_NAME + '-' + env.BUILD_NUMBER
+    def stackName = (env.JOB_NAME + '-' + env.BRANCH_NAME + '-' + env.BUILD_NUMBER).replaceAll('/', '.')
     body.resolveStrategy = Closure.DELEGATE_FIRST
     body.delegate = config
     body()

@@ -58,7 +58,7 @@ def call(body) {
 
                         //TODO Launch Test cases here
 
-                        undeployStack {}
+                        //undeployStack {}
                     }
                 }
             }
