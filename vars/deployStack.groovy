@@ -42,7 +42,7 @@ def call(body) {
 
         //Query docker every minute to see if deployment is complete
         echo 'Wating for containers to finish deploying...'
-        timeout(time: 10, unit: 'MINUTES') {
+        timeout(time: 5, unit: 'MINUTES') {
             def deployDone = false
             waitUntil {
                 sleep(30)
