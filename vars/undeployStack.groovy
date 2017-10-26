@@ -13,7 +13,7 @@ def call(body) {
     body()
 
     if (config.dockerHost == null) {
-        dockerHost = env.DOCKER_SWARM_MANAGER
+        dockerHost = env.CI_DOCKER_SWARM_MANAGER
     }
 
     stage("Undeploying Stack: ${stackName}") {
