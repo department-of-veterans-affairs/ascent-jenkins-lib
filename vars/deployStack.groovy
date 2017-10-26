@@ -37,6 +37,7 @@ def call(body) {
 
     stage("Deploying Stack: ${stackName}") {
         withEnv(["VAULT_TOKEN=${vaultToken}"]) {
+            echo "Vault Token: ${env.VAULT_TOKEN}"
             sh "docker --host ${config.dockerHost} stack deploy ${dockerFiles} ${stackName}"
         }
 

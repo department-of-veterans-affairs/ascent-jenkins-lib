@@ -17,7 +17,7 @@ def call(body) {
     }
 
     stage("Undeploying Stack: ${stackName}") {
-        sh "docker stack rm --host ${config.dockerHost} ${stackName}"
+        sh "docker --host ${config.dockerHost} stack rm ${stackName}"
     }
     
 }
