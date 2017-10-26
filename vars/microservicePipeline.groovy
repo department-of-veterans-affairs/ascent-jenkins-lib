@@ -57,6 +57,17 @@ def call(body) {
         }
     }
 
+    if (config.composeFiles != null) {
+        //Deploy to CI for automated testing
+        deployStack {
+            composeFiles = config.composeFiles
+        }
+
+        //TODO Launch Test cases here
+
+        undeployStack {}
+    }
+
     mavenRelease {
         directory = config.directory
     }
