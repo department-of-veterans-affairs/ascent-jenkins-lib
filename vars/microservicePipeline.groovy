@@ -54,7 +54,6 @@ def call(body) {
                         //Deploy to CI for automated testing
                         deployStack {
                             composeFiles = config.testEnvironment
-                            dockerHost = "${env.CI_DOCKER_SWARM_MANAGER}"
                         }
 
                         //TODO Launch Test cases here

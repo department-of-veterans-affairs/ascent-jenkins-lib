@@ -18,7 +18,7 @@ def call(body) {
         error('No compose files defined for deployment')
     }
     if (config.dockerHost == null) {
-        dockerHost = env.CI_DOCKER_SWARM_MANAGER
+        config.dockerHost = env.CI_DOCKER_SWARM_MANAGER
     }
 
     for (file in config.composeFiles) {
