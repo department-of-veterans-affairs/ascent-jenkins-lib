@@ -31,4 +31,8 @@ def call(body) {
             notifyBuild(currentBuild.result)
         }
     }
+
+    dockerRelease {
+        directory = config.directory
+    }
 }

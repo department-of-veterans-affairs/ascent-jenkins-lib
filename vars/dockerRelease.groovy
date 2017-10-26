@@ -10,13 +10,10 @@ def call(body) {
         config.directory = '.'
     }
 
-    def buildStatus =  currentBuild.result ?: 'SUCCESSFUL'
-    echo "Build Status: ${currentBuild.result}" 
-
-    if (!isPullRequest() && buildStatus == 'SUCCESSFUL') {
+    if (!isPullRequest() && currentBuild.result == null) {
         //Create a milestone that will abort older builds when a newer build passes this stage.
         if (config.releaseVersion == null) {
-        milestone()
+            milestone()
             def versions = input(id: "versions", message: "Release this build?", parameters: [
                 [$class: 'StringParameterDefinition', description: 'Release Version', name: 'release']
             ])
