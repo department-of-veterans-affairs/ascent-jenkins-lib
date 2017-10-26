@@ -37,7 +37,7 @@ def call(body) {
 
     stage("Deploying Stack: ${stackName}") {
         withEnv(["VAULT_TOKEN=${vaultToken}"]) {
-            sh "docker stack deploy --host ${config.dockerHost} ${dockerFiles} ${stackName}"
+            sh "docker --host ${config.dockerHost} stack deploy ${dockerFiles} ${stackName}"
         }
 
         //Query docker every minute to see if deployment is complete

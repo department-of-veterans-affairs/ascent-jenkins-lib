@@ -26,7 +26,8 @@ The following credentials will need to be setup in Jenkins:
 Open the `/configure` url for your Jenkins Master server and add the following Global Properties:
 * Name: `DOCKER_HOST` Value: `URL for your Docker Host (ex. tcp://docker.test.com:2375)`
 * Name: `DOCKER_REPOSITORY_URL` Value: `URL for your Docker Repository (ex. https://index.docker.io/v1/)`
-* Name: `DOCKER_SWARM_MANAGER` Value: `URL for a Docker Swarm manager (ex. tcp://manager.test.com:2375)`
+* Name: `CI_DOCKER_SWARM_MANAGER` Value: `URL for a Docker Swarm manager in the CI environment (ex. tcp://manager.test.com:2375)`
+* Name: `VAULT_ADDR` Value: `URL for the Vault server`
 
 ## SonarQube Servers
 As are prequiste for configuring Sonar integration, you will need to create an access token that Jenkins can use to authenticate with Sonar.
