@@ -10,6 +10,7 @@ def call(body) {
     def vaultToken = null
     def stackName = stackName()
     def dockerFiles = ""
+    def publishedPort = 0
     body.resolveStrategy = Closure.DELEGATE_FIRST
     body.delegate = config
     body()
@@ -54,6 +55,8 @@ def call(body) {
             }
         }
         echo 'Containers are successfully deployed'
+
+        publishedPort = sh(returnStdout: true, script: "docker --host ${config.dockerHost} service inspect --format '{{range $p, $conf := .Endpoint.Ports}} {{($conf).PublishedPort}} {{end}}'")
     }
     
 }
