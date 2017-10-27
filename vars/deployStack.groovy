@@ -60,7 +60,7 @@ def call(body) {
         echo 'Containers are successfully deployed'
 
         def service = "${stackName}_${config.serviceName}"
-        publishedPort = sh(returnStdout: true, script: "docker --host ${config.dockerHost} service inspect ${service} --format '{{range $p, $conf := .Endpoint.Ports}} {{($conf).PublishedPort}} {{end}}'")
+        publishedPort = sh(returnStdout: true, script: "docker --host ${config.dockerHost} service inspect ${service} --format '{{range \$p, \$conf := .Endpoint.Ports}} {{(\$conf).PublishedPort}} {{end}}'")
     }
 
     return publishedPort
