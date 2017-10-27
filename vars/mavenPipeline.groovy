@@ -30,8 +30,4 @@ def call(body) {
         }
     }
 
-    mavenRelease {
-        directory = config.directory
-    }
-
 }
