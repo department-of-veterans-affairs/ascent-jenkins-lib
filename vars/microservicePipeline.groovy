@@ -70,8 +70,8 @@ def call(body) {
         }
     }
 
-    // mavenRelease {
-    //     directory = config.directory
-    // }
+    mavenRelease {
+        directory = config.directory
+    }
 
 }
