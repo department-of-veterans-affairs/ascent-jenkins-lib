@@ -1,5 +1,7 @@
 # Microservice Pipeline
-This pipeline will build both an executable JAR file using Maven and then a Docker image containing the previously built JAR file.
+This pipeline will build both an executable JAR file using Maven and then a Docker image containing the previously built JAR file. The newly built Docker image
+will be deployed to the CI docker swarm and automated test cases will be executed against the deployed service. When test case execution is complete, the test
+environment is torn down.
 
 ![Build Process Flow](/docs/images/microservice.png)
 
