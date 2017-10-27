@@ -53,9 +53,12 @@ def call(body) {
                     if (!isPullRequest() && config.testEnvironment != null) {
                         try {
                             //Deploy to CI for automated testing
-                            deployStack {
+                            def testEnvPort = deployStack {
                                 composeFiles = config.testEnvironment
+                                serviceName = config.serviceToTest
                             }
+
+                            echo "Test Environment Port Number: ${testEnvPort}"
 
                             //TODO Launch Test cases here
                         } finally {

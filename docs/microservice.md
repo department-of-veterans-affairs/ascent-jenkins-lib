@@ -13,9 +13,12 @@ microservicePipeline {
         "ascent/demo-service": "ascent-demo-service",
         "ascent/document-service": "ascent-document-service"
     ]
+
+    //Testing Info
     testEnvironment = [
         'docker-compose.yml'
     ]
+    serviceToTest = 'demo-service' //This must match the service name defined in the testEnvironment compose file
     //directory = '.'
 }
 ```

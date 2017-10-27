@@ -18,6 +18,9 @@ def call(body) {
     if (config.composeFiles == null) {
         error('No compose files defined for deployment')
     }
+    if (config.serviceName == null) {
+        error('serviceName is required')
+    }
     if (config.dockerHost == null) {
         config.dockerHost = env.CI_DOCKER_SWARM_MANAGER
     }
@@ -56,7 +59,10 @@ def call(body) {
         }
         echo 'Containers are successfully deployed'
 
-        publishedPort = sh(returnStdout: true, script: "docker --host ${config.dockerHost} service inspect --format '{{range $p, $conf := .Endpoint.Ports}} {{($conf).PublishedPort}} {{end}}'")
+        def service = "${stackName}_${serviceName}"
+        publishedPort = sh(returnStdout: true, script: "docker --host ${config.dockerHost} service inspect ${service} --format '{{range $p, $conf := .Endpoint.Ports}} {{($conf).PublishedPort}} {{end}}'")
     }
+
+    return publishedPort
     
 }
