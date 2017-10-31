@@ -32,6 +32,7 @@ def call(body) {
 
                 mavenBuild {
                     directory = config.directory
+                    mavenSettings = config.mavenSettings
                 }
 
                 echo "Build Result is: ${currentBuild.result}"

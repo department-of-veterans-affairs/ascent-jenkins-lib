@@ -23,6 +23,7 @@ def call(body) {
 
             mavenBuild {
                 directory = config.directory
+                mavenSettings = config.mavenSettings
             }
         } finally {
             //Send build notifications if needed
