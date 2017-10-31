@@ -13,7 +13,7 @@ def call(body) {
     def mvnCmd = "mvn -Dmaven.wagon.http.ssl.insecure=true -Dmaven.wagon.http.ssl.allowall=true -Ddockerfile.skip=true -DskipITs=true -s ${tmpDir}/settings.xml"
 
     stage('Configure Maven') {
-        def mavenSettings = libraryResource 'com/lucksolutions/maven/settings.xml'
+        def mavenSettings = libraryResource 'gov/va/maven/settings.xml'
         writeFile file: "${tmpDir}/settings.xml", text: mavenSettings
     }
     
