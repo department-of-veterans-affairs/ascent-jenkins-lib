@@ -20,10 +20,12 @@ microservicePipeline {
     ]
     serviceToTest = 'demo-service' //This must match the service name defined in the testEnvironment compose file
     //directory = '.'
+    //mavenSettings = '/path/to/maven/settings.xml'
 }
 ```
 
 ## Configuration
+* __mavenSettings__ - Specify a custom maven settings.xml file. By default it uses [settings.xml](/resources/gov/va/maven/settings.xml)
 * __dockerBuilds__ - (Required) A map of image tags to directories. Each directory is expected to contain a Dockerfile.
 * __directory__ - Path to the directory containing your pom.xml file. This defaults to the root of the repository.
 * __testEnvironment__ - An array of docker compose files that define the test environment to deploy for automated testing

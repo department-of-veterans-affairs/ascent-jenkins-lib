@@ -8,8 +8,10 @@ To use this pipeline include the following in your Jenkinsfile:
 ```groovy
 mavenPipeline {
     //directory = '.'
+    //mavenSettings = '/path/to/maven/settings.xml'
 }
 ```
 
 ## Configuration
 * __directory__ - Path to the directory containing your pom.xml file. This defaults to the root of the repository.
+* __mavenSettings__ - Specify a custom maven settings.xml file. By default it uses [settings.xml](/resources/gov/va/maven/settings.xml)
