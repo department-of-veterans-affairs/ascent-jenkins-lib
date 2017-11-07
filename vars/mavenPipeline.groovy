@@ -25,6 +25,10 @@ def call(body) {
                 directory = config.directory
                 mavenSettings = config.mavenSettings
             }
+        } catch (ex) {
+            if (currentBuild.result == null) {
+                currentBuild.result = 'FAILED'
+            }
         } finally {
             //Send build notifications if needed
             notifyBuild(currentBuild.result)

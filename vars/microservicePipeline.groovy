@@ -62,11 +62,19 @@ def call(body) {
                             echo "Test Environment Port Number: ${testEnvPort}"
 
                             //TODO Launch Test cases here
+                        } catch (ex) {
+                            if (currentBuild.result == null) {
+                                currentBuild.result = 'FAILED'
+                            } 
                         } finally {
                             undeployStack {}
                         }
                     }
                 }
+            }
+        } catch (ex) {
+            if (currentBuild.result == null) {
+                currentBuild.result = 'FAILED'
             }
         } finally {
             //Send build notifications if needed

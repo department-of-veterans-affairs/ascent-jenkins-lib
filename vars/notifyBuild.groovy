@@ -1,13 +1,8 @@
 
 def call(String buildStatus = 'STARTED') {
   // build status of null means successful
-  buildStatus =  buildStatus ?: 'SUCCESSFUL'
-  previousStatus = currentBuild.getPreviousBuild() ? currentBuild.getPreviousBuild().result : 'SUCCESSFUL'
-
-  //Previous builds have a SUCCESS state, change to SUCCESSFUL to match current build
-  if (previousStatus == 'SUCCESS') {
-    previousStatus = 'SUCCESSFUL'
-  }
+  buildStatus =  buildStatus ?: 'SUCCESS'
+  previousStatus = currentBuild.getPreviousBuild() ? currentBuild.getPreviousBuild().result : 'SUCCESS'
  
   // Default values
   def colorName = 'RED'
@@ -21,7 +16,7 @@ def call(String buildStatus = 'STARTED') {
   if (buildStatus == 'STARTED') {
     color = 'BLUE'
     colorCode = '#0000FF'
-  } else if (buildStatus == 'SUCCESSFUL') {
+  } else if (buildStatus == 'SUCCESS') {
     color = 'GREEN'
     colorCode = '#00FF00'
   } else if (buildStatus == 'UNSTABLE') {
@@ -38,7 +33,7 @@ def call(String buildStatus = 'STARTED') {
     //slackSend (color: colorCode, message: summary)
   
     echo "Notifying that build was a ${buildStatus}"
-    //hipchatSend (color: color, notify: true, message: summary)
+    hipchatSend (color: color, notify: true, message: summary)
  
     // emailext (
     //     subject: subject,
