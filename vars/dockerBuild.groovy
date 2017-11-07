@@ -24,25 +24,34 @@ def call(body) {
             }
         }
 
-        stage("Build ${config.imageName}") {
-            docker.withServer("${env.DOCKER_HOST}") {
-                docker.withRegistry("${env.DOCKER_REPOSITORY_URL}", 'docker-repository') {
-                    def image = docker.build("${config.imageName}:${BRANCH_NAME}")
-                }
-            }
-        }
+        try {
+            def image = null
 
-        //Do not push images for PR builds
-        if (!isPullRequest()) {
-            stage("Push ${config.imageName} to Registry") {
+            stage("Build ${config.imageName}") {
                 docker.withServer("${env.DOCKER_HOST}") {
                     docker.withRegistry("${env.DOCKER_REPOSITORY_URL}", 'docker-repository') {
-                        def image = docker.build("${config.imageName}:${config.version}")
-                        image.push()
-                        if (env.BRANCH_NAME == 'development') {
-                            image.push('latest')
+                        image = docker.build("${config.imageName}:${config.version}")
+                    }
+                }
+            }
+
+            //Do not push images for PR builds
+            if (!isPullRequest()) {
+                stage("Push ${config.imageName} to Registry") {
+                    docker.withServer("${env.DOCKER_HOST}") {
+                        docker.withRegistry("${env.DOCKER_REPOSITORY_URL}", 'docker-repository') {
+                            image.push()
+                            if (env.BRANCH_NAME == 'development') {
+                                image.push('latest')
+                            }
                         }
                     }
+                }
+            }
+        } finally {
+            if (image != null) {
+                stage("Remove ${config.imageName}") {
+                    sh "docker -H ${env.DOCKER_HOST} rmi ${image.imageName}"
                 }
             }
         }
