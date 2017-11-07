@@ -25,7 +25,7 @@ def call(body) {
         }
 
         def image = null
-        try {
+        // try {
             stage("Build ${config.imageName}") {
                 docker.withServer("${env.DOCKER_HOST}") {
                     docker.withRegistry("${env.DOCKER_REPOSITORY_URL}", 'docker-repository') {
@@ -47,15 +47,21 @@ def call(body) {
                     }
                 }
             }
-        } finally {
-            if (image != null) {
-                stage("Remove ${image.imageName}") {
-                    echo 'Removing docker image...'
-                    echo "Image ID: ${image.id}"
-                    sh "docker -H ${env.DOCKER_HOST} rmi ${image.id}"
-                }
+
+            stage("Remove ${image.imageName}") {
+                echo 'Removing docker image...'
+                echo "Image ID: ${image.id}"
+                sh "docker -H ${env.DOCKER_HOST} rmi ${image.id}"
             }
-        }
+        // } finally {
+        //     if (image != null) {
+        //         stage("Remove ${image.imageName}") {
+        //             echo 'Removing docker image...'
+        //             echo "Image ID: ${image.id}"
+        //             sh "docker -H ${env.DOCKER_HOST} rmi ${image.id}"
+        //         }
+        //     }
+        // }
     }
     
 }
