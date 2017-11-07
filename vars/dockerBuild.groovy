@@ -48,7 +48,7 @@ def call(body) {
                 }
             }
 
-            stage("Remove ${image.imageName}") {
+            stage("Remove ${config.imageName}") {
                 echo 'Removing docker image...'
                 echo "Image ID: ${image.id}"
                 sh "docker -H ${env.DOCKER_HOST} rmi ${image.id}"
