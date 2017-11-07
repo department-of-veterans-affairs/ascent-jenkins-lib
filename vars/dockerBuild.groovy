@@ -24,9 +24,8 @@ def call(body) {
             }
         }
 
+        def image = null
         try {
-            def image = null
-
             stage("Build ${config.imageName}") {
                 docker.withServer("${env.DOCKER_HOST}") {
                     docker.withRegistry("${env.DOCKER_REPOSITORY_URL}", 'docker-repository') {
