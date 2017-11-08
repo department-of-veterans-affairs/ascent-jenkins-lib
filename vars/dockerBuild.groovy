@@ -50,7 +50,7 @@ def call(body) {
 
             stage("Remove ${config.imageName}") {
                 echo "Removing ${image.id}"
-                sh "docker -H ${env.DOCKER_HOST} rmi --force $(docker -H ${env.DOCKER_HOST} images ${image.id} -q)"
+                sh "docker -H ${env.DOCKER_HOST} rmi --force \$(docker -H ${env.DOCKER_HOST} images ${image.id} -q)"
             }
         // } finally {
         //     if (image != null) {
