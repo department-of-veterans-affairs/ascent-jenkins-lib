@@ -57,6 +57,7 @@ def call(body) {
                             def testEnvPort = deployStack {
                                 composeFiles = config.testEnvironment
                                 serviceName = config.serviceToTest
+                                vaultTokens = config.vaultTokens
                             }
 
                             echo "Test Environment Port Number: ${testEnvPort}"

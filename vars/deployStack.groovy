@@ -24,6 +24,9 @@ def call(body) {
     if (config.dockerHost == null) {
         config.dockerHost = env.CI_DOCKER_SWARM_MANAGER
     }
+    if (config.vaultRole == null) {
+        config.vaultRole = 'ascent-platform'
+    }
 
     for (file in config.composeFiles) {
         if (fileExists(file)) {
@@ -33,14 +36,20 @@ def call(body) {
         }
     }
 
+    
+    def deployEnv = []
     stage("Requesting Vault Token for application") {
         withCredentials([string(credentialsId: 'jenkins-vault', variable: 'JENKINS_VAULT_TOKEN')]) {
-            vaultToken = sh(returnStdout: true, script: "curl -k -s --header \"X-Vault-Token: ${JENKINS_VAULT_TOKEN}\" --request POST --data '{\"display_name\": \"testenv\"}' ${env.VAULT_ADDR}/v1/auth/token/create/ascent-platform | jq '.auth.client_token'").trim().replaceAll('"', '')
+            for (x in config.vaultTokens.keySet()) {
+                def var = x
+                vaultToken = sh(returnStdout: true, script: "curl -k -s --header \"X-Vault-Token: ${JENKINS_VAULT_TOKEN}\" --request POST --data '{\"display_name\": \"testenv\"}' ${env.VAULT_ADDR}/v1/auth/token/create/${config.vaultTokens[var]} | jq '.auth.client_token'").trim().replaceAll('"', '')
+                deployEnv.add("${var}=${vaultToken}")
+            }
         }
     }
 
     stage("Deploying Stack: ${stackName}") {
-        withEnv(["VAULT_TOKEN=${vaultToken}"]) {
+        withEnv(deployEnv) {
             sh "docker --host ${config.dockerHost} stack deploy ${dockerFiles} ${stackName}"
         }
 
