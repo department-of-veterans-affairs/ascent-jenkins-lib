@@ -66,7 +66,7 @@ def call(body) {
                                 serviceUrl = "${env.DOCKER_SWARM_URL}:${testEnvPort}"
                             }
                         } catch (ex) {
-                            echo "Failed due to ${ex}"
+                            echo "Failed due to ${ex}: ${ex.message}"
                             if (currentBuild.result == null) {
                                 currentBuild.result = 'FAILED'
                             } 
