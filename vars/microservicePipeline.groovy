@@ -60,8 +60,6 @@ def call(body) {
                                 vaultTokens = config.vaultTokens
                             }
 
-                            echo "Test Environment Port Number: ${testEnvPort}"
-
                             //TODO Launch Test cases here
                             mavenFunctionalTest {
                                 directory = config.directory
