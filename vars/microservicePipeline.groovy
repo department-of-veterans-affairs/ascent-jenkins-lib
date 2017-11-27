@@ -63,6 +63,10 @@ def call(body) {
                             echo "Test Environment Port Number: ${testEnvPort}"
 
                             //TODO Launch Test cases here
+                            mavenFunctionalTest {
+                                directory = config.directory
+                                serviceUrl = "${env.DOCKER_SWARM_URL}:${testEnvPort}"
+                            }
                         } catch (ex) {
                             if (currentBuild.result == null) {
                                 currentBuild.result = 'FAILED'
