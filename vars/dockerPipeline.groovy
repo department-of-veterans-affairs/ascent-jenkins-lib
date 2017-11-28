@@ -9,6 +9,12 @@ def call(body) {
         config.directory = '.'
     }
 
+    if (config.dockerBuilds == null) {
+        config.dockerBuilds = [
+                (config.imageName): config.directory
+        ]
+    }
+
     node {
         properties([
             disableConcurrentBuilds(),
@@ -22,10 +28,19 @@ def call(body) {
                 checkout scm
             }
             
-            dockerBuild {
-                directory = config.directory
-                imageName = config.imageName
+            def builds = [:]
+            for (x in config.dockerBuilds.keySet()) {
+                def image = x
+                builds[image] = {
+                    echo "Image Name: ${image}"
+                    dockerBuild {
+                        directory = config.dockerBuilds[image]
+                        imageName = image
+                    }
+                }
             }
+
+            parallel builds
         } catch (ex) {
             if (currentBuild.result == null) {
                 currentBuild.result = 'FAILED'
