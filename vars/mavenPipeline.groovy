@@ -9,7 +9,7 @@ def call(body) {
         config.directory = '.'
     }
 
-    throttle([env.JOB_NAME])
+    throttle([env.JOB_NAME]) {
         node {
             properties([
                 pipelineTriggers([
