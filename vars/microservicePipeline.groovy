@@ -63,7 +63,7 @@ def call(body) {
                             //TODO Launch Test cases here
                             mavenFunctionalTest {
                                 directory = config.directory
-                                serviceUrl = "${env.DOCKER_SWARM_URL}:${testEnvPort}"
+                                serviceUrl = "${this.env.DOCKER_SWARM_URL}:${testEnvPort}"
                             }
                         } catch (ex) {
                             echo "Failed due to ${ex}: ${ex.message}"
