@@ -9,28 +9,29 @@ def call(body) {
         config.directory = '.'
     }
 
-    node {
-        properties([
-            pipelineTriggers([
-                pollSCM('*/5 * * * *')
-            ]),
-            disableConcurrentBuilds()
-        ])
+    throttle([env.JOB_NAME]) {
+        node {
+            properties([
+                pipelineTriggers([
+                    pollSCM('*/5 * * * *')
+                ]),
+                disableConcurrentBuilds()
+            ])
 
-        try {
-            stage('Checkout SCM') {
-                checkout scm
-            }
+            try {
+                stage('Checkout SCM') {
+                    checkout scm
+                }
 
-            packerBuild {
-                directory = config.directory
-                vars = config.vars
-                packerFile = config.packerFile
+                packerBuild {
+                    directory = config.directory
+                    vars = config.vars
+                    packerFile = config.packerFile
+                }
+            } finally {
+                //Send build notifications if needed
+                notifyBuild(currentBuild.result)
             }
-        } finally {
-            //Send build notifications if needed
-            notifyBuild(currentBuild.result)
         }
     }
-
 }

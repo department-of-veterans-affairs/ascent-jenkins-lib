@@ -9,29 +9,31 @@ def call(body) {
         config.directory = '.'
     }
 
-    node {
-        properties([
-            pipelineTriggers([
-                pollSCM('*/5 * * * *')
+    throttle([env.JOB_NAME]) {
+        node {
+            properties([
+                pipelineTriggers([
+                    pollSCM('*/5 * * * *')
+                ])
             ])
-        ])
 
-        try {
-            stage('Checkout SCM') {
-                checkout scm
-            }
+            try {
+                stage('Checkout SCM') {
+                    checkout scm
+                }
 
-            mavenBuild {
-                directory = config.directory
-                mavenSettings = config.mavenSettings
+                mavenBuild {
+                    directory = config.directory
+                    mavenSettings = config.mavenSettings
+                }
+            } catch (ex) {
+                if (currentBuild.result == null) {
+                    currentBuild.result = 'FAILED'
+                }
+            } finally {
+                //Send build notifications if needed
+                notifyBuild(currentBuild.result)
             }
-        } catch (ex) {
-            if (currentBuild.result == null) {
-                currentBuild.result = 'FAILED'
-            }
-        } finally {
-            //Send build notifications if needed
-            notifyBuild(currentBuild.result)
         }
     }
 
