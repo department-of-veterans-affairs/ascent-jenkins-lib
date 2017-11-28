@@ -64,6 +64,7 @@ def call(body) {
                             mavenFunctionalTest {
                                 directory = config.directory
                                 serviceUrl = "${this.env.DOCKER_SWARM_URL}:${testEnvPort}"
+                                cucumberReportDirectory = config.cucumberReportDirectory
                             }
                         } catch (ex) {
                             echo "Failed due to ${ex}: ${ex.message}"

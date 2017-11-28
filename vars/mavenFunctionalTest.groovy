@@ -11,6 +11,9 @@ def call(body) {
     if (config.serviceUrl == null) {
         error "serviceUrl parameters must be specified"
     }
+    if (config.cucumberReportDirectory == null) {
+        config.cucumberReportDirectory = 'target'
+    }
 
     def tmpDir = pwd(tmp: true)
     
@@ -35,9 +38,9 @@ def call(body) {
         } finally {
             step([$class: 'CucumberReportPublisher',
                 jenkinsBasePath: 'http://jenkins.internal.vets-api.gov:8080/',
-                fileIncludePattern: 'cucumber.json',
+                fileIncludePattern: '**/cucumber.json',
                 fileExcludePattern: '',
-                jsonReportDirectory: 'target',
+                jsonReportDirectory: "${config.cucumberReportDirectory}",
                 ignoreFailedTests: true, missingFails: false, pendingFails: false, skippedFails: false, undefinedFails: false, parallelTesting: false])
             if (currentBuild.result == 'UNSTABLE') {
                 return
