@@ -72,7 +72,7 @@ def call(body) {
                                 currentBuild.result = 'FAILED'
                             } 
                         } finally {
-                            //undeployStack {}
+                            undeployStack {}
                         }
                     }
                 }
