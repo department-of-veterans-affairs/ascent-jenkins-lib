@@ -33,7 +33,7 @@ def call(body) {
         try {
             stage('Functional Testing') {
                 echo "Executing functional tests against ${config.serviceUrl}"
-                sh "${mvnCmd} integration-test -P inttest -DbaseUrl=${config.serviceUrl}"   
+                sh "${mvnCmd} integration-test -P inttest -DbaseURL=${config.serviceUrl}"   
             }
         } finally {
             step([$class: 'CucumberReportPublisher',
