@@ -60,7 +60,7 @@ def call(body) {
             waitUntil {
                 sleep(30)
                 sh(script: "docker --host ${config.dockerHost} stack ps ${stackName} --format {{.CurrentState}}")
-                def result = sh(returnStdout: true, script: "docker --host ${config.dockerHost} stack ps ${stackName} --format {{.CurrentState}}")
+                def result = sh(returnStdout: true, script: "docker --host ${config.dockerHost} stack ps ${stackName} --filter label=gov.va.ascent.testable --format {{.CurrentState}}")
                 deployDone = !(result.contains('Failed') || result.contains('Preparing') || result.contains('Starting'))
                 echo "Deployment is done: ${deployDone}"
                 return deployDone;
