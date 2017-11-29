@@ -41,7 +41,7 @@ def call(body) {
                 fileIncludePattern: '**/cucumber.json',
                 fileExcludePattern: '',
                 jsonReportDirectory: "${config.cucumberReportDirectory}",
-                ignoreFailedTests: true, missingFails: false, pendingFails: false, skippedFails: false, undefinedFails: false, parallelTesting: false])
+                ignoreFailedTests: false, missingFails: false, pendingFails: false, skippedFails: false, undefinedFails: false, parallelTesting: false])
             if (currentBuild.result == 'UNSTABLE') {
                 return
             }
