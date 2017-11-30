@@ -36,15 +36,17 @@ def call(body) {
                 sh "${mvnCmd} integration-test -P inttest -DbaseURL=${config.serviceUrl}"   
             }
         } finally {
-            step([$class: 'CucumberReportPublisher',
-                jenkinsBasePath: 'http://jenkins.internal.vets-api.gov:8080/',
-                fileIncludePattern: '**/cucumber.json',
-                fileExcludePattern: '',
-                jsonReportDirectory: "${config.cucumberReportDirectory}",
-                parallelTesting: false,
-                buildStatus: 'UNSTABLE'])
-            if (currentBuild.result == 'UNSTABLE') {
-                return
+            if (fileExists("${config.cucumberReportDirectory}/cucumber.json")) {
+                step([$class: 'CucumberReportPublisher',
+                    jenkinsBasePath: 'http://jenkins.internal.vets-api.gov:8080/',
+                    fileIncludePattern: '**/cucumber.json',
+                    fileExcludePattern: '',
+                    jsonReportDirectory: "${config.cucumberReportDirectory}",
+                    parallelTesting: false,
+                    buildStatus: 'UNSTABLE'])
+                if (currentBuild.result == 'UNSTABLE') {
+                    return
+                }
             }
         }
     }
