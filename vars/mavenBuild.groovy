@@ -35,7 +35,7 @@ def call(body) {
 
         stage('Maven Build') {
             withCredentials([usernamePassword(credentialsId: 'nexus', usernameVariable: 'DEPLOY_USER', passwordVariable: 'DEPLOY_PASSWORD')]) {
-                sh "${mvnCmd} clean compile test-compile"
+                sh "${mvnCmd} -U clean compile test-compile"
             }
         }
 
