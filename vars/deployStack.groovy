@@ -27,6 +27,9 @@ def call(body) {
     if (config.vaultRole == null) {
         config.vaultRole = 'ascent-platform'
     }
+    if (config.deployWaitTime == null) {
+        config.deployWaitTime = 300
+    }
 
     for (file in config.composeFiles) {
         if (fileExists(file)) {
@@ -68,7 +71,7 @@ def call(body) {
         // }
 
         echo 'Sleep for a few minutes and cross our fingers that the services started. Need to find a more reliable way of checking container health.'
-        sleep(300)
+        sleep(config.deployWaitTime)
         sh "docker --host ${config.dockerHost} stack ps ${stackName}"
         echo 'Containers are successfully deployed'
 

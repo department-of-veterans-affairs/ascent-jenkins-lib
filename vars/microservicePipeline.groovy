@@ -59,6 +59,7 @@ def call(body) {
                                 composeFiles = config.testEnvironment
                                 serviceName = config.serviceToTest
                                 vaultTokens = config.vaultTokens
+                                deployWaitTime = config.deployWaitTime
                             }
 
                             mavenFunctionalTest {
