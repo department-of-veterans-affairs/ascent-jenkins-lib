@@ -68,7 +68,7 @@ def call(body) {
         // }
 
         echo 'Sleep for a few minutes and cross our fingers that the services started. Need to find a more reliable way of checking container health.'
-        sleep(180)
+        sleep(300)
         sh "docker --host ${config.dockerHost} stack ps ${stackName}"
         echo 'Containers are successfully deployed'
 
