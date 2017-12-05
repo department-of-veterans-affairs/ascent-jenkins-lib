@@ -72,7 +72,7 @@ def call(body) {
 
         echo 'Sleep for a few minutes and cross our fingers that the services started. Need to find a more reliable way of checking container health.'
         sleep(config.deployWaitTime)
-        sh "docker --host ${config.dockerHost} stack ps ${stackName}"
+        sh "docker --host ${config.dockerHost} stack ps ${stackName} --no-trunc"
         echo 'Containers are successfully deployed'
 
         def service = "${stackName}_${config.serviceName}"
