@@ -72,7 +72,7 @@ def call(body) {
                     sh "${mvnCmd} org.codehaus.mojo:versions-maven-plugin:2.5::use-releases"
 
                     //Check for any snapshot versions remaining
-                    //sh "${mvnCmd} enforcer:enforce -Denforcer.fail=true"
+                    sh "${mvnCmd} validate"
                 }
 
                 stage('Tag Release') {
