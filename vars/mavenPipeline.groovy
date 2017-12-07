@@ -34,9 +34,9 @@ def call(body) {
                 echo "developmentVersion: ${params.developmentVersion}"
             }
 
-            if (params.isRelease == true) {
+            if (params.isRelease) {
                 //Execute maven release process and receive the Git Tag for the release
-                def tag = mavenRelease {
+                mavenRelease {
                     directory = config.directory
                     releaseVersion = params.releaseVersion
                     developmentVersion = params.developmentVersion
@@ -48,6 +48,7 @@ def call(body) {
                 mavenSettings = config.mavenSettings
             }
         } catch (ex) {
+            echo "Failed due to ${ex}: ${ex.message}"
             if (currentBuild.result == null) {
                 currentBuild.result = 'FAILED'
             }
