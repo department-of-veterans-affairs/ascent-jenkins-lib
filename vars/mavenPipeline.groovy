@@ -28,12 +28,12 @@ def call(body) {
                 checkout scm
             }
 
-            if (param.isRelease) {
+            if (params.isRelease) {
                 //Execute maven release process and receive the Git Tag for the release
                 def tag = mavenRelease {
                     directory = config.directory
-                    releaseVersion = param.releaseVersion
-                    developmentVersion = param.developmentVersion
+                    releaseVersion = params.releaseVersion
+                    developmentVersion = params.developmentVersion
                 } 
             }
 
