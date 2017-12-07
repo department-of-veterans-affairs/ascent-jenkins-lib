@@ -16,7 +16,7 @@ def call(body) {
                 pollSCM('*/5 * * * *')
             ]),
             parameters ([
-                booleanParam(name: 'isRelease', defaultValue: 'false', description: 'Release this build?'),
+                booleanParam(name: 'isRelease', defaultValue: false, description: 'Release this build?'),
                 string(name: 'release', defaultValue: '', description: 'Provide the release version'),
                 string(name: 'development', defaultValue: '', description: 'Provide the next development version')
             ])
