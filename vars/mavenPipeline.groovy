@@ -28,6 +28,12 @@ def call(body) {
                 checkout scm
             }
 
+            stage ('Build Info') {
+                echo "isRelease: ${params.isRelease}"
+                echo "releaseVersion: ${params.releaseVersion}"
+                echo "developmentVersion: ${params.developmentVersion}"
+            }
+
             if (params.isRelease) {
                 //Execute maven release process and receive the Git Tag for the release
                 def tag = mavenRelease {
