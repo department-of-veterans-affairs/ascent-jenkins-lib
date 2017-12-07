@@ -17,8 +17,8 @@ def call(body) {
             ]),
             parameters ([
                 booleanParam(name: 'isRelease', defaultValue: false, description: 'Release this build?'),
-                string(name: 'release', defaultValue: '', description: 'Provide the release version'),
-                string(name: 'development', defaultValue: '', description: 'Provide the next development version')
+                string(name: 'releaseVersion', defaultValue: '', description: 'Provide the release version:'),
+                string(name: 'developmentVersion', defaultValue: '', description: 'Provide the next development version:')
             ])
         ])
         
@@ -26,6 +26,15 @@ def call(body) {
         try {
             stage('Checkout SCM') {
                 checkout scm
+            }
+
+            if (param.isRelease) {
+                //Execute maven release process and receive the Git Tag for the release
+                def tag = mavenRelease {
+                    directory = config.directory
+                    releaseVersion = param.releaseVersion
+                    developmentVersion = param.developmentVersion
+                } 
             }
 
             mavenBuild {
