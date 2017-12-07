@@ -48,7 +48,7 @@ def call(body) {
                 mavenSettings = config.mavenSettings
             }
         } catch (ex) {
-            echo "Failed due to ${ex}: ${ex.message}"
+            echo "Failed due to: ${ex.message}"
             if (currentBuild.result == null) {
                 currentBuild.result = 'FAILED'
             }
