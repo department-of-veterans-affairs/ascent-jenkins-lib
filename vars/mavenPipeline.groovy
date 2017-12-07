@@ -38,8 +38,8 @@ def call(body) {
                 //Execute maven release process and receive the Git Tag for the release
                 mavenRelease {
                     directory = config.directory
-                    releaseVersion = params.releaseVersion
-                    developmentVersion = params.developmentVersion
+                    releaseVersion = this.params.releaseVersion
+                    developmentVersion = this.params.developmentVersion
                 } 
             }
 
