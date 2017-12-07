@@ -34,7 +34,7 @@ def call(body) {
                 echo "developmentVersion: ${params.developmentVersion}"
             }
 
-            if (params.isRelease) {
+            if (params.isRelease == true) {
                 //Execute maven release process and receive the Git Tag for the release
                 def tag = mavenRelease {
                     directory = config.directory
