@@ -65,8 +65,16 @@ def call(body) {
         }
 
         stage('Push to changes to remote branch') {
-            //Push to Github
-            sh "git push origin HEAD:${env.BRANCH_NAME}"
+            //makes a new branch from current detached HEAD
+            sh "git checkout –b temp"
+            //Point the remote branch to the detached HEAD
+            sh "git branch –f ${BRANCH_NAME} temp"
+            //Delete the temp branch
+            sh "git branch –d temp"
+            //Push the branch to the remote
+            sh "git push origin ${BRANCH_NAME}"
+            //Push the tag to the remote
+            sh "git push origin refs/tags/${tag}"
         }
 
         stage('Checkout Tag') {
