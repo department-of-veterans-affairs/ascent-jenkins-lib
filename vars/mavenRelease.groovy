@@ -68,7 +68,7 @@ def call(body) {
             //Push to Github
             sh "git config --list"
             def remoteBranchFetch = sh(returnStdout: true, script: 'git config remote.origin.fetch').trim()
-            def remoteBranch = remoteBranchFetch.substring(env.CHANGE_URL.indexOf(':')+1)
+            def remoteBranch = remoteBranchFetch.substring(remoteBranchFetch.indexOf(':')+1)
             sh "git push origin HEAD:${remoteBranch}"
         }
 
