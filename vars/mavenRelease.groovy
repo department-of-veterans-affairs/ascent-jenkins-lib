@@ -37,7 +37,7 @@ def call(body) {
 
         stage('Set Release Version') {
             //Set release version
-            sh "${mvnCmd} org.codehaus.mojo:versions-maven-plugin:2.5:set -DnewVersion=${config.releaseVersion}"
+            sh "${mvnCmd} org.codehaus.mojo:versions-maven-plugin:2.5:set -DnewVersion=${config.releaseVersion} -DgenerateBackupPoms=false"
 
             //Update SNAPSHOT dependencies to their release versions if available
             sh "${mvnCmd} org.codehaus.mojo:versions-maven-plugin:2.5::use-releases"
@@ -58,7 +58,7 @@ def call(body) {
 
         stage('Set Next Development Version') {
             //Set the next dev version
-            sh "${mvnCmd} org.codehaus.mojo:versions-maven-plugin:2.5::set -DnewVersion=${config.developmentVersion}"
+            sh "${mvnCmd} org.codehaus.mojo:versions-maven-plugin:2.5::set -DnewVersion=${config.developmentVersion}  -DgenerateBackupPoms=false"
             //Commit changes locally
             sh "git status"
             sh "git commit -a -m \"Preparing POMs for next development version ${config.developmentVersion}\""
