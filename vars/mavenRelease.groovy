@@ -69,7 +69,7 @@ def call(body) {
             sh "git branch temp"
             sh "git checkout temp"
             //Point the remote branch to the detached HEAD
-            sh "git branch –f ${BRANCH_NAME} temp"
+            sh "git branch –f -M ${BRANCH_NAME} temp"
             //Delete the temp branch
             sh "git branch –d temp"
             //Push the branch to the remote
