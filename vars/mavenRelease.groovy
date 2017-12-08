@@ -66,7 +66,6 @@ def call(body) {
 
         stage('Push to changes to remote branch') {
             //Push to Github
-            sh "git config --list"
             sh "git push origin HEAD:${env.BRANCH_NAME}"
         }
 
