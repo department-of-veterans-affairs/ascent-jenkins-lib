@@ -24,9 +24,7 @@ def call(body) {
                 echo "Branch is up to date with changesets on master. Proceeding with release..."
             }
 
-            sh "git --version"
             sh "git fetch origin"
-            sh "git branch --list"
             sh "git checkout ${env.BRANCH_NAME}"
         }
 
@@ -78,7 +76,7 @@ def call(body) {
             // sh "git checkout -B ${BRANCH_NAME} temp"
             // //Delete the temp branch
             // sh "git branch –d temp"
-            def urlMinusProtocol = url.subString(url.indexOf('://')+1)
+            def urlMinusProtocol = url.substring(url.indexOf('://')+1)
             withCredentials([usernamePassword(credentialsId: 'github', passwordVariable: 'GIT_PASSWORD', usernameVariable: 'GIT_USERNAME')]) {
                 //Push the branch to the remote
                 sh "git push https://${GIT_USERNAME}:${GIT_PASSWORD}@${urlMinusProtocol} ${BRANCH_NAME}"
