@@ -66,7 +66,8 @@ def call(body) {
 
         stage('Push to changes to remote branch') {
             //makes a new branch from current detached HEAD
-            sh "git checkout –b temp"
+            sh "git branch temp"
+            sh "git checkout temp"
             //Point the remote branch to the detached HEAD
             sh "git branch –f ${BRANCH_NAME} temp"
             //Delete the temp branch
