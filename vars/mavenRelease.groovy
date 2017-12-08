@@ -49,7 +49,6 @@ def call(body) {
             sh "${mvnCmd} validate"
 
             //Commit changes locally
-            sh "git status"
             sh "git commit -a -m \"Releasing version ${config.releaseVersion}\""
         }
 
@@ -63,19 +62,10 @@ def call(body) {
             //Set the next dev version
             sh "${mvnCmd} org.codehaus.mojo:versions-maven-plugin:2.5::set -DnewVersion=${config.developmentVersion}  -DgenerateBackupPoms=false"
             //Commit changes locally
-            sh "git status"
             sh "git commit -a -m \"Preparing POMs for next development version ${config.developmentVersion}\""
         }
 
         stage('Push to changes to remote branch') {
-            // sh "git branch --list"
-            // //makes a new branch from current detached HEAD
-            // sh "git branch temp"
-            // sh "git checkout temp"
-            // //Point the remote branch to the detached HEAD
-            // sh "git checkout -B ${BRANCH_NAME} temp"
-            // //Delete the temp branch
-            // sh "git branch –d temp"
             def urlMinusProtocol = url.substring(url.indexOf('://')+3)
             withCredentials([usernamePassword(credentialsId: 'github', passwordVariable: 'GIT_PASSWORD', usernameVariable: 'GIT_USERNAME')]) {
                 //Push the branch to the remote
