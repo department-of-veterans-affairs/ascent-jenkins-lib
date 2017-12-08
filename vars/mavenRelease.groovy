@@ -67,7 +67,9 @@ def call(body) {
         stage('Push to changes to remote branch') {
             //Push to Github
             sh "git config --list"
-            sh "git push"
+            def remoteBranchFetch = sh(returnStdout: true, script: 'git config remote.origin.fetch').trim()
+            def remoteBranch = remoteBranchFetch.substring(env.CHANGE_URL.indexOf(':')+1)
+            sh "git push origin HEAD:${remoteBranch}"
         }
 
         stage('Checkout Tag') {
