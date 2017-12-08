@@ -11,8 +11,9 @@ def call(body) {
     }
 
     if (!isPullRequest() && currentBuild.result == null) {
+        def url = ''
         stage('Check master branch') {
-            def url = sh(returnStdout: true, script: 'git config remote.origin.url').trim()
+           url = sh(returnStdout: true, script: 'git config remote.origin.url').trim()
             sh "git fetch --no-tags --progress ${url} +refs/heads/master:refs/remotes/origin/master"
 
             //Compare to master branch to look for any unmerged changes
@@ -24,7 +25,8 @@ def call(body) {
             }
 
             sh "git --version"
-            sh "git fetch --no-tags --progress ${url} +refs/heads/${env.BRANCH_NAME}:refs/remotes/origin/${env.BRANCH_NAME}"
+            sh "git fetch origin"
+            sh "git branch --list"
             sh "git checkout ${env.BRANCH_NAME}"
         }
 
@@ -76,10 +78,13 @@ def call(body) {
             // sh "git checkout -B ${BRANCH_NAME} temp"
             // //Delete the temp branch
             // sh "git branch –d temp"
-            //Push the branch to the remote
-            sh "git push origin ${BRANCH_NAME}"
-            //Push the tag to the remote
-            sh "git push origin refs/tags/${tag}"
+            urlMinusProtocol = url.subString(url.indexOf('://')+1)
+            withCredentials([usernamePassword(credentialsId: 'github', passwordVariable: 'GIT_PASSWORD', usernameVariable: 'GIT_USERNAME')]) {
+                //Push the branch to the remote
+                sh "git push https://${GIT_USERNAME}:${GIT_PASSWORD}@${urlMinusProtocol} ${BRANCH_NAME}"
+                //Push the tag to the remote
+                sh "git push https://${GIT_USERNAME}:${GIT_PASSWORD}@${urlMinusProtocol} --tags"
+            }
         }
 
         stage('Checkout Tag') {
