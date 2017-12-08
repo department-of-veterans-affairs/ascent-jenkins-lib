@@ -65,7 +65,7 @@ def call(body) {
         }
 
         stage('Push to changes to remote branch') {
-            sh "git branches --list"
+            sh "git branch --list"
             //makes a new branch from current detached HEAD
             sh "git branch temp"
             sh "git checkout temp"
