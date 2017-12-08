@@ -78,7 +78,7 @@ def call(body) {
             // sh "git checkout -B ${BRANCH_NAME} temp"
             // //Delete the temp branch
             // sh "git branch –d temp"
-            urlMinusProtocol = url.subString(url.indexOf('://')+1)
+            def urlMinusProtocol = url.subString(url.indexOf('://')+1)
             withCredentials([usernamePassword(credentialsId: 'github', passwordVariable: 'GIT_PASSWORD', usernameVariable: 'GIT_USERNAME')]) {
                 //Push the branch to the remote
                 sh "git push https://${GIT_USERNAME}:${GIT_PASSWORD}@${urlMinusProtocol} ${BRANCH_NAME}"
