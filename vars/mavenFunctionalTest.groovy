@@ -44,7 +44,7 @@ def call(body) {
             stage('Functional Testing') {
                 echo "Executing functional tests against ${config.serviceUrl}"
                 withEnv(deployEnv) {
-                    sh "${mvnCmd} integration-test -P inttest -DbaseURL=${config.serviceUrl} -DX-Vault-Token=${env.VAULT_TOKEN}"
+                    sh "${mvnCmd} integration-test -P inttest -Dtest.env=ci -DbaseURL=${config.serviceUrl} -DX-Vault-Token=${env.VAULT_TOKEN}"
                 }
             }
         } finally {
