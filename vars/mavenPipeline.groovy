@@ -19,7 +19,9 @@ def call(body) {
                 booleanParam(name: 'isRelease', defaultValue: false, description: 'Release this build?'),
                 string(name: 'releaseVersion', defaultValue: '', description: 'Provide the release version:'),
                 string(name: 'developmentVersion', defaultValue: '', description: 'Provide the next development version:')
-            ])
+            ]),
+            [$class: 'BuildDiscarderProperty', strategy: [$class: 'LogRotator', daysToKeepStr: '5', numToKeepStr: '5']],
+            [$class: 'ScannerJobProperty', doNotScan: false]
         ])
         
 
