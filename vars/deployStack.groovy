@@ -45,7 +45,7 @@ def call(body) {
         withCredentials([string(credentialsId: 'jenkins-vault', variable: 'JENKINS_VAULT_TOKEN')]) {
             for (x in config.vaultTokens.keySet()) {
                 def var = x
-                vaultToken = sh(returnStdout: true, script: "curl -k -s --header \"X-Vault-Token: ${JENKINS_VAULT_TOKEN}\" --request POST --data '{\"display_name\": \"testenv\"}' ${env.VAULT_ADDR}/v1/auth/token/create/${config.vaultTokens[var]}?ttl=30m&renewable=false | jq '.auth.client_token'").trim().replaceAll('"', '')
+                vaultToken = sh(returnStdout: true, script: "curl -k -s --header \"X-Vault-Token: ${JENKINS_VAULT_TOKEN}\" --request POST --data '{\"display_name\": \"testenv\"}' ${env.VAULT_ADDR}/v1/auth/token/create/${config.vaultTokens[var]}?ttl=30m | jq '.auth.client_token'").trim().replaceAll('"', '')
                 deployEnv.add("${var}=${vaultToken}")
             }
         }
