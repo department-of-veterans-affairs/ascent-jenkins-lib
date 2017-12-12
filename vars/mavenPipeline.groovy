@@ -20,8 +20,7 @@ def call(body) {
                 string(name: 'releaseVersion', defaultValue: '', description: 'Provide the release version:'),
                 string(name: 'developmentVersion', defaultValue: '', description: 'Provide the next development version:')
             ]),
-            [$class: 'BuildDiscarderProperty', strategy: [$class: 'LogRotator', daysToKeepStr: '5', numToKeepStr: '5']],
-            [$class: 'ScannerJobProperty', doNotScan: false]
+            buildDiscarder(logRotator(daysToKeepStr: '5', numToKeepStr: '5'))
         ])
         
 
