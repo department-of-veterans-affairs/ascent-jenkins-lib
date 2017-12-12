@@ -81,6 +81,7 @@ def call(body) {
                                 directory = config.directory
                                 serviceUrl = "${this.env.DOCKER_SWARM_URL}:${testEnvPort}"
                                 cucumberReportDirectory = config.cucumberReportDirectory
+                                testVaultTokenRole = config.testVaultTokenRole
                             }
                         } catch (ex) {
                             echo "Failed due to ${ex}: ${ex.message}"

@@ -31,9 +31,21 @@ def call(body) {
     dir("${config.directory}") {
 
         try {
+            def deployEnv = []
+            if (config.testVaultTokenRole != null) {
+                stage('Request Vault Token for testing') {
+                     withCredentials([string(credentialsId: 'jenkins-vault', variable: 'JENKINS_VAULT_TOKEN')]) {
+                        vaultToken = sh(returnStdout: true, script: "curl -k -s --header \"X-Vault-Token: ${JENKINS_VAULT_TOKEN}\" --request POST --data '{\"display_name\": \"testenv\"}' ${env.VAULT_ADDR}/v1/auth/token/create/${config.testVaultTokenRole}?ttl=30m | jq '.auth.client_token'").trim().replaceAll('"', '')
+                        deployEnv.add("VAULT_TOKEN=${vaultToken}")
+                    }
+                } 
+            }
+
             stage('Functional Testing') {
                 echo "Executing functional tests against ${config.serviceUrl}"
-                sh "${mvnCmd} integration-test -P inttest -DbaseURL=${config.serviceUrl}"   
+                withEnv(deployEnv) {
+                    sh "${mvnCmd} integration-test -P inttest -DbaseURL=${config.serviceUrl} -DX-Vault-Token=${env.VAULT_TOKEN}"
+                }
             }
         } finally {
             if (fileExists("${config.cucumberReportDirectory}/cucumber.json")) {
