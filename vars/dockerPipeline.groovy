@@ -20,7 +20,8 @@ def call(body) {
             disableConcurrentBuilds(),
             pipelineTriggers([
                 pollSCM('*/5 * * * *')
-            ])
+            ]),
+            buildDiscarder(logRotator(daysToKeepStr: '5', numToKeepStr: '5'))
         ])
 
         try {

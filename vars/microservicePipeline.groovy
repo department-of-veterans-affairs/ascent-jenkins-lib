@@ -25,7 +25,8 @@ def call(body) {
                 booleanParam(name: 'isRelease', defaultValue: false, description: 'Release this build?'),
                 string(name: 'releaseVersion', defaultValue: '', description: 'Provide the release version:'),
                 string(name: 'developmentVersion', defaultValue: '', description: 'Provide the next development version:')
-            ])
+            ]),
+            buildDiscarder(logRotator(daysToKeepStr: '5', numToKeepStr: '5'))
         ])
 
         try {
