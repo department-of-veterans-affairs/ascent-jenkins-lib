@@ -42,6 +42,7 @@ def call(body) {
                             image.push()
                             if (env.BRANCH_NAME == 'development') {
                                 image.push('latest')
+                                sh "docker -H ${env.DOCKER_HOST} rmi --force \$(docker -H ${env.DOCKER_HOST} images ${config.imageName}:latest -q)"
                             }
                         }
                     }
