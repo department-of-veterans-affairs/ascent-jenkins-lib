@@ -40,7 +40,7 @@ def call(body) {
 
         stage('Set Release Version') {
             //Set release version
-            sh "${mvnCmd} org.codehaus.mojo:versions-maven-plugin:2.5:set -DnewVersion=${config.releaseVersion} -DgenerateBackupPoms=false"
+            sh "${mvnCmd} org.codehaus.mojo:versions-maven-plugin:2.5:set -DnewVersion=${config.releaseVersion} -DgenerateBackupPoms=false -DprocessAllModules=true"
 
             //Update SNAPSHOT dependencies to their release versions if available
             sh "${mvnCmd} org.codehaus.mojo:versions-maven-plugin:2.5::use-releases -DprocessParent=true"
