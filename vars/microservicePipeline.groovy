@@ -61,6 +61,7 @@ def call(body) {
                             dockerBuild {
                                 directory = config.dockerBuilds[image]
                                 imageName = image
+                                version = this.params.releaseVersion
                             }
                         }
                     }
