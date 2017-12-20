@@ -60,7 +60,7 @@ def call(body) {
 
         stage('Set Next Development Version') {
             //Set the next dev version
-            sh "${mvnCmd} org.codehaus.mojo:versions-maven-plugin:2.5::set -DnewVersion=${config.developmentVersion}  -DgenerateBackupPoms=false"
+            sh "${mvnCmd} org.codehaus.mojo:versions-maven-plugin:2.5::set -DnewVersion=${config.developmentVersion}  -DgenerateBackupPoms=false -DprocessAllModules=true"
             //Commit changes locally
             sh "git commit -a -m \"Preparing POMs for next development version ${config.developmentVersion}\""
         }
