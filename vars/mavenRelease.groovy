@@ -43,7 +43,7 @@ def call(body) {
             sh "${mvnCmd} org.codehaus.mojo:versions-maven-plugin:2.5:set -DnewVersion=${config.releaseVersion} -DgenerateBackupPoms=false"
 
             //Update SNAPSHOT dependencies to their release versions if available
-            sh "${mvnCmd} org.codehaus.mojo:versions-maven-plugin:2.5::use-releases"
+            sh "${mvnCmd} org.codehaus.mojo:versions-maven-plugin:2.5::use-releases -DprocessParent=true"
 
             //Check for any snapshot versions remaining
             sh "${mvnCmd} validate"
