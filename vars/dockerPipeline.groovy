@@ -21,6 +21,10 @@ def call(body) {
             pipelineTriggers([
                 pollSCM('*/5 * * * *')
             ]),
+            parameters ([
+                booleanParam(name: 'isRelease', defaultValue: false, description: 'Release this build?'),
+                string(name: 'releaseVersion', defaultValue: '', description: 'Provide the release version:')
+            ]),
             buildDiscarder(logRotator(daysToKeepStr: '5', numToKeepStr: '5'))
         ])
 
@@ -37,6 +41,7 @@ def call(body) {
                     dockerBuild {
                         directory = config.dockerBuilds[image]
                         imageName = image
+                        version = this.params.releaseVersion
                     }
                 }
             }
