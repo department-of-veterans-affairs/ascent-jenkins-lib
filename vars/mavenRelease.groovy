@@ -27,7 +27,7 @@ def call(body) {
                     echo "Branch is up to date with changesets on master. Proceeding with release..."
                 }
 
-                sh "git fetch https://${GIT_USERNAME}:${GIT_PASSWORD}@${urlMinusProtocol} origin"
+                sh "git fetch https://${GIT_USERNAME}:${GIT_PASSWORD}@${urlMinusProtocol} +refs/heads/${env.BRANCH_NAME}:refs/remotes/origin/${env.BRANCH_NAME}"
                 sh "git checkout ${env.BRANCH_NAME}"
             }
         }
