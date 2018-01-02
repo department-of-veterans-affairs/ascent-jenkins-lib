@@ -38,7 +38,7 @@ def call(String buildStatus = 'STARTED') {
     emailext (
       subject: subject,
       body: details,
-      recipientProviders: [[$class: 'CulpritsRecipientProvider']]
+      recipientProviders: [[$class: 'CulpritsRecipientProvider'], [$class: 'RequesterRecipientProvider']]
     )
 //  }
 }
