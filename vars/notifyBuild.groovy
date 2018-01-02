@@ -28,7 +28,7 @@ def call(String buildStatus = 'STARTED') {
   }
  
  //Notify only on a status change
-  if (previousStatus != buildStatus) {
+  if (previousStatus != buildStatus || buildStatus == 'UNSTABLE' || buildStatus == 'FAILURE') {
     // Send notifications of build state change
     //slackSend (color: colorCode, message: summary)
   
