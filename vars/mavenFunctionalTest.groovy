@@ -1,6 +1,7 @@
 def call(body) {
 
     def config = [:]
+    def vaultToken = null
     body.resolveStrategy = Closure.DELEGATE_FIRST
     body.delegate = config
     body()
