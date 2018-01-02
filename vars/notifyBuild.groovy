@@ -28,7 +28,7 @@ def call(String buildStatus = 'STARTED') {
   }
  
  //Notify only on a status change
-//  if (previousStatus != buildStatus) {
+  if (previousStatus != buildStatus) {
     // Send notifications of build state change
     //slackSend (color: colorCode, message: summary)
   
@@ -38,7 +38,11 @@ def call(String buildStatus = 'STARTED') {
     emailext (
       subject: subject,
       body: details,
-      recipientProviders: [[$class: 'CulpritsRecipientProvider'], [$class: 'RequesterRecipientProvider']]
+      
+      recipientProviders: [[$class: 'CulpritsRecipientProvider'],
+        [$class: 'RequesterRecipientProvider'],
+        [$class: 'FailingTestSuspectsRecipientProvider'],
+        [$class: 'FirstFailingBuildSuspectsRecipientProvider']]
     )
-//  }
+  }
 }
