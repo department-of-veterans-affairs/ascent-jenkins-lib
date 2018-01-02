@@ -28,7 +28,7 @@ def call(String buildStatus = 'STARTED') {
   }
  
  //Notify only on a status change
- if (previousStatus != buildStatus) {
+//  if (previousStatus != buildStatus) {
     // Send notifications of build state change
     //slackSend (color: colorCode, message: summary)
   
@@ -40,5 +40,5 @@ def call(String buildStatus = 'STARTED') {
       body: details,
       recipientProviders: [[$class: 'CulpritsRecipientProvider']]
     )
- }
+//  }
 }
