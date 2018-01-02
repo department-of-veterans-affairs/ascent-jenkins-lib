@@ -35,10 +35,10 @@ def call(String buildStatus = 'STARTED') {
     echo "Notifying that build was a ${buildStatus}"
     hipchatSend (color: color, notify: true, message: summary)
  
-    // emailext (
-    //     subject: subject,
-    //     body: details,
-    //     recipientProviders: [[$class: 'CulpritsRecipientProvider']]
-    //   )
+    emailext (
+      subject: subject,
+      body: details,
+      recipientProviders: [[$class: 'CulpritsRecipientProvider']]
+    )
  }
 }
