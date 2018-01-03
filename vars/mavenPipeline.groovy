@@ -1,6 +1,7 @@
 def call(body) {
 
     def config = [:]
+    def triggers = [pollSCM('*/5 * * * *')]
     body.resolveStrategy = Closure.DELEGATE_FIRST
     body.delegate = config
     body()
@@ -8,13 +9,14 @@ def call(body) {
     if (config.directory == null) {
         config.directory = '.'
     }
+    if (config.upstreamProjects != null) {
+        triggers.addAll(config.upstreamProjects)
+    }
 
     node {
         properties([
             disableConcurrentBuilds(),
-            pipelineTriggers([
-                pollSCM('*/5 * * * *')
-            ]),
+            pipelineTriggers(triggers),
             parameters ([
                 booleanParam(name: 'isRelease', defaultValue: false, description: 'Release this build?'),
                 string(name: 'releaseVersion', defaultValue: '', description: 'Provide the release version:'),
