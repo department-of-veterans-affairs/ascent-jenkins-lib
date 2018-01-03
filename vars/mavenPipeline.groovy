@@ -10,7 +10,7 @@ def call(body) {
         config.directory = '.'
     }
     if (config.upstreamProjects != null) {
-        triggers.addAll(config.upstreamProjects)
+        triggers.add(upstream(threshold: 'SUCCESS', upstreamProjects: config.upstreamProjects))
     }
 
     node {
