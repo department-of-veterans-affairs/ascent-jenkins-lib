@@ -36,6 +36,9 @@ To do this following these steps:
 1. Enter a name for your token in the __Generate New Token__ field and click __Generate__.
 1. Copy the token value and save that for later.
 
+Setup a Webhook to call back Jenkins when the scan is complete. See [SonarQube Plugin](https://docs.sonarqube.org/display/SCAN/Analyzing+with+SonarQube+Scanner+for+Jenkins#AnalyzingwithSonarQubeScannerforJenkins-AnalyzinginaJenkinspipeline) for more information.
+1. Add a webhook named Jenkins and a URL of {you jenkins instance url}/sonarqube-webhook/. Make sure to retain the trailing slash.
+
 Open the `/configure` url for your Jenkins Master server and in the SonarQube section:
 1. Click the __Add SonarQube__ button
 1. Set the name to `CI`
