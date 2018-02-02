@@ -12,9 +12,6 @@ def call(body) {
     node {
         properties([
             disableConcurrentBuilds(),
-            pipelineTriggers([
-                pollSCM('*/5 * * * *')
-            ]),
             buildDiscarder(logRotator(daysToKeepStr: '5', numToKeepStr: '5'))
         ])
 
