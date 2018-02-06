@@ -68,3 +68,13 @@ This library supports pipelines for the following project types:
 * [Java Library](docs/library.md)
 * [Docker Image](docs/docker.md)
 * [Microservice](docs/microservice.md)
+
+## Setting Repository Scan interval
+This code can be run through the Jenkins Script console to modify the repository scan interval for multi-branch jobs since there
+is currently no way to do this any other way.
+```groovy
+for (f in Jenkins.instance.getAllItems(jenkins.branch.MultiBranchProject.class)) {
+    println("Updating " + f.name)
+    f.addTrigger(new com.cloudbees.hudson.plugins.folder.computed.PeriodicFolderTrigger("5m"));
+}
+```
