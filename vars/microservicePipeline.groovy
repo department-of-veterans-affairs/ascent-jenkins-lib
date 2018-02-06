@@ -1,7 +1,7 @@
 def call(body) {
 
     def config = [:]
-    def triggers = [[$class: 'PeriodicFolderTrigger', interval: '5m']]
+    def triggers = [pollSCM('*/5 * * * *')]
     body.resolveStrategy = Closure.DELEGATE_FIRST
     body.delegate = config
     body()
