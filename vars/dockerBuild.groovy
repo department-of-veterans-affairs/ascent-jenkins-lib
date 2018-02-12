@@ -38,7 +38,15 @@ def call(body) {
             if (!isPullRequest()) {
                 stage("Push ${config.imageName} to Registry") {
                     docker.withServer("${env.DOCKER_HOST}") {
+                        //Push to Docker Hub
                         docker.withRegistry("${env.DOCKER_REPOSITORY_URL}", 'docker-repository') {
+                            image.push()
+                            if (env.BRANCH_NAME == 'development') {
+                                image.push('latest')
+                            }
+                        }
+                        //Push to Nexus
+                        docker.withRegistry("${env.NEXUS_REPOSITORY_URL}", 'nexus') {
                             image.push()
                             if (env.BRANCH_NAME == 'development') {
                                 image.push('latest')
