@@ -6,6 +6,7 @@ def call(body) {
     body.delegate = config
     body()
 
+    
     if (config.directory == null) {
         config.directory = '.'
     }
@@ -17,6 +18,18 @@ def call(body) {
     }
     if (config.jmeterReportDirectory == null) {
         config.jmeterReportDirectory = 'target/jmeterReports'
+    }
+    if (config.serviceProtocol == null) {
+        config.serviceProtocol = 'http'
+    }
+
+    //Setup JMeter command line options
+    def jmeterOpts = "-Jbaseurl=${config.serviceUrl} -Jprotocol=${config.serviceProtocol}"
+    if (config.threads != null) {
+        jmeterOpts = jmeterOpts + " -Jloadusers=${config.threads}"
+    }
+    if (config.duration != null) {
+        jmeterOpts = jmeterOpts + " -Jlduration=${config.duration}"
     }
 
     dir("${config.directory}") {
@@ -32,7 +45,7 @@ def call(body) {
                 } 
             }
 
-            stage('Performance Testing Testing') {
+            stage('Performance Testing') {
                 echo "Executing performance tests against ${config.serviceUrl}"
                 withEnv(deployEnv) {
                     sh "jmeter -n -t ${config.testPlan} -l ${config.logFile} -e -o ${config.jmeterReportDirectory}"

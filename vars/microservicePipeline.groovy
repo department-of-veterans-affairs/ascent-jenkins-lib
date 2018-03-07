@@ -106,12 +106,13 @@ def call(body) {
                                     serviceName = config.serviceToTest
                                     vaultTokens = config.vaultTokens
                                     deployWaitTime = config.deployWaitTime
-                                    dockerHost = ${this.env.PERF_SWARM_URL}
+                                    dockerHost = "tcp://${this.env.PERF_SWARM_HOST}"
                                 }
 
                                 jmeter {
                                     directory = config.directory
-                                    serviceUrl = "${this.env.PERF_SWARM_URL}:${testEnvPort}"
+                                    serviceProtocol = "http"
+                                    serviceUrl = "${this.env.PERF_SWARM_HOST}:${testEnvPort}"
                                     testVaultTokenRole = config.testVaultTokenRole
                                     testPlan = config.perfTestPlan
                                 }
@@ -122,7 +123,7 @@ def call(body) {
                                 } 
                             } finally {
                                 undeployStack {
-                                    dockerHost = ${this.env.PERF_SWARM_URL}
+                                    dockerHost = "tcp://${this.env.PERF_SWARM_HOST}""
                                 }
                             }
                         }
