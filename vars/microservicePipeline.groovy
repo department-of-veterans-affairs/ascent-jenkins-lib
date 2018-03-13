@@ -100,7 +100,7 @@ def call(body) {
                         //Aquire a lock on the performance environment so that only one performance test executes at a time
                         lock('perf-env') {
                             try {
-                                //Deploy to CI for automated testing
+                                //Deploy for performance testing
                                 def testEnvPort = deployStack {
                                     composeFiles = config.perfEnvironment
                                     serviceName = config.serviceToTest
@@ -123,7 +123,7 @@ def call(body) {
                                 } 
                             } finally {
                                 undeployStack {
-                                    dockerHost = "tcp://${this.env.PERF_SWARM_HOST}""
+                                    dockerHost = "tcp://${this.env.PERF_SWARM_HOST}"
                                 }
                             }
                         }

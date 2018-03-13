@@ -38,9 +38,12 @@ def call(body) {
             error(file + 'was not found')
         }
     }
-
     
     def deployEnv = []
+    if (config.deployEnv != null) {
+        deployEnv.plus(config.deployEnv)
+    }
+
     stage("Requesting Vault Token for application") {
         withCredentials([string(credentialsId: 'jenkins-vault', variable: 'JENKINS_VAULT_TOKEN')]) {
             for (x in config.vaultTokens.keySet()) {
