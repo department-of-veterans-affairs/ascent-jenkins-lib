@@ -51,7 +51,7 @@ def call(body) {
             stage('Performance Testing') {
                 echo "Executing performance tests against ${config.serviceUrl}"
                 withEnv(deployEnv) {
-                    sh "jmeter -n -t ${config.testPlan} -l ${config.logFile} -e -o ${config.jmeterReportDirectory}"
+                    sh "jmeter -n -t ${config.testPlan} -l ${config.logFile} -e -o ${config.jmeterReportDirectory} ${jmeterOpts}"
                 }
             }
         } finally {
