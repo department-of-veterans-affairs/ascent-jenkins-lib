@@ -30,7 +30,7 @@ def call(body) {
     }
 
     //Setup JMeter command line options
-    def jmeterOpts = "-Jbaseurl=${config.serviceHost} -Jprotocol=${config.serviceProtocol} -Jport=${config.servicePort}"
+    def jmeterOpts = "-Jbaseurl=${config.serviceHost} -Jport=${config.servicePort}"
     if (config.threads != null) {
         jmeterOpts = jmeterOpts + " -Jloadusers=${config.threads}"
     }
