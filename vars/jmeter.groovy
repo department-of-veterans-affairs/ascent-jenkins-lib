@@ -10,8 +10,11 @@ def call(body) {
     if (config.directory == null) {
         config.directory = '.'
     }
-    if (config.serviceUrl == null) {
-        error "serviceUrl parameters must be specified"
+    if (config.serviceHost == null) {
+        error "serviceHost parameters must be specified"
+    }
+    if (config.servicePort == null) {
+        error "servicePort parameters must be specified"
     }
     if (config.testPlan == null) {
         error "testPlan parameter must be specified"
@@ -27,7 +30,7 @@ def call(body) {
     }
 
     //Setup JMeter command line options
-    def jmeterOpts = "-Jbaseurl=${config.serviceUrl} -Jprotocol=${config.serviceProtocol}"
+    def jmeterOpts = "-Jbaseurl=${config.serviceHost} -Jprotocol=${config.serviceProtocol} -Jport=${config.servicePort}"
     if (config.threads != null) {
         jmeterOpts = jmeterOpts + " -Jloadusers=${config.threads}"
     }
@@ -49,7 +52,7 @@ def call(body) {
             }
 
             stage('Performance Testing') {
-                echo "Executing performance tests against ${config.serviceUrl}"
+                echo "Executing performance tests against ${config.serviceHost}"
                 withEnv(deployEnv) {
                     sh "jmeter -n -t ${config.testPlan} -l ${config.logFile} -e -o ${config.jmeterReportDirectory} ${jmeterOpts}"
                 }

@@ -111,7 +111,8 @@ def call(body) {
                                 jmeter {
                                     directory = config.directory
                                     serviceProtocol = "http"
-                                    serviceUrl = "${this.env.PERF_SWARM_HOST}:${testEnvPort}"
+                                    serviceHost = "${this.env.PERF_SWARM_HOST}"
+                                    servicePort = "${testEnvPort}"
                                     testVaultTokenRole = config.testVaultTokenRole
                                     testPlan = config.perfTestPlan
                                 }
