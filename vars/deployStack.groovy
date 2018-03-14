@@ -10,16 +10,13 @@ def call(body) {
     def vaultToken = null
     def stackName = stackName()
     def dockerFiles = ""
-    def publishedPort = 0
+    def publishedPort = 8762
     body.resolveStrategy = Closure.DELEGATE_FIRST
     body.delegate = config
     body()
 
     if (config.composeFiles == null) {
         error('No compose files defined for deployment')
-    }
-    if (config.serviceName == null) {
-        error('serviceName is required')
     }
     if (config.dockerHost == null) {
         config.dockerHost = env.CI_DOCKER_SWARM_MANAGER
@@ -78,8 +75,10 @@ def call(body) {
         sh "docker --host ${config.dockerHost} stack ps ${stackName} --no-trunc"
         echo 'Containers are successfully deployed'
 
-        def service = "${stackName}_${config.serviceName}"
-        publishedPort = sh(returnStdout: true, script: "docker --host ${config.dockerHost} service inspect ${service} --format '{{range \$p, \$conf := .Endpoint.Ports}} {{(\$conf).PublishedPort}} {{end}}'").trim()
+        if (config.serviceName != null) {
+            def service = "${stackName}_${config.serviceName}"
+            publishedPort = sh(returnStdout: true, script: "docker --host ${config.dockerHost} service inspect ${service} --format '{{range \$p, \$conf := .Endpoint.Ports}} {{(\$conf).PublishedPort}} {{end}}'").trim()
+        }
     }
 
     return publishedPort

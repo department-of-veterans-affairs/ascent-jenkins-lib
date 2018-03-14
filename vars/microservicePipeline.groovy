@@ -103,9 +103,8 @@ def call(body) {
                                 //Deploy for performance testing
                                 def testEnvPort = deployStack {
                                     composeFiles = config.perfEnvironment
-                                    serviceName = config.serviceToTest
                                     vaultTokens = config.vaultTokens
-                                    deployWaitTime = config.deployWaitTime
+                                    deployWaitTime = 120
                                     dockerHost = "tcp://${this.env.PERF_SWARM_HOST}"
                                 }
 
