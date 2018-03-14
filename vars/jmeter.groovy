@@ -22,6 +22,9 @@ def call(body) {
     if (config.serviceProtocol == null) {
         config.serviceProtocol = 'http'
     }
+    if (config.logFile == null) {
+        config.logFile == 'target/jmeterLogs/log.csv'
+    }
 
     //Setup JMeter command line options
     def jmeterOpts = "-Jbaseurl=${config.serviceUrl} -Jprotocol=${config.serviceProtocol}"
