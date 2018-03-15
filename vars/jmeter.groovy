@@ -51,10 +51,12 @@ def call(body) {
                 } 
             }
 
-            stage('Performance Testing') {
-                echo "Executing performance tests against ${config.serviceHost}"
-                withEnv(deployEnv) {
-                    sh "jmeter -n -t ${config.testPlan} -l ${config.logFile} -e -o ${config.jmeterReportDirectory} ${jmeterOpts}"
+            for (plan in config.testPlan) {
+                stage("Performance Testing - ${plan}") {
+                    echo "Executing performance tests against ${config.serviceHost}"
+                    withEnv(deployEnv) {
+                        sh "jmeter -n -t ${plan} -l ${config.logFile} -e -o ${config.jmeterReportDirectory} ${jmeterOpts}"
+                    }
                 }
             }
         } finally {
