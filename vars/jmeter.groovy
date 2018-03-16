@@ -25,9 +25,6 @@ def call(body) {
     if (config.serviceProtocol == null) {
         config.serviceProtocol = 'http'
     }
-    if (config.logFile == null) {
-        config.logFile = 'target/jmeterLogs/log.csv'
-    }
 
     //Setup JMeter command line options
     def jmeterOpts = "-Jbaseurl=${config.serviceHost} -Jport=${config.servicePort}"
@@ -40,33 +37,36 @@ def call(body) {
 
     dir("${config.directory}") {
 
-        try {
-            def deployEnv = []
-            if (config.testVaultTokenRole != null) {
-                stage('Request Vault Token for testing') {
-                     withCredentials([string(credentialsId: 'jenkins-vault', variable: 'JENKINS_VAULT_TOKEN')]) {
-                        vaultToken = sh(returnStdout: true, script: "curl -k -s --header \"X-Vault-Token: ${JENKINS_VAULT_TOKEN}\" --request POST --data '{\"display_name\": \"testenv\"}' ${env.VAULT_ADDR}/v1/auth/token/create/${config.testVaultTokenRole}?ttl=30m | jq '.auth.client_token'").trim().replaceAll('"', '')
-                        deployEnv.add("VAULT_TOKEN=${vaultToken}")
-                    }
-                } 
-            }
+        def deployEnv = []
+        if (config.testVaultTokenRole != null) {
+            stage('Request Vault Token for testing') {
+                    withCredentials([string(credentialsId: 'jenkins-vault', variable: 'JENKINS_VAULT_TOKEN')]) {
+                    vaultToken = sh(returnStdout: true, script: "curl -k -s --header \"X-Vault-Token: ${JENKINS_VAULT_TOKEN}\" --request POST --data '{\"display_name\": \"testenv\"}' ${env.VAULT_ADDR}/v1/auth/token/create/${config.testVaultTokenRole}?ttl=30m | jq '.auth.client_token'").trim().replaceAll('"', '')
+                    deployEnv.add("VAULT_TOKEN=${vaultToken}")
+                }
+            } 
+        }
 
-            for (plan in config.testPlan) {
+        for (plan in config.testPlan) {
+            def filename = plan.substring(plan.lastIndexOf('/'),plan.lastIndexOf('.'))
+            def logFile = "target/jmeterLogs/${filename}.csv"
+            def reportDir = "${config.jmeterReportDirectory}/${filename}"
+            try {
                 stage("Performance Testing - ${plan}") {
                     echo "Executing performance tests against ${config.serviceHost}"
                     withEnv(deployEnv) {
-                        sh "jmeter -n -t ${plan} -l ${config.logFile} -e -o ${config.jmeterReportDirectory} ${jmeterOpts}"
+                        sh "jmeter -n -t ${plan} -l ${logFile} -e -o ${reportDir} ${jmeterOpts}"
                     }
                 }
-            }
-        } finally {
-            //If performance test results exist, then publish those to Jenkins
-            if (fileExists("${config.logFile}")) {
-                performanceReport parsers: [[$class: 'JMeterParser', glob: "${config.logFile}"]],
-                    relativeFailedThresholdNegative: 1.2,
-                    relativeFailedThresholdPositive: 1.89,
-                    relativeUnstableThresholdNegative: 1.8,
-                    relativeUnstableThresholdPositive: 1.5
+            } finally {
+                //If performance test results exist, then publish those to Jenkins
+                if (fileExists("${logFile}")) {
+                    performanceReport parsers: [[$class: 'JMeterParser', glob: "${logFile}"]],
+                        relativeFailedThresholdNegative: 1.2,
+                        relativeFailedThresholdPositive: 1.89,
+                        relativeUnstableThresholdNegative: 1.8,
+                        relativeUnstableThresholdPositive: 1.5
+                }
             }
         }
     }
