@@ -55,7 +55,7 @@ def call(body) {
                 stage("Performance Testing - ${plan}") {
                     echo "Executing performance tests against ${config.serviceHost}"
                     withEnv(deployEnv) {
-                        sh "mkdir -P ${reportDir}"
+                        sh "mkdir -p ${reportDir}"
                         sh "jmeter -n -t ${plan} -l ${logFile} -e -o ${reportDir} ${jmeterOpts}"
                     }
                 }
