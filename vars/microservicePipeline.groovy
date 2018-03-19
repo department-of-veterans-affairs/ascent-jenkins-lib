@@ -95,6 +95,39 @@ def call(body) {
                             undeployStack {}
                         }
                     }
+
+                    if (params.isRelease && config.perfEnvironment != null) {
+                        //Aquire a lock on the performance environment so that only one performance test executes at a time
+                        lock('perf-env') {
+                            try {
+                                //Deploy for performance testing
+                                def testEnvPort = deployStack {
+                                    composeFiles = config.perfEnvironment
+                                    vaultTokens = config.vaultTokens
+                                    deployWaitTime = 120
+                                    dockerHost = "tcp://${this.env.PERF_SWARM_HOST}"
+                                }
+
+                                jmeter {
+                                    directory = config.directory
+                                    serviceProtocol = "http"
+                                    serviceHost = "${this.env.PERF_SWARM_HOST}"
+                                    servicePort = "${testEnvPort}"
+                                    testVaultTokenRole = config.testVaultTokenRole
+                                    testPlan = config.perfTestPlan
+                                }
+                            } catch (ex) {
+                                echo "Failed due to ${ex}: ${ex.message}"
+                                if (currentBuild.result == null) {
+                                    currentBuild.result = 'FAILED'
+                                } 
+                            } finally {
+                                undeployStack {
+                                    dockerHost = "tcp://${this.env.PERF_SWARM_HOST}"
+                                }
+                            }
+                        }
+                    }
                 }
             }
         } catch (ex) {

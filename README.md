@@ -12,6 +12,8 @@ On your Master Jenkins server you will need to install the following plugins:
 * envinject
 * sonar
 * pipeline-utilities-steps
+* lockable-resources
+* performance-plugin
 
 ## Credentials
 The following credentials will need to be setup in Jenkins:
