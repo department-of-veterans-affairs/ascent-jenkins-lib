@@ -48,7 +48,7 @@ def call(body) {
         }
 
         for (plan in config.testPlan) {
-            def filename = plan.substring(plan.lastIndexOf('/'),plan.lastIndexOf('.'))
+            def filename = plan.substring(plan.lastIndexOf('/')+1,plan.lastIndexOf('.'))
             def logFile = "target/jmeterLogs/${filename}.csv"
             def reportDir = "${config.jmeterReportDirectory}/${filename}"
             try {
