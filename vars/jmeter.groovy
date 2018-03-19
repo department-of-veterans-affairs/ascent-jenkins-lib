@@ -67,6 +67,15 @@ def call(body) {
                         relativeFailedThresholdPositive: 1.89,
                         relativeUnstableThresholdNegative: 1.8,
                         relativeUnstableThresholdPositive: 1.5
+
+                    publishHTML (target: [
+                        allowMissing: false,
+                        alwaysLinkToLastBuild: false,
+                        keepAll: true,
+                        reportDir: "${reportDir}",
+                        reportFiles: 'index.html',
+                        reportName: "${filename}"
+                    ])
                 }
             }
         }
