@@ -96,7 +96,7 @@ def call(body) {
                         }
                     }
 
-                    if (params.isRelease && config.perfEnvironment != null) {
+                    if (!isPullRequest() && config.perfEnvironment != null) {
                         //Aquire a lock on the performance environment so that only one performance test executes at a time
                         lock('perf-env') {
                             try {
