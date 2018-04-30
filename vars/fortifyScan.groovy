@@ -28,13 +28,9 @@ def call(body) {
           sh "sourceanalyzer -b ${config.projname} . > target/fortify-build.out 2>&1"
           sh "sourceanalyzer -b ${config.projname} -scan -f target/fortify-${config.projname}-scan.fpr -format fpr"
           sh "ReportGenerator -format xml -f target/fortify-${config.projname}-scan.xml -source target/fortify-${config.projname}-scan.fpr"
+          archive "target/fortify-${config.projname}-scan.xml"
       }
 
-      post {
-        success {
-          archive "target/fortify-${config.projname}-scan.xml"
-        }
-      }
     }
   }
 }
