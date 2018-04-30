@@ -17,6 +17,9 @@ def call(body) {
 
   node ('fortify-sca') {
     dir("${config.directory}") {
+      stage('Checkout SCM') {
+          checkout scm
+      }
       stage('Fortify Analyzer') {
           sh "sourceanalyzer -b ${config.projname} -scan"
       }
