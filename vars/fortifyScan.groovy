@@ -16,11 +16,18 @@ def call(body) {
   }
 
   node ('fortify-sca') {
+    // unstash the packages from the mavenBuild on other node
+    unstash 'packaged'
+
     dir("${config.directory}") {
-      stage('Checkout SCM') {
-          checkout scm
+      stage('Debug') {
+        echo "projname=${config.projname}"
+        echo "directory=${config.directory}"
       }
+
       stage('Fortify Analyzer') {
+          sh "sourceanalyzer -b ${config.projname} -clean"
+          sh "sourceanalyzer -b ${config.projname} ."
           sh "sourceanalyzer -b ${config.projname} -scan"
       }
     }
