@@ -53,6 +53,9 @@ def call(body) {
         stage('Package') {
             try {
                 sh "${mvnCmd} package"
+
+                // Build mba files that fortify can use to perform scans
+                sh "${mvnCmd} clean install com.fortify.ps.maven.plugin:sca-maven-plugin:translate -Dfortify.sca.buildId=${env.JOB_NAME} -Dmaven.test.skip=true"
                 // Stash everything so can build on the fortify-sca agent
                 stash name: 'packaged'
             } finally {
@@ -70,7 +73,8 @@ def call(body) {
             }
         }
 
-        echo "finished with package step. Moving to fortifyScan"
+
+
         fortifyScan {
           directory = config.directory
         }
