@@ -10,7 +10,7 @@ def call(body) {
   }
 
   if (config.project_name == null) {
-      def names = (config.directory.split("/")
+      def names = (config.directory.split("/"))
       // Get the last element (-1 wraps to the last element)
       config.project_name = names[-1]
   }
