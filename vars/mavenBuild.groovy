@@ -56,6 +56,9 @@ def call(body) {
                 // Stash everything so can build on the fortify-sca agent
                 stash includes: './*', name: 'packaged'
             } finally {
+              // unstash the packages on current node, as stashed packages themselves
+              // cannot be used unless they're unstashed
+              unstash 'packaged'
                 publishHTML (target: [
                     allowMissing: true,
                     alwaysLinkToLastBuild: false,
@@ -88,7 +91,10 @@ def call(body) {
                     sh "${mvnCmd} sonar:sonar"
                 }
             }
+
         }
+
+
 
         //Only run the Sonar quality gate and deploy stage for non PR builds
         if (!isPullRequest()) {
