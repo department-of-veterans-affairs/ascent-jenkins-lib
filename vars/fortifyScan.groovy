@@ -10,9 +10,7 @@ def call(body) {
   }
 
   if (config.projname == null) {
-      def names = (config.directory.split("/"))
-      // Get the last element (-1 wraps to the last element)
-      config.projname = names[-1]
+      config.projname = "${env.JOB_NAME}"
   }
 
   node ('fortify-sca') {
