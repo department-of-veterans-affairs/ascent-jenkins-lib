@@ -15,7 +15,11 @@ def call(body) {
       config.project-name = names[-1]
   }
 
+  node ('fortify-sca') {
     dir("${config.directory}") {
-      sh "sourceanalyzer -b ${config.project-name} -scan"
+      stage('Fortify Analyzer') {
+          sh "sourceanalyzer -b ${config.project-name} -scan"
+      }
     }
+  }
 }
