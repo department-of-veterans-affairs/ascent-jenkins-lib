@@ -53,6 +53,10 @@ def call(body) {
                     mavenSettings = config.mavenSettings
                 }
 
+                fortifyScan {
+                  directory = config.directory
+                }
+
                 echo "Build Result is: ${currentBuild.result}"
                 if (currentBuild.result == null) {
                     def builds = [:]
