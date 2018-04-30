@@ -15,7 +15,7 @@ def call(body) {
 
   node ('fortify-sca') {
     // unstash the packages from the mavenBuild on other node
-    unstash 'packaged'
+    unstash "packaged"
 
     dir("${config.directory}") {
       stage('Debug') {

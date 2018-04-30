@@ -55,10 +55,12 @@ def call(body) {
                 sh "${mvnCmd} package"
                 // Stash everything so can build on the fortify-sca agent
                 stash includes: './*', name: 'packaged'
+                sh "ls"
             } finally {
               // unstash the packages on current node, as stashed packages themselves
               // cannot be used unless they're unstashed
-              unstash 'packaged'
+              unstash "packaged"
+              sh "ls"
                 publishHTML (target: [
                     allowMissing: true,
                     alwaysLinkToLastBuild: false,
@@ -70,6 +72,7 @@ def call(body) {
             }
         }
 
+        echo "finished with package step. Moving to fortifyScan"
         fortifyScan {
           directory = config.directory
         }
