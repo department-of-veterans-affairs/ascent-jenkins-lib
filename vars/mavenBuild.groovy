@@ -54,12 +54,16 @@ def call(body) {
             try {
                 sh "${mvnCmd} package"
                 // Stash everything so can build on the fortify-sca agent
-                stash includes: './*', name: 'packaged'
+                echo "about to package"
+                stash name: 'packaged'
+                echo "finished packaging"
                 sh "ls"
             } finally {
               // unstash the packages on current node, as stashed packages themselves
               // cannot be used unless they're unstashed
+              echo "about to unpackage on same node"
               unstash "packaged"
+              echo "unpackaged on same node"
               sh "ls"
                 publishHTML (target: [
                     allowMissing: true,
