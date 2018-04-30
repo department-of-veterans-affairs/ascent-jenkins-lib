@@ -25,6 +25,7 @@ def call(body) {
 
       stage('Fortify Analyzer') {
           sh "sourceanalyzer -b ${config.projname} -clean"
+          sh "sourceanalyzer -b ${config.projname} ."
           sh "sourceanalyzer -b ${config.projname} -scan"
       }
     }
