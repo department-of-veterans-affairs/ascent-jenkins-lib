@@ -45,7 +45,7 @@ def call(body) {
       stage('Fortify Analyzer') {
           sh "${mvnCmd} dependency:resolve"
           sh "sourceanalyzer -b ${config.projname} -clean"
-          sh "sourceanalyzer -b ${config.projname}"
+          sh "${translateCmd}"
           sh "sourceanalyzer -b ${config.projname} -scan -f target/fortify-${config.projname}-scan.fpr -format fpr"
           sh "ReportGenerator -format xml -f target/fortify-${config.projname}-scan.xml -source target/fortify-${config.projname}-scan.fpr"
           archive "target/fortify-${config.projname}-scan.xml"
