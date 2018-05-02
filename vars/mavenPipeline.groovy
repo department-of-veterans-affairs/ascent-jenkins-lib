@@ -24,7 +24,7 @@ def call(body) {
             ]),
             buildDiscarder(logRotator(daysToKeepStr: '5', numToKeepStr: '5'))
         ])
-        
+
 
         try {
             stage('Checkout SCM') {
@@ -37,12 +37,12 @@ def call(body) {
                     directory = config.directory
                     releaseVersion = this.params.releaseVersion
                     developmentVersion = this.params.developmentVersion
-                } 
+                }
             }
 
             mavenBuild {
                 directory = config.directory
-                mavenSettings = config.mavenSettings
+                //mavenSettings = config.mavenSettings
             }
         } catch (ex) {
             echo "Failed due to: ${ex.message}"
