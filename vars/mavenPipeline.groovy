@@ -42,7 +42,7 @@ def call(body) {
 
             mavenBuild {
                 directory = config.directory
-                //mavenSettings = config.mavenSettings
+                mavenSettings = config.mavenSettings
             }
         } catch (ex) {
             echo "Failed due to: ${ex.message}"
