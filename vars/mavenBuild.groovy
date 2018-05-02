@@ -78,7 +78,7 @@ def call(body) {
 
         fortifyScan {
           directory = config.directory
-          mavenSettings = config.mavenSettings
+          //mavenSettings = config.mavenSettings
         }
 
         stage('Code Analysis') {
