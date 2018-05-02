@@ -56,7 +56,7 @@ def call(body) {
 
                 //TODO: Build mba files that fortify can use to perform scans, so we won't have compiler errors in the fortify build
                 //sh "${mvnCmd} clean install com.fortify.ps.maven.plugin:sca-maven-plugin:translate -Dfortify.sca.buildId=${env.JOB_NAME} -Dmaven.test.skip=true"
-                
+
                 // Stash everything so can build on the fortify-sca agent
                 stash name: 'packaged'
             } finally {
@@ -78,6 +78,7 @@ def call(body) {
 
         fortifyScan {
           directory = config.directory
+          mavenSettings = config.mavenSettings
         }
 
         stage('Code Analysis') {
