@@ -57,6 +57,8 @@ def call(body) {
           if(fprFile.exists()) {
             sh "ReportGenerator -format pdf -f target/fortify-${config.projname}-scan.pdf -source target/fortify-${config.projname}-scan.fpr"
             archive "target/fortify-${config.projname}-scan.xml"
+          } else {
+            print "Fortify code report ${currDir}/${fortifyScanResults} not found. Skipping the report generator..."
           }
 
 
