@@ -51,12 +51,14 @@ def call(body) {
             // -- Generate an xml report, parse, and fail if there are critical violations
             def xmlFile = "target/fortify-${config.projname}-scan.xml"
             sh "ReportGenerator -format xml -f ${xmlFile} -source target/fortify-${config.projname}-scan.fpr"
-            //def xml = readFile "${env.WORKSPACE}/${xmlFile}"
-            //def reportDefinition = new XmlSlurper().parseText(xml)
-            //reportDefinition.ReportSection.SubSection.IssueListing.Chart.GroupingSection.each{ groupsection ->
-            //  println "Title:       "+groupsection.groupTitle
-            //  println "    Count:   "+groupsection.@'count'
-            //}
+            def xml = readFile "${env.WORKSPACE}/${xmlFile}"
+            def reportDefinition = new XmlSlurper().parseText(xml)
+            reportDefinition.ReportSection.SubSection.IssueListing.Chart.GroupingSection.findAll { groupsection ->
+                groupsection.groupTitle.toString().equals('Low')
+              }.each { groupsection ->
+                println "Title:       "+groupsection.groupTitle
+                println "    Count:   "+groupsection.@'count'
+              }
 
 
 
