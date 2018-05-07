@@ -13,11 +13,6 @@ def call(body) {
       config.projname = "${env.JOB_BASE_NAME}"
   }
 
-
-
-
-
-
   node ('fortify-sca') {
     // unstash the packages from the mavenBuild on other node
     unstash "packaged"
@@ -53,15 +48,25 @@ def call(body) {
           // -- Check if a fortifyScan was generated, and if it was, then use the report generator to convert
           //    it to a pdf
           if(fileExists("${fortifyScanResults}")) {
+            // -- Generate an xml report, parse, and fail if there are critical violations
+            def xmlFile = "target/fortify-${config.projname}-scan.xml"
+            sh "ReportGenerator -format xml -f ${xmlFile} -source target/fortify-${config.projname}-scan.fpr"
+            def xml = readFile "${env.WORKSPACE}/${xmlFile}"
+            def reportDefinition = new XmlSlurper().parseText(xml)
+            reportDefinition.ReportSection.SubSection.IssueListing.Chart.GroupingSection.each{ groupsection ->
+              println "Title:       "+groupsection.groupTitle
+              println "    Count:   "+groupsection.@'count'
+            }
+
+
+
+            // -- Generate a pdf report to archive with the build
             sh "ReportGenerator -format pdf -f target/fortify-${config.projname}-scan.pdf -source target/fortify-${config.projname}-scan.fpr"
             archive "target/fortify-${config.projname}-scan.pdf"
           } else {
             print "Fortify code report ${currDir}/${fortifyScanResults} not found. Skipping the report generator..."
           }
-
-
       }
-
     }
   }
 }
