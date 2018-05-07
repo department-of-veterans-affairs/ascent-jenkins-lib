@@ -47,7 +47,7 @@ def call(body) {
           sh "sourceanalyzer -b ${config.projname} -clean"
           sh "${translateCmd}"
           sh "sourceanalyzer -b ${config.projname} -scan -f target/fortify-${config.projname}-scan.fpr -format fpr"
-          sh "ReportGenerator -format xml -f target/fortify-${config.projname}-scan.xml -source target/fortify-${config.projname}-scan.fpr"
+          sh "ReportGenerator -format pdf -f target/fortify-${config.projname}-scan.pdf -source target/fortify-${config.projname}-scan.fpr"
           archive "target/fortify-${config.projname}-scan.xml"
       }
 
