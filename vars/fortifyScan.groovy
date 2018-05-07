@@ -52,7 +52,8 @@ def call(body) {
 
           // -- Check if a fortifyScan was generated, and if it was, then use the report generator to convert
           //    it to a pdf
-          def fprFile = new File(fortifyScanResults)
+          def currDir = pwd(tmp: false)
+          def fprFile = new File("${currDir}/${fortifyScanResults}")
           if(fprFile.exists()) {
             sh "ReportGenerator -format pdf -f target/fortify-${config.projname}-scan.pdf -source target/fortify-${config.projname}-scan.fpr"
             archive "target/fortify-${config.projname}-scan.xml"
