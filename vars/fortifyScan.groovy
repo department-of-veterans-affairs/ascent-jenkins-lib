@@ -46,9 +46,19 @@ def call(body) {
           sh "${mvnCmd} dependency:resolve"
           sh "sourceanalyzer -b ${config.projname} -clean"
           sh "${translateCmd}"
-          sh "sourceanalyzer -b ${config.projname} -scan -f target/fortify-${config.projname}-scan.fpr -format fpr"
-          sh "ReportGenerator -format pdf -f target/fortify-${config.projname}-scan.pdf -source target/fortify-${config.projname}-scan.fpr"
-          archive "target/fortify-${config.projname}-scan.xml"
+          def fortifyScanResults = "target/fortify-${config.projname}-scan.fpr"
+
+          sh "sourceanalyzer -b ${config.projname} -scan -f ${fortifyScanResults} -format fpr"
+
+          // -- Check if a fortifyScan was generated, and if it was, then use the report generator to convert
+          //    it to a pdf
+          def fprFile = new File(fortifyScanResults)
+          if(fprFile.exists()) {
+            sh "ReportGenerator -format pdf -f target/fortify-${config.projname}-scan.pdf -source target/fortify-${config.projname}-scan.fpr"
+            archive "target/fortify-${config.projname}-scan.xml"
+          }
+
+
       }
 
     }
