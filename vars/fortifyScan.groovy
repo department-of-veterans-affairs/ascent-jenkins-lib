@@ -54,7 +54,7 @@ def call(body) {
           //    it to a pdf
           def currDir = pwd(tmp: false)
           def fprFile = new File("${fortifyScanResults}")
-          if(fileExists(fprFile)) {
+          if(fileExists("${fortifyScanResults}")) {
             sh "ReportGenerator -format pdf -f target/fortify-${config.projname}-scan.pdf -source target/fortify-${config.projname}-scan.fpr"
             archive "target/fortify-${config.projname}-scan.xml"
           } else {
