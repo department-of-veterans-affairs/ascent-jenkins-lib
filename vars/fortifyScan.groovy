@@ -48,7 +48,7 @@ def call(body) {
           sh "${translateCmd}"
           def fortifyScanResults = "target/fortify-${config.projname}-scan.fpr"
 
-          sh "sourceanalyzer -b ${config.projname} -scan -f ${fortifyScanResults} -format fpr"
+          //sh "sourceanalyzer -b ${config.projname} -scan -f ${fortifyScanResults} -format fpr"
 
           // -- Check if a fortifyScan was generated, and if it was, then use the report generator to convert
           //    it to a pdf
