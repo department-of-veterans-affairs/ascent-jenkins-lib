@@ -48,6 +48,11 @@ def call(body) {
           // -- Check if a fortifyScan was generated, and if it was, then use the report generator to convert
           //    it to a pdf
           if(fileExists("${fortifyScanResults}")) {
+            // -- Generate a pdf report to archive with the build
+            sh "ReportGenerator -format pdf -f target/fortify-${config.projname}-scan.pdf -source target/fortify-${config.projname}-scan.fpr"
+            archive "target/fortify-${config.projname}-scan.pdf"
+
+
             // -- Generate an xml report, parse, and fail if there are critical violations
             def xmlFile = "target/fortify-${config.projname}-scan.xml"
             sh "ReportGenerator -format xml -f ${xmlFile} -source ${fortifyScanResults}"
@@ -56,11 +61,7 @@ def call(body) {
             def xml = readFile "${env.WORKSPACE}/${xmlFile}"
             println "parsing the xml..."
             def reportDefinition = new XmlSlurper().parseText(xml)
-            println "done parsing xml. Content :"
-            
-            // -- Generate a pdf report to archive with the build
-            sh "ReportGenerator -format pdf -f target/fortify-${config.projname}-scan.pdf -source ${fortifyScanResults}"
-            archive "target/fortify-${config.projname}-scan.pdf"
+            println "done parsing xml"
           } else {
             print "Fortify code report ${fortifyScanResults} not found. Skipping the report generator..."
           }
