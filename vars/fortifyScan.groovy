@@ -37,7 +37,7 @@ def call(body) {
       def translateCmd = "sourceanalyzer -b ${config.projname} touchless ${mvnCmd} com.hpe.security.fortify.maven.plugin:sca-maven-plugin:17.20:translate"
 
 
-      stage('Fortify Analyzer') {
+      stage('Fortify Quality Gate') {
           sh "${mvnCmd} dependency:resolve"
           sh "sourceanalyzer -b ${config.projname} -clean"
           sh "${translateCmd}"
