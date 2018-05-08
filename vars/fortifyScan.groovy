@@ -70,7 +70,7 @@ def call(body) {
             sh "ReportGenerator -format pdf -f target/fortify-${config.projname}-scan.pdf -source ${fortifyScanResults}"
             archive "target/fortify-${config.projname}-scan.pdf"
           } else {
-            print "Fortify code report ${currDir}/${fortifyScanResults} not found. Skipping the report generator..."
+            print "Fortify code report ${fortifyScanResults} not found. Skipping the report generator..."
           }
       }
     }
