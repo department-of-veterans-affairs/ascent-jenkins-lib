@@ -51,12 +51,14 @@ def call(body) {
             // -- Use the FPR utility to see if there are any issues
             def criticalIssueFile = "target/critical-issues.txt"
             sh "FPRUtility -information -categoryIssueCounts -project ${fortifyScanResults} -search -query \"[fortify priority order]:Critical\" -listIssues -f ${criticalIssueFile}"
-            determineCriticalIssue(readFile("${criticalIssueFile}"))
-
-            // -- Generate a pdf report to archive with the build
-            sh "ReportGenerator -format pdf -f target/fortify-${config.projname}-scan.pdf -source target/fortify-${config.projname}-scan.fpr"
-            archive "target/fortify-${config.projname}-scan.pdf"
-
+            try {
+              determineCriticalIssue(readFile("${criticalIssueFile}"))
+            } finally {
+              // -- Generate a pdf report to archive with the build
+              sh "ReportGenerator -format pdf -f target/fortify-${config.projname}-scan.pdf -source target/fortify-${config.projname}-scan.fpr"
+              archive "target/fortify-${config.projname}-scan.pdf"
+              archive "${criticalIssueFile}"
+            }
           } else {
             print "Fortify code report ${fortifyScanResults} not found. Skipping the report generator..."
           }
