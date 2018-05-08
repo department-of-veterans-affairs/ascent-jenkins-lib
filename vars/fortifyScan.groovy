@@ -50,20 +50,24 @@ def call(body) {
           if(fileExists("${fortifyScanResults}")) {
             // -- Generate an xml report, parse, and fail if there are critical violations
             def xmlFile = "target/fortify-${config.projname}-scan.xml"
-            sh "ReportGenerator -format xml -f ${xmlFile} -source target/fortify-${config.projname}-scan.fpr"
+            sh "ReportGenerator -format xml -f ${xmlFile} -source ${fortifyScanResults}"
+
+            println "reading the xml file ${env.WORKSPACE}/${xmlFile}"
             def xml = readFile "${env.WORKSPACE}/${xmlFile}"
+            println "parsing the xml..."
             def reportDefinition = new XmlSlurper().parseText(xml)
-            reportDefinition.ReportSection.SubSection.IssueListing.Chart.GroupingSection.findAll { groupsection ->
-                groupsection.groupTitle.toString().equals('Low')
-              }.each { groupsection ->
-                println "Title:       "+groupsection.groupTitle
-                println "    Count:   "+groupsection.@'count'
-              }
-
-
+            println "done parsing xml. Content :"
+            println "\n\n\n"
+            println "${reportDefinition.toString()}"
+            //reportDefinition.ReportSection.SubSection.IssueListing.Chart.GroupingSection.findAll { groupsection ->
+            //    groupsection.groupTitle.toString().equals('Low')
+            //  }.each { groupsection ->
+            //    println "Title:       ${groupsection.groupTitle}"
+            //    println "    Count:   ${groupsection.@'count'}"
+            //  }
 
             // -- Generate a pdf report to archive with the build
-            sh "ReportGenerator -format pdf -f target/fortify-${config.projname}-scan.pdf -source target/fortify-${config.projname}-scan.fpr"
+            sh "ReportGenerator -format pdf -f target/fortify-${config.projname}-scan.pdf -source ${fortifyScanResults}"
             archive "target/fortify-${config.projname}-scan.pdf"
           } else {
             print "Fortify code report ${currDir}/${fortifyScanResults} not found. Skipping the report generator..."
