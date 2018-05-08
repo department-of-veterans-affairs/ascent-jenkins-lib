@@ -48,28 +48,19 @@ def call(body) {
           // -- Check if a fortifyScan was generated, and if it was, then use the report generator to convert
           //    it to a pdf
           if(fileExists("${fortifyScanResults}")) {
+            // -- Use the FPR utility to see if there are any issues
+            def criticalIssueFile = "target/critical-issues.txt"
+            sh "FPRUtility -information -categoryIssueCounts -project ${fortifyScanResults} -search -query \"[fortify priority order]:Critical\" -listIssues -f ${criticalIssueFile}"
+            def criticalOuput = readFile "${criticalIssueFile}"
+            // -- Check if there are critical issue in the file
+            if(isCriticalIssue("${criticalOutput}")) {
+              print "THERE ARE CRITICAL ISSUES!!!!!!!"
+            }
+
             // -- Generate a pdf report to archive with the build
             sh "ReportGenerator -format pdf -f target/fortify-${config.projname}-scan.pdf -source target/fortify-${config.projname}-scan.fpr"
             archive "target/fortify-${config.projname}-scan.pdf"
 
-            // -- Generate an xml report, parse, and fail if there are critical violations
-            def xmlFile = "target/fortify-${config.projname}-scan.xml"
-            sh "ReportGenerator -format xml -f ${xmlFile} -source ${fortifyScanResults}"
-
-            println "reading the xml file ${env.WORKSPACE}/${xmlFile}"
-            def xml = readFile "${env.WORKSPACE}/${xmlFile}"
-            println "parsing the xml..."
-            def reportDefinition = new XmlSlurper().parseText(xml)
-            println "done parsing xml"
-
-
-            reportDefinition.ReportSection.SubSection.IssueListing.Chart.GroupingSection.findAll { groupsection ->
-                groupsection.groupTitle.toString().equals('Low')
-              }.each { gs ->
-                println "Title:       ${gs.groupTitle}"
-                println "    Count:   ${gs.@'count'}"
-              }
-            
           } else {
             print "Fortify code report ${fortifyScanResults} not found. Skipping the report generator..."
           }
