@@ -57,8 +57,6 @@ def call(body) {
             println "parsing the xml..."
             def reportDefinition = new XmlSlurper().parseText(xml)
             println "done parsing xml. Content :"
-            println "\n\n\n"
-            println "${reportDefinition.toString()}"
             //reportDefinition.ReportSection.SubSection.IssueListing.Chart.GroupingSection.findAll { groupsection ->
             //    groupsection.groupTitle.toString().equals('Low')
             //  }.each { groupsection ->
