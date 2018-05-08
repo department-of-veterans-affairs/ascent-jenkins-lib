@@ -57,13 +57,7 @@ def call(body) {
             println "parsing the xml..."
             def reportDefinition = new XmlSlurper().parseText(xml)
             println "done parsing xml. Content :"
-            //reportDefinition.ReportSection.SubSection.IssueListing.Chart.GroupingSection.findAll { groupsection ->
-            //    groupsection.groupTitle.toString().equals('Low')
-            //  }.each { groupsection ->
-            //    println "Title:       ${groupsection.groupTitle}"
-            //    println "    Count:   ${groupsection.@'count'}"
-            //  }
-
+            
             // -- Generate a pdf report to archive with the build
             sh "ReportGenerator -format pdf -f target/fortify-${config.projname}-scan.pdf -source ${fortifyScanResults}"
             archive "target/fortify-${config.projname}-scan.pdf"
