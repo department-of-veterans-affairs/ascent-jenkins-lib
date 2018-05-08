@@ -52,7 +52,6 @@ def call(body) {
             sh "ReportGenerator -format pdf -f target/fortify-${config.projname}-scan.pdf -source target/fortify-${config.projname}-scan.fpr"
             archive "target/fortify-${config.projname}-scan.pdf"
 
-
             // -- Generate an xml report, parse, and fail if there are critical violations
             def xmlFile = "target/fortify-${config.projname}-scan.xml"
             sh "ReportGenerator -format xml -f ${xmlFile} -source ${fortifyScanResults}"
@@ -62,6 +61,15 @@ def call(body) {
             println "parsing the xml..."
             def reportDefinition = new XmlSlurper().parseText(xml)
             println "done parsing xml"
+
+
+            reportDefinition.ReportSection.SubSection.IssueListing.Chart.GroupingSection.findAll { groupsection ->
+                groupsection.groupTitle.toString().equals('Low')
+              }.each { gs ->
+                println "Title:       ${gs.groupTitle}"
+                println "    Count:   ${gs.@'count'}"
+              }
+            
           } else {
             print "Fortify code report ${fortifyScanResults} not found. Skipping the report generator..."
           }
