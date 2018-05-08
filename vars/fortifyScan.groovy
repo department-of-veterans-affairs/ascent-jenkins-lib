@@ -13,11 +13,6 @@ def call(body) {
       config.projname = "${env.JOB_BASE_NAME}"
   }
 
-
-
-
-
-
   node ('fortify-sca') {
     // unstash the packages from the mavenBuild on other node
     unstash "packaged"
@@ -42,7 +37,7 @@ def call(body) {
       def translateCmd = "sourceanalyzer -b ${config.projname} touchless ${mvnCmd} com.hpe.security.fortify.maven.plugin:sca-maven-plugin:17.20:translate"
 
 
-      stage('Fortify Analyzer') {
+      stage('Fortify Quality Gate') {
           sh "${mvnCmd} dependency:resolve"
           sh "sourceanalyzer -b ${config.projname} -clean"
           sh "${translateCmd}"
@@ -53,15 +48,21 @@ def call(body) {
           // -- Check if a fortifyScan was generated, and if it was, then use the report generator to convert
           //    it to a pdf
           if(fileExists("${fortifyScanResults}")) {
-            sh "ReportGenerator -format pdf -f target/fortify-${config.projname}-scan.pdf -source target/fortify-${config.projname}-scan.fpr"
-            archive "target/fortify-${config.projname}-scan.pdf"
+            // -- Use the FPR utility to see if there are any issues
+            def criticalIssueFile = "target/critical-issues.txt"
+            sh "FPRUtility -information -categoryIssueCounts -project ${fortifyScanResults} -search -query \"[fortify priority order]:Critical\" -listIssues -f ${criticalIssueFile}"
+            try {
+              determineCriticalIssue(readFile("${criticalIssueFile}"))
+            } finally {
+              // -- Generate a pdf report to archive with the build
+              sh "ReportGenerator -format pdf -f target/fortify-${config.projname}-scan.pdf -source target/fortify-${config.projname}-scan.fpr"
+              archive "target/fortify-${config.projname}-scan.pdf"
+              archive "${criticalIssueFile}"
+            }
           } else {
-            print "Fortify code report ${currDir}/${fortifyScanResults} not found. Skipping the report generator..."
+            print "Fortify code report ${fortifyScanResults} not found. Skipping the report generator..."
           }
-
-
       }
-
     }
   }
 }
