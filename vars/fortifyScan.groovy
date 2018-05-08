@@ -51,7 +51,7 @@ def call(body) {
             // -- Use the FPR utility to see if there are any issues
             def criticalIssueFile = "target/critical-issues.txt"
             sh "FPRUtility -information -categoryIssueCounts -project ${fortifyScanResults} -search -query \"[fortify priority order]:Critical\" -listIssues -f ${criticalIssueFile}"
-            determineCriticalIssue(readFile(criticalIssueFile))
+            determineCriticalIssue(readFile("${criticalIssueFile}"))
 
             // -- Generate a pdf report to archive with the build
             sh "ReportGenerator -format pdf -f target/fortify-${config.projname}-scan.pdf -source target/fortify-${config.projname}-scan.fpr"
@@ -63,13 +63,4 @@ def call(body) {
       }
     }
   }
-
-  def determineCriticalIssue(criticalText) {
-    // -- Check if there are critical issue in the file
-    if(isCriticalIssue("${criticalText}")) {
-      print "THERE ARE CRITICAL ISSUES!!!!!!!"
-    }
-  }
-
-
 }
