@@ -54,7 +54,6 @@ def call(body) {
             stage("Performance Testing") {
                 echo "Executing performance tests against ${config.serviceHost}"
                 withEnv(deployEnv) {
-                    sh "mkdir -p ${reportDir}"
                     withCredentials([usernamePassword(credentialsId: 'nexus', usernameVariable: 'DEPLOY_USER', passwordVariable: 'DEPLOY_PASSWORD')]) {
                         sh "${mvnCmd} -Pperftest verify ${opts} "
                     }
