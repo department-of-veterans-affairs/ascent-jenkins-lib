@@ -61,23 +61,21 @@ def call(body) {
             }
         } finally {
             //If performance test results exist, then publish those to Jenkins
-            if (fileExists("target/jmeter/reports")) {
-                //get list of all report directories
-                def reportDirs = sh(returnStdout: true, script: "ls target/jmeter/reports").split( "\\r?\\n" )
-                echo "Report Directorys are: ${reportDirs}"
-                for (directory in reportDirs) {
-                    //truncate at first under-score to get report name
-                    def reportName = directory.substring(0, directory.indexOf('_'))
+            //get list of all report directories
+            def reportDirs = sh(returnStdout: true, script: "ls -d -1 */target/jmeter/reports/*").split( "\\r?\\n" )
+            echo "Report Directorys are: ${reportDirs}"
+            for (directory in reportDirs) {
+                //truncate at first under-score to get report name
+                def reportName = directory.substring(directory.lastIndexOf('/')+1, directory.length())
 
-                    publishHTML (target: [
-                        allowMissing: false,
-                        alwaysLinkToLastBuild: false,
-                        keepAll: true,
-                        reportDir: "target/jmeter/reports/${directory}/",
-                        reportFiles: 'index.html',
-                        reportName: "${reportName}"
-                    ])
-                }
+                publishHTML (target: [
+                    allowMissing: false,
+                    alwaysLinkToLastBuild: false,
+                    keepAll: true,
+                    reportDir: "${directory}",
+                    reportFiles: 'index.html',
+                    reportName: "${reportName}"
+                ])
             }
         }
     }
