@@ -16,7 +16,7 @@ def call(body) {
         config.cucumberReportDirectory = 'target'
     }
     if (config.cucumberOpts == null) {
-        config.cucumberOpts = "--tags @CI"
+        config.cucumberOpts = '"--tags @CI"'
     }
 
     def tmpDir = pwd(tmp: true)
@@ -48,7 +48,7 @@ def call(body) {
             stage('Functional Testing') {
                 echo "Executing functional tests against ${config.serviceUrl}"
                 withEnv(deployEnv) {
-                    sh "${mvnCmd} integration-test -P inttest -Dbrowser=HtmlUnit -Dtest.env=ci -DbaseURL=${config.serviceUrl} -DX-Vault-Token=${env.VAULT_TOKEN} -Dcucumber.options=\"${config.cucumberOpts}\""
+                    sh "${mvnCmd} integration-test -P inttest -Dbrowser=HtmlUnit -Dtest.env=ci -DbaseURL=${config.serviceUrl} -DX-Vault-Token=${env.VAULT_TOKEN} -Dcucumber.options=${config.cucumberOpts}"
                 }
             }
         } finally {
