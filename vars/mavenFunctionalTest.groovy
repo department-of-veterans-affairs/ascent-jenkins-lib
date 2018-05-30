@@ -16,7 +16,7 @@ def call(body) {
         config.cucumberReportDirectory = 'target'
     }
     if (config.cucumberOpts == null) {
-        config.cucumberOpts = '"--tags @CI"'
+        config.cucumberOpts = ''
     }
 
     def tmpDir = pwd(tmp: true)
