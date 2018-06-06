@@ -86,6 +86,7 @@ def call(body) {
                                 cucumberReportDirectory = config.cucumberReportDirectory
                                 testVaultTokenRole = config.testVaultTokenRole
                                 cucumberOpts = config.cucumberOpts
+                                options = config.intTestOptions
                             }
                         } catch (ex) {
                             echo "Failed due to ${ex}: ${ex.message}"
