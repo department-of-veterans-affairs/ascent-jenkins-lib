@@ -39,7 +39,7 @@ def call(body) {
     stage ('Fortify'){
         lock(resource: "lock_fortify_${env.NODE_NAME}_${artifactId}") {
             //perform fortify scan
-            standardWithMaven("ant -f fortify.xml fortify.all -Dmvn.cmd.fortify.prereq=initialize")
+            sh "ant -f fortify.xml fortify.all -Dmvn.cmd.fortify.prereq=initialize"
 
             //generate pdf
             sh "cd \${WORKSPACE}; TEMPLATE=\"\$(dirname \$(which ReportGenerator))/../Core/config/reports/DeveloperWorkbook.xml\"; SOURCE=\"\$(find . -name \\${artifactId}*.fpr)\"; TARGET=\"target/fortify/\$(find . -name \\${artifactId}*.fpr -exec basename -s .fpr {} \\;).pdf\"; ReportGenerator -template \$TEMPLATE -format pdf -source \$SOURCE -f \$TARGET"
