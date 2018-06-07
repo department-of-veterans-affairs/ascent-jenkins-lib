@@ -1,4 +1,4 @@
-def call(notifyMessages, artifactId, version, Boolean applyGates=true, Boolean failOnGates=true) {
+def call(Boolean applyGates=true, Boolean failOnGates=true) {
   def config = [:]
   body.resolveStrategy = Closure.DELEGATE_FIRST
   body.delegate = config
@@ -11,6 +11,15 @@ def call(notifyMessages, artifactId, version, Boolean applyGates=true, Boolean f
   if (config.projname == null) {
       config.projname = "${env.JOB_BASE_NAME}"
   }
+
+  if(config.notifyMessages == null) {
+    def notifyMessages = []
+  }
+
+  if(config.artifactId == null) {
+    artifactId = ${env.JOB_BASE_NAME}
+  }
+
 
   node('fortify-sca') {
     stage ('Fortify'){
