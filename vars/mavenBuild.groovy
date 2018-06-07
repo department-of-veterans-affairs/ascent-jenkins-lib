@@ -73,7 +73,7 @@ def call(body) {
 
         echo "Packaging done"
 
-        fortifyStage() {
+        fortifyStage {
           echo "starting fortifyStage"
           directory = config.directory
         }
