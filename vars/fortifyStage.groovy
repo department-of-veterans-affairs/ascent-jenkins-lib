@@ -38,6 +38,9 @@ def call(body) {
     echo "in fortify node"
     stage ('Fortify'){
         lock(resource: "lock_fortify_${env.NODE_NAME}_${artifactId}") {
+            // unstash the packages from the mavenBuild on other node
+            unstash "packaged"
+
             //perform fortify scan
             sh "ant -f fortify.xml fortify.all -Dmvn.cmd.fortify.prereq=initialize"
 
