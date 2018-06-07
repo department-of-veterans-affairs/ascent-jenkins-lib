@@ -17,7 +17,11 @@ def call(Boolean applyGates=true, Boolean failOnGates=true) {
   }
 
   if(config.artifactId == null) {
-    artifactId = ${env.JOB_BASE_NAME}
+    artifactId = readMavenPom().getArtifactId()
+  }
+
+  if(config.version == null) {
+    version = readMavenPom().getVersion()
   }
 
 

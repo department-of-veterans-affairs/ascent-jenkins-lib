@@ -71,8 +71,7 @@ def call(body) {
             }
         }
 
-        pom = readMavenPom('pom.xml')
-        fortifyStage('Test', 'Test', '1.0') {
+        fortifyStage() {
           directory = config.directory
         }
 
