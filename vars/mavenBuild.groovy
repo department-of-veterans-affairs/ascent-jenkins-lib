@@ -72,7 +72,7 @@ def call(body) {
         }
 
         pom = readMavenPom file: 'pom.xml'
-        fortifyStage("Test", "${env.JOB_BASE_NAME}", pom.version) {
+        fortifyStage('Test', 'Test', '1.0') {
           directory = config.directory
         }
 
