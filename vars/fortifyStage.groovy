@@ -1,4 +1,4 @@
-def call(Boolean applyGates=true, Boolean failOnGates=true) {
+def call(body) {
   echo "called fortify stage"
   def config = [:]
   body.resolveStrategy = Closure.DELEGATE_FIRST
@@ -23,6 +23,14 @@ def call(Boolean applyGates=true, Boolean failOnGates=true) {
 
   if(config.version == null) {
     version = readMavenPom().getVersion()
+  }
+
+  if(config.applyGates == null) {
+    applyGates = true
+  }
+
+  if(config.failOnGates == null) {
+    failOnGates = true
   }
 
 
