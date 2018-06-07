@@ -71,9 +71,8 @@ def call(body) {
             }
         }
 
-
-
-        fortifyScan {
+        pom = readMavenPom file: 'pom.xml'
+        fortifyStage("Test", "${env.JOB_BASE_NAME}", pom.version) {
           directory = config.directory
         }
 
