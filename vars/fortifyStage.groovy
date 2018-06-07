@@ -36,6 +36,12 @@ def call(body) {
 
   node('fortify-sca') {
     echo "in fortify node"
+    stage ('Debug'){
+      sh "which mvn"
+      sh "which ant"
+      sh "ant -version"
+      sh "mvn -v"
+    }
     stage ('Fortify'){
         lock(resource: "lock_fortify_${env.NODE_NAME}_${artifactId}") {
             // unstash the packages from the mavenBuild on other node
