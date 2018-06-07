@@ -1,4 +1,5 @@
 def call(Boolean applyGates=true, Boolean failOnGates=true) {
+  echo "called fortify stage"
   def config = [:]
   body.resolveStrategy = Closure.DELEGATE_FIRST
   body.delegate = config
@@ -26,6 +27,7 @@ def call(Boolean applyGates=true, Boolean failOnGates=true) {
 
 
   node('fortify-sca') {
+    echo "in fortify node"
     stage ('Fortify'){
         lock(resource: "lock_fortify_${env.NODE_NAME}_${artifactId}") {
             //perform fortify scan
