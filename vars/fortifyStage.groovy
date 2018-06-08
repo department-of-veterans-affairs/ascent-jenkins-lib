@@ -33,6 +33,13 @@ def call(body) {
     failOnGates = true
   }
 
+  if (config.mavenSettings == null) {
+      config.mavenSettings = "${tmpDir}/settings.xml"
+      stage('Configure Maven') {
+          def mavenSettings = libraryResource 'gov/va/maven/settings.xml'
+          writeFile file: config.mavenSettings, text: mavenSettings
+      }
+  }
 
   node('fortify-sca') {
     echo "in fortify node"
@@ -42,13 +49,7 @@ def call(body) {
       sh "ant -version"
       sh "mvn -v"
     }
-    if (config.mavenSettings == null) {
-        config.mavenSettings = "${tmpDir}/settings.xml"
-        stage('Configure Maven') {
-            def mavenSettings = libraryResource 'gov/va/maven/settings.xml'
-            writeFile file: config.mavenSettings, text: mavenSettings
-        }
-    }
+
     stage ('Fortify'){
         lock(resource: "lock_fortify_${env.NODE_NAME}_${artifactId}") {
             // unstash the packages from the mavenBuild on other node
