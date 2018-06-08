@@ -61,7 +61,7 @@ def call(body) {
             dir("${config.directory}") {
               //use maven to get all of our dependencies and such
               def mvnCmd = "mvn -Dmaven.wagon.http.ssl.insecure=true -Dmaven.wagon.http.ssl.ignore.validity.dates=true -Dmaven.wagon.http.ssl.allowall=true -Ddockerfile.skip=true -DskipITs=true -s ${config.mavenSettings}"
-              sh "${mvnCmd} clean install -DskipITs=true"
+              sh "${mvnCmd} clean install -DskipITs=true -DskipTests=true"
 
               //perform fortify scan
               sh "ant -f mdm-cuf-core-fortify.xml fortify.all -Dmvn.cmd.fortify.prereq=initialize -Dproject.settings=${config.mavenSettings}"
