@@ -49,7 +49,7 @@ def call(body) {
 
             dir("${config.directory}") {
               //perform fortify scan
-              sh "ant -f fortify.xml fortify.all -Dmvn.cmd.fortify.prereq=initialize"
+              sh "ant -f mdm-cuf-core-fortify.xml fortify.all -Dmvn.cmd.fortify.prereq=initialize"
 
               //generate pdf
               sh "cd \${WORKSPACE}; TEMPLATE=\"\$(dirname \$(which ReportGenerator))/../Core/config/reports/DeveloperWorkbook.xml\"; SOURCE=\"\$(find . -name \\${artifactId}*.fpr)\"; TARGET=\"target/fortify/\$(find . -name \\${artifactId}*.fpr -exec basename -s .fpr {} \\;).pdf\"; ReportGenerator -template \$TEMPLATE -format pdf -source \$SOURCE -f \$TARGET"
