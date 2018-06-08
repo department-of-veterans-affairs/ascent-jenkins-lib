@@ -18,6 +18,9 @@ def call(body) {
     if (config.cucumberOpts == null) {
         config.cucumberOpts = ''
     }
+    if (config.options == null) {
+        config.options = ''
+    }
 
     def tmpDir = pwd(tmp: true)
     
