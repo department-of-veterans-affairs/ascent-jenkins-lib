@@ -33,16 +33,6 @@ def call(body) {
     failOnGates = true
   }
 
-  def tmpDir = pwd(tmp: true)
-
-  if (config.mavenSettings == null) {
-      config.mavenSettings = "${tmpDir}/settings.xml"
-      stage('Configure Maven') {
-          def mavenSettings = libraryResource 'gov/va/maven/settings.xml'
-          writeFile file: config.mavenSettings, text: mavenSettings
-      }
-  }
-
   node('fortify-sca') {
     echo "in fortify node"
     stage ('Debug'){
@@ -51,6 +41,17 @@ def call(body) {
       sh "ant -version"
       sh "mvn -v"
     }
+
+    def tmpDir = pwd(tmp: true)
+
+    if (config.mavenSettings == null) {
+        config.mavenSettings = "${tmpDir}/settings.xml"
+        stage('Configure Maven') {
+            def mavenSettings = libraryResource 'gov/va/maven/settings.xml'
+            writeFile file: config.mavenSettings, text: mavenSettings
+        }
+    }
+
 
     stage ('Fortify'){
         lock(resource: "lock_fortify_${env.NODE_NAME}_${artifactId}") {
