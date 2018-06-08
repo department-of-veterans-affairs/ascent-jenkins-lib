@@ -73,9 +73,9 @@ def call(body) {
 
 
 
-        fortifyScan {
-          directory = config.directory
-        }
+        // fortifyScan {
+        //   directory = config.directory
+        // }
 
         stage('Code Analysis') {
             //See https://docs.sonarqube.org/display/SONAR/Analysis+Parameters for more info on Sonar analysis configuration
