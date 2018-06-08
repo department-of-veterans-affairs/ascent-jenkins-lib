@@ -42,6 +42,13 @@ def call(body) {
       sh "ant -version"
       sh "mvn -v"
     }
+    if (config.mavenSettings == null) {
+        config.mavenSettings = "${tmpDir}/settings.xml"
+        stage('Configure Maven') {
+            def mavenSettings = libraryResource 'gov/va/maven/settings.xml'
+            writeFile file: config.mavenSettings, text: mavenSettings
+        }
+    }
     stage ('Fortify'){
         lock(resource: "lock_fortify_${env.NODE_NAME}_${artifactId}") {
             // unstash the packages from the mavenBuild on other node
@@ -49,7 +56,7 @@ def call(body) {
 
             dir("${config.directory}") {
               //perform fortify scan
-              sh "ant -f mdm-cuf-core-fortify.xml fortify.all -Dmvn.cmd.fortify.prereq=initialize"
+              sh "ant -f mdm-cuf-core-fortify.xml fortify.all -Dmvn.cmd.fortify.prereq=initialize -Dproject.settings=${config.mavenSettings}"
 
               //generate pdf
               sh "cd \${WORKSPACE}; TEMPLATE=\"\$(dirname \$(which ReportGenerator))/../Core/config/reports/DeveloperWorkbook.xml\"; SOURCE=\"\$(find . -name \\${artifactId}*.fpr)\"; TARGET=\"target/fortify/\$(find . -name \\${artifactId}*.fpr -exec basename -s .fpr {} \\;).pdf\"; ReportGenerator -template \$TEMPLATE -format pdf -source \$SOURCE -f \$TARGET"
