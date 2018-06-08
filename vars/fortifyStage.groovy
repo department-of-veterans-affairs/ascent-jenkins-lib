@@ -33,6 +33,8 @@ def call(body) {
     failOnGates = true
   }
 
+  def tmpDir = pwd(tmp: true)
+
   if (config.mavenSettings == null) {
       config.mavenSettings = "${tmpDir}/settings.xml"
       stage('Configure Maven') {
