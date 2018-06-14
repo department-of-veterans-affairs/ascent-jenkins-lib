@@ -63,7 +63,7 @@ def call(body) {
               def mvnCmd = "mvn -Dmaven.wagon.http.ssl.insecure=true -Dmaven.wagon.http.ssl.ignore.validity.dates=true -Dmaven.wagon.http.ssl.allowall=true -Ddockerfile.skip=true -DskipITs=true -s ${config.mavenSettings}"
               sh "${mvnCmd} clean install -DskipITs=true -DskipTests=true"
 
-              sh "${mvnCmd} antrun:run@fortify-scan -Dproject.settings=${config.mavenSettings}"
+              sh "${mvnCmd} antrun:run@fortify-scan -Dsettings.file.location=${config.mavenSettings}"
 
               //perform fortify scan
               //sh "ant -f mdm-cuf-core-fortify.xml fortify.all -Dmvn.cmd.fortify.prereq=initialize -Dproject.settings=${config.mavenSettings}"
