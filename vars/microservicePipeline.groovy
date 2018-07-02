@@ -85,6 +85,8 @@ def call(body) {
                                 serviceUrl = "${this.env.DOCKER_SWARM_URL}:${testEnvPort}"
                                 cucumberReportDirectory = config.cucumberReportDirectory
                                 testVaultTokenRole = config.testVaultTokenRole
+                                cucumberOpts = config.cucumberOpts
+                                options = config.intTestOptions
                             }
                         } catch (ex) {
                             echo "Failed due to ${ex}: ${ex.message}"
@@ -108,13 +110,13 @@ def call(body) {
                                     dockerHost = "tcp://${this.env.PERF_SWARM_HOST}"
                                 }
 
-                                jmeter {
+                                mavenPerformanceTest {
                                     directory = config.directory
                                     serviceProtocol = "http"
                                     serviceHost = "${this.env.PERF_SWARM_HOST}"
                                     servicePort = "${testEnvPort}"
                                     testVaultTokenRole = config.testVaultTokenRole
-                                    testPlan = config.perfTestPlan
+                                    options = config.perfTestOptions
                                 }
                             } catch (ex) {
                                 echo "Failed due to ${ex}: ${ex.message}"
