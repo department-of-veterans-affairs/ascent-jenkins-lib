@@ -50,28 +50,6 @@ def call(body) {
             }
         }
 
-        stage('Package') {
-            try {
-                sh "${mvnCmd} package"
-
-                // Stash everything so can build on the fortify-sca agent
-                stash name: 'packaged'
-            } finally {
-              // unstash the packages on current node, as stashed packages themselves
-              // cannot be used unless they're unstashed
-              unstash "packaged"
-                publishHTML (target: [
-                    allowMissing: true,
-                    alwaysLinkToLastBuild: false,
-                    keepAll: true,
-                    reportDir: 'target/site/jacoco',
-                    reportFiles: 'index.html',
-                    reportName: "Code Coverage"
-                ])
-            }
-        }
-
-        echo "Packaging done"
 
         fortifyStage {
           directory = config.directory

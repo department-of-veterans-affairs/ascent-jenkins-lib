@@ -52,12 +52,13 @@ def call(body) {
         }
     }
 
+    // recheck out scm in case the stage before changed any poms (like a release, for instance)
+    stage('Checkout SCM') {
+        checkout scm
+    }
 
     stage ('Fortify'){
         lock(resource: "lock_fortify_${env.NODE_NAME}_${artifactId}") {
-            // unstash the packages from the mavenBuild on other node
-            unstash "packaged"
-
             dir("${config.directory}") {
               //use maven to get all of our dependencies and such
               def mvnCmd = "mvn -Dmaven.wagon.http.ssl.insecure=true -Dmaven.wagon.http.ssl.ignore.validity.dates=true -Dmaven.wagon.http.ssl.allowall=true -Ddockerfile.skip=true -DskipITs=true -s ${config.mavenSettings}"
