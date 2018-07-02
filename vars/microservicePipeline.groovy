@@ -136,8 +136,7 @@ def call(body) {
             }
         } finally {
             //Send build notifications if needed
-            // TODO: uncomment this when ready to merge
-            //notifyBuild(currentBuild.result)
+            notifyBuild(currentBuild.result)
         }
     }
 }
