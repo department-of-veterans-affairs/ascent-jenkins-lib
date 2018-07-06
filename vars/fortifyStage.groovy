@@ -52,47 +52,35 @@ def call(body) {
         }
     }
 
-    // recheck out scm in case the stage before changed any poms (like a release, for instance)
     stage('Checkout SCM') {
         checkout scm
     }
 
     stage ('Fortify'){
-        lock(resource: "lock_fortify_${env.NODE_NAME}_${artifactId}") {
             dir("${config.directory}") {
-              //use maven to get all of our dependencies and such
               def mvnCmd = "mvn -Dmaven.wagon.http.ssl.insecure=true -Dmaven.wagon.http.ssl.ignore.validity.dates=true -Dmaven.wagon.http.ssl.allowall=true -Ddockerfile.skip=true -DskipITs=true -s ${config.mavenSettings}"
               sh "${mvnCmd} clean install -U -DskipITs=true -DskipTests=true"
 
               sh "${mvnCmd} antrun:run@fortify-scan -N -Dsettings.file.location=${config.mavenSettings}"
 
-              //perform fortify scan
-              //sh "ant -f mdm-cuf-core-fortify.xml fortify.all -Dmvn.cmd.fortify.prereq=initialize -Dproject.settings=${config.mavenSettings}"
-
-              //generate pdf
               sh "cd \${WORKSPACE}; TEMPLATE=\"\$(dirname \$(readlink \$(which ReportGenerator)))/../Core/config/reports/DeveloperWorkbook.xml\"; SOURCE=\"\$(find . -name \\${artifactId}*.fpr)\"; TARGET=\"target/fortify/\$(find . -name \\${artifactId}*.fpr -exec basename -s .fpr {} \\;).pdf\"; ReportGenerator -template \$TEMPLATE -format pdf -source \$SOURCE -f \$TARGET"
 
               sh "echo \"\n\n--------------------------------------------------\" > ${WORKSPACE}/target/fortify/fortify-gate.txt"
               sh "echo \"Fortify Gates Overview\n${artifactId}-${version}\" >> ${WORKSPACE}/target/fortify/fortify-gate.txt"
               sh "echo \"\n--------------------------------------------------\" >> ${WORKSPACE}/target/fortify/fortify-gate.txt"
 
-              //fortify "critical" gate
               sh "echo \"\n\n-------------------------\nCritical Issues\n-------------------------\" >> ${WORKSPACE}/target/fortify/fortify-gate.txt"
               sh "FPRUtility -project \"\$(find . -name \\${artifactId}*.fpr)\" -categoryIssueCounts -listIssues -information -search -query \"[fortify priority order]:critical AND [analysis]:<none>\" >> ${WORKSPACE}/target/fortify/fortify-gate.txt"
 
-              //fortify "high" gate
               sh "echo \"\n\n-------------------------\nHigh Issues\n-------------------------\" >> ${WORKSPACE}/target/fortify/fortify-gate.txt"
               sh "FPRUtility -project \"\$(find . -name \\${artifactId}*.fpr)\" -categoryIssueCounts -listIssues -information -search -query \"[fortify priority order]:high AND [analysis]:<none>\" >> ${WORKSPACE}/target/fortify/fortify-gate.txt"
 
-              //fortify "code quality" gate
               sh "echo \"\n\n-------------------------\nCode Quality Issues\n-------------------------\" >> ${WORKSPACE}/target/fortify/fortify-gate.txt"
               sh "FPRUtility -project \"\$(find . -name \\${artifactId}*.fpr)\" -categoryIssueCounts -listIssues -information -search -query \"[kingdom]:code quality AND [analysis]:<none>\" >> ${WORKSPACE}/target/fortify/fortify-gate.txt"
 
-              //fortify "don't suppress stuff" gate
               sh "echo \"\n\n-------------------------\nSuppressed Issues\n-------------------------\" >> ${WORKSPACE}/target/fortify/fortify-gate.txt"
               sh "FPRUtility -project \"\$(find . -name \\${artifactId}*.fpr)\" -categoryIssueCounts -listIssues -information -search -query \"[suppressed]:true\" -includeSuppressed >> ${WORKSPACE}/target/fortify/fortify-gate.txt"
 
-              //archive the artifacts for easy review/accessibility
               archiveArtifacts 'target/fortify/*.pdf,target/fortify/*.fpr,target/fortify/*gate.txt'
 
               if(applyGates){
@@ -121,6 +109,5 @@ def call(body) {
             }
 
           }
-      }
     }
 }
