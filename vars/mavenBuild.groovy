@@ -50,32 +50,10 @@ def call(body) {
             }
         }
 
-        stage('Package') {
-            try {
-                sh "${mvnCmd} package"
 
-                // Stash everything so can build on the fortify-sca agent
-                stash name: 'packaged'
-            } finally {
-              // unstash the packages on current node, as stashed packages themselves
-              // cannot be used unless they're unstashed
-              unstash "packaged"
-                publishHTML (target: [
-                    allowMissing: true,
-                    alwaysLinkToLastBuild: false,
-                    keepAll: true,
-                    reportDir: 'target/site/jacoco',
-                    reportFiles: 'index.html',
-                    reportName: "Code Coverage"
-                ])
-            }
+        fortifyStage {
+          directory = config.directory
         }
-
-
-
-        // fortifyScan {
-        //   directory = config.directory
-        // }
 
         stage('Code Analysis') {
             //See https://docs.sonarqube.org/display/SONAR/Analysis+Parameters for more info on Sonar analysis configuration

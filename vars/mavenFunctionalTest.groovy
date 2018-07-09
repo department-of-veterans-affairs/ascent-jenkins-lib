@@ -57,7 +57,7 @@ def call(body) {
         } finally {
             if (fileExists("${config.cucumberReportDirectory}/cucumber.json")) {
                 step([$class: 'CucumberReportPublisher',
-                    jenkinsBasePath: 'http://jenkins.internal.vets-api.gov:8080/',
+                    jenkinsBasePath: "${JENKINS_URL}",
                     fileIncludePattern: '**/cucumber.json',
                     fileExcludePattern: '',
                     jsonReportDirectory: "${config.cucumberReportDirectory}",
