@@ -1,6 +1,7 @@
 def call(body) {
   echo "called fortify stage"
   def config = [:]
+  def notifyMessages = []
   body.resolveStrategy = Closure.DELEGATE_FIRST
   body.delegate = config
   body()
@@ -13,8 +14,8 @@ def call(body) {
       config.projname = "${env.JOB_BASE_NAME}"
   }
 
-  if(config.notifyMessages == null) {
-    def notifyMessages = []
+  if(config.notifyMessages != null) {
+    notifyMessages = config.notifyMessages
   }
 
   if(config.artifactId == null) {
