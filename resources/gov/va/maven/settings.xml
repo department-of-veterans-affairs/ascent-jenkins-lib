@@ -7,7 +7,7 @@
             <mirror>
                   <id>vets.gov</id>
                   <name>Vets.gov Nexus Repository</name>
-                  <url>https://nexus.internal.vets-api.gov/repository/maven-public</url>
+                  <url>${NEXUS_URL}/repository/maven-public</url>
                   <mirrorOf>*</mirrorOf>
             </mirror>
       </mirrors>
@@ -33,7 +33,7 @@
                   </activation>
 
                   <properties>
-                        <repo.baseurl>https://nexus.internal.vets-api.gov/repository</repo.baseurl>
+                        <repo.baseurl>${NEXUS_URL}/repository</repo.baseurl>
                         <repo.release>${repo.baseurl}/maven-releases</repo.release>
                         <repo.snapshot>${repo.baseurl}/maven-snapshots</repo.snapshot>
                   </properties>
