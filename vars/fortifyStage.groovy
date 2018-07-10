@@ -34,7 +34,7 @@ def call(body) {
     failOnGates = true
   }
 
-  node('fortify-sca') {
+  node('fortify-sca*') {
     echo "in fortify node"
     stage ('Debug'){
       sh "which mvn"
