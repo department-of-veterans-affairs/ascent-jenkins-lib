@@ -60,10 +60,9 @@ def call(body) {
     stage ('Fortify'){
             dir("${config.directory}") {
               def mvnCmd = "mvn -Dmaven.wagon.http.ssl.insecure=true -Dmaven.wagon.http.ssl.ignore.validity.dates=true -Dmaven.wagon.http.ssl.allowall=true -Ddockerfile.skip=true -DskipITs=true -s ${config.mavenSettings}"
-              def fortifyMvnCmd = "${mvnCmd} -Dfortify.sca.Xmx=3G"
               sh "${mvnCmd} clean install -U -DskipITs=true -DskipTests=true"
 
-              sh "${mvnCmd} antrun:run@fortify-scan -N -Dsettings.file.location=${config.mavenSettings} -Dmvn.cmd.fortify.extra.properties=${fortifyMvnCmd}"
+              sh "${mvnCmd} antrun:run@fortify-scan -N -Dsettings.file.location=${config.mavenSettings}"
 
               sh "cd \${WORKSPACE}; TEMPLATE=\"\$(dirname \$(readlink \$(which ReportGenerator)))/../Core/config/reports/DeveloperWorkbook.xml\"; SOURCE=\"\$(find . -name \\${artifactId}*.fpr)\"; TARGET=\"target/fortify/\$(find . -name \\${artifactId}*.fpr -exec basename -s .fpr {} \\;).pdf\"; ReportGenerator -template \$TEMPLATE -format pdf -source \$SOURCE -f \$TARGET"
 
