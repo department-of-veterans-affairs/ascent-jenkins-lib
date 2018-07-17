@@ -8,6 +8,9 @@ def call(body) {
     if (config.directory == null) {
         config.directory = '.'
     }
+    if (config.skipFortify == null) {
+        config.skipFortify = false
+    }
 
     def tmpDir = pwd(tmp: true)
 
@@ -50,9 +53,10 @@ def call(body) {
             }
         }
 
-
-        fortifyStage {
-          directory = config.directory
+        if (config.skipFortify) {
+            fortifyStage {
+            directory = config.directory
+            }
         }
 
         stage('Code Analysis') {
