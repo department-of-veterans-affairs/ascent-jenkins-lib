@@ -53,9 +53,9 @@ def call(body) {
             }
         }
 
-        if (config.skipFortify) {
+        if (!config.skipFortify) {
             fortifyStage {
-            directory = config.directory
+                directory = config.directory
             }
         }
 
