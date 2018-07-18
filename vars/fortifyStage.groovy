@@ -31,7 +31,7 @@ def call(body) {
   }
 
   if(config.failOnGates == null) {
-    failOnGates = true
+    failOnGates = false
   }
 
   node('fortify-sca') {
@@ -97,7 +97,7 @@ def call(body) {
                       if(failOnGates){
                           error(gateMessage)
                       } else {
-                          currentBuild.result="UNSTABLE"
+                          //currentBuild.result="UNSTABLE"
                       }
                   } else {
                       echo "PASSED FORTIFY GATES!"
