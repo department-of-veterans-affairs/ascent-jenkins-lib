@@ -31,7 +31,7 @@ def call(body) {
   }
 
   if(config.failOnGates == null) {
-    failOnGates = false
+    failOnGates = true
   }
 
   node('fortify-sca') {
