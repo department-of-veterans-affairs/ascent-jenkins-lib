@@ -51,6 +51,7 @@ def call(body) {
                 mavenBuild {
                     directory = config.directory
                     mavenSettings = config.mavenSettings
+                    skipFortify = config.skipFortify
                 }
 
                 echo "Build Result is: ${currentBuild.result}"

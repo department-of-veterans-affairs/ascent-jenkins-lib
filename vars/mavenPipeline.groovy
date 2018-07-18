@@ -43,6 +43,7 @@ def call(body) {
             mavenBuild {
                 directory = config.directory
                 mavenSettings = config.mavenSettings
+                skipFortify = config.skipFortify
             }
         } catch (ex) {
             echo "Failed due to: ${ex.message}"
