@@ -56,8 +56,8 @@ def call(body) {
         if (!config.skipFortify) {
             fortifyStage {
                 directory = config.directory
+                failOnGates = false
             }
-        }
 
         stage('Code Analysis') {
             //See https://docs.sonarqube.org/display/SONAR/Analysis+Parameters for more info on Sonar analysis configuration

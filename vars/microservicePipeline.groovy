@@ -55,6 +55,7 @@ def call(body) {
                 }
 
                 echo "Build Result is: ${currentBuild.result}"
+                
                 if (currentBuild.result == null) {
                     def builds = [:]
                     for (x in config.dockerBuilds.keySet()) {
