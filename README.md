@@ -80,3 +80,8 @@ for (f in Jenkins.instance.getAllItems(jenkins.branch.MultiBranchProject.class))
     f.addTrigger(new com.cloudbees.hudson.plugins.folder.computed.PeriodicFolderTrigger("5m"));
 }
 ```
+## Allow HTML Report CSS/JS
+In the Jenkins script consule execute:
+```groovy
+System.setProperty("hudson.model.DirectoryBrowserSupport.CSP", "")
+```
