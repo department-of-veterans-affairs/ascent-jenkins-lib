@@ -44,7 +44,7 @@ def call(body) {
 
         try {
             stage('Unit Testing') {
-                sh "${mvnCmd} -Dmaven.test.failure.ignore=true test"
+                sh "${mvnCmd} -Dmaven.test.failure.ignore=true package"
             }
         } finally {
             step([$class: 'JUnitResultArchiver', testResults: '**/surefire-reports/*.xml', healthScaleFactor: 1.0, allowEmptyResults: true])
