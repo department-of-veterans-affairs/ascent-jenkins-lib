@@ -79,6 +79,9 @@ def call(body) {
                                 serviceName = config.serviceToTest
                                 vaultTokens = config.vaultTokens
                                 deployWaitTime = config.deployWaitTime
+                                deployEnv = [
+                                    "SPRING_PROFILE=aws-ci"
+                                ]
                             }
 
                             mavenFunctionalTest {
@@ -109,6 +112,9 @@ def call(body) {
                                     vaultTokens = config.vaultTokens
                                     deployWaitTime = 120
                                     dockerHost = "tcp://${this.env.PERF_SWARM_HOST}"
+                                    deployEnv = [
+                                        "SPRING_PROFILE=aws-ci"
+                                    ]
                                 }
 
                                 mavenPerformanceTest {
