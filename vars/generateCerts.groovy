@@ -42,7 +42,7 @@ def call(body) {
   sh "sed -i s?DOCKER_HOST_IP?${DOCKER_IP_ADDRESS}?g /tmp/templates/docker_swarm.key.tpl"
 
   // Get our Certificates
-  withCredentials([string(credentialsId: "${vaultCredID}", variable: 'JENKINS_VAULT_TOKEN')]) {
-    sh "consul-template -once -config=/tmp/templates/consul-template-config.hcl -vault-addr=${vaultAddress} -vault-token=${JENKINS_VAULT_TOKEN}"
+  withCredentials([string(credentialsId: "${config.vaultCredID}", variable: 'JENKINS_VAULT_TOKEN')]) {
+    sh "consul-template -once -config=/tmp/templates/consul-template-config.hcl -vault-addr=${config.vaultAddress} -vault-token=${JENKINS_VAULT_TOKEN}"
   }
 }
