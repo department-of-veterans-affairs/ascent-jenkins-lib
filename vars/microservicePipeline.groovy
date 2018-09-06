@@ -112,9 +112,13 @@ def call(body) {
                                     vaultTokens = config.vaultTokens
                                     deployWaitTime = 120
                                     dockerHost = "tcp://${this.env.PERF_SWARM_HOST}"
+                                    dockerDomain = env.DOCKER_PERF_DOMAIN
+                                    vaultAddr = env.VAULT_ADDR
                                     deployEnv = [
                                         "SPRING_PROFILE=aws-ci"
                                     ]
+
+
                                 }
 
                                 mavenPerformanceTest {
@@ -133,6 +137,8 @@ def call(body) {
                             } finally {
                                 undeployStack {
                                     dockerHost = "tcp://${this.env.PERF_SWARM_HOST}"
+                                    dockerDomain = env.DOCKER_PERF_DOMAIN
+                                    vaultAddr = env.VAULT_ADDR
                                 }
                             }
                         }

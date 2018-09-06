@@ -16,8 +16,28 @@ def call(body) {
         config.dockerHost = env.CI_DOCKER_SWARM_MANAGER
     }
 
-    stage("Undeploying Stack: ${stackName}") {
-        sh "docker --host ${config.dockerHost} stack rm ${stackName}"
+    if (config.dockerDomain == null) {
+        config.dockerDomain = env.DOCKER_DEV_DOMAIN
     }
-    
+
+    if (config.vaultAddr == null) {
+        config.vaultAddr = env.VAULT_ADDR
+    }
+
+    stage("Retrieving Docker Certificates") {
+      generateCerts {
+        dockerHost = config.dockerHost
+        dockerDomainName = config.dockerDomain
+        vaultCredID = "jenkins-vault"
+        vaultAddress = config.vaultAddr
+      }
+    }
+
+    def dockerCertPath = env.DOCKER_CERT_LOCATION
+    def dockerSSLArgs = "--tlsverify --tlscacert=${dockerCertPath}/ca.crt --tlscert=${dockerCertPath}/docker_swarm.crt --tlskey=${dockerCertPath}/docker_swarm.key"
+
+    stage("Undeploying Stack: ${stackName}") {
+        sh "docker ${dockerSSLArgs} --host ${config.dockerHost} stack rm ${stackName}"
+    }
+
 }

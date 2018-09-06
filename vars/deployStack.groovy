@@ -15,12 +15,24 @@ def call(body) {
     body.delegate = config
     body()
 
+    def dockerCertPath = env.DOCKER_CERT_LOCATION
+    def dockerSSLArgs = "--tlsverify --tlscacert=${dockerCertPath}/ca.crt --tlscert=${dockerCertPath}/docker_swarm.crt --tlskey=${dockerCertPath}/docker_swarm.key"
+
     if (config.composeFiles == null) {
         error('No compose files defined for deployment')
     }
     if (config.dockerHost == null) {
         config.dockerHost = env.CI_DOCKER_SWARM_MANAGER
     }
+
+    if (config.dockerDomain == null) {
+        config.dockerDomain = env.DOCKER_DEV_DOMAIN
+    }
+
+    if (config.vaultAddr == null) {
+        config.vaultAddr = env.VAULT_ADDR
+    }
+
     if (config.vaultRole == null) {
         config.vaultRole = 'ascent-platform'
     }
@@ -38,7 +50,7 @@ def call(body) {
             error(file + 'was not found')
         }
     }
-    
+
     def deployEnv = []
     if (config.deployEnv != null) {
         deployEnv.plus(config.deployEnv)
@@ -54,9 +66,18 @@ def call(body) {
         }
     }
 
+    stage("Retrieving Docker Certificates") {
+      generateCerts {
+        dockerHost = config.dockerHost
+        dockerDomainName = config.dockerDomain
+        vaultCredID = "jenkins-vault"
+        vaultAddress = config.vaultAddr
+      }
+    }
+
     stage("Deploying Stack: ${stackName}") {
         withEnv(deployEnv) {
-            sh "docker --host ${config.dockerHost} stack deploy ${dockerFiles} ${stackName}"
+            sh "docker ${dockerSSLArgs} --host ${config.dockerHost} stack deploy ${dockerFiles} ${stackName}"
         }
 
         //Query docker every minute to see if deployment is complete
@@ -75,15 +96,15 @@ def call(body) {
 
         echo 'Sleep for a few minutes and cross our fingers that the services started. Need to find a more reliable way of checking container health.'
         sleep(config.deployWaitTime)
-        sh "docker --host ${config.dockerHost} stack ps ${stackName} --no-trunc"
+        sh "docker ${dockerSSLArgs} --host ${config.dockerHost} stack ps ${stackName} --no-trunc"
         echo 'Containers are successfully deployed'
 
         if (config.serviceName != null) {
             def service = "${stackName}_${config.serviceName}"
-            publishedPort = sh(returnStdout: true, script: "docker --host ${config.dockerHost} service inspect ${service} --format '{{range \$p, \$conf := .Endpoint.Ports}} {{(\$conf).PublishedPort}} {{end}}'").trim()
+            publishedPort = sh(returnStdout: true, script: "docker ${dockerSSLArgs} --host ${config.dockerHost} service inspect ${service} --format '{{range \$p, \$conf := .Endpoint.Ports}} {{(\$conf).PublishedPort}} {{end}}'").trim()
         }
     }
 
     return publishedPort
-    
+
 }
