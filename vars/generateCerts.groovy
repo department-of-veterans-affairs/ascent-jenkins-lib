@@ -24,6 +24,10 @@ def call(body) {
     error('Aborting pipeline because vault address was not provided')
   }
 
+  if (config.keystoreAlias == null) {
+    config.keystoreAlias = "ascent"
+  }
+
 
   def DOCKER_IP_ADDRESS = config.dockerHost[6..-6]
   print "ip address: ${DOCKER_IP_ADDRESS}"
@@ -45,4 +49,11 @@ def call(body) {
   withCredentials([string(credentialsId: "${config.vaultCredID}", variable: 'JENKINS_VAULT_TOKEN')]) {
     sh "consul-template -once -config=/tmp/templates/consul-template-config.hcl -vault-addr=${config.vaultAddress} -vault-token=${JENKINS_VAULT_TOKEN}"
   }
+
+  // Load the key and certificate in a keystore
+  sh "openssl pkcs12 -export -in ${env.DOCKER_CERT_LOCATION}/docker_swarm.crt -inkey ${env.DOCKER_CERT_LOCATION}/docker_swarm.key -name ${config.dockerDomainName} -out docker_swarm.p12"
+  sh "keytool -importkeystore -deststorepass changeit -destkeystore docker_swarm.jks -srckeystore docker_swarm.p12 -srcstoretype PKCS12"
+  def currentDir = pwd();
+
+  return "${currentDir}/docker_swarm.jks"  
 }
