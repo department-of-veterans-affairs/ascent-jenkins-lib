@@ -34,7 +34,8 @@ def call(body) {
     }
 
     def dockerCertPath = env.DOCKER_CERT_LOCATION
-    def dockerSSLArgs = "--tlsverify --tlscacert=${dockerCertPath}/ca.crt --tlscert=${dockerCertPath}/docker_swarm.crt --tlskey=${dockerCertPath}/docker_swarm.key"
+    //def dockerSSLArgs = "--tlsverify --tlscacert=${dockerCertPath}/ca.crt --tlscert=${dockerCertPath}/docker_swarm.crt --tlskey=${dockerCertPath}/docker_swarm.key"
+    def dockerSSLArgs = ""
 
     stage("Undeploying Stack: ${stackName}") {
         sh "docker ${dockerSSLArgs} --host ${config.dockerHost} stack rm ${stackName}"
