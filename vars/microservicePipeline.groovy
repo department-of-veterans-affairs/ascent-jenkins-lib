@@ -91,6 +91,8 @@ def call(body) {
                                 testVaultTokenRole = config.testVaultTokenRole
                                 cucumberOpts = config.cucumberOpts
                                 options = config.intTestOptions
+                                keystore = "${pwd()}/docker_swarm.jks"
+                                keystorePassword = "changeit"
                             }
                         } catch (ex) {
                             echo "Failed due to ${ex}: ${ex.message}"
