@@ -139,7 +139,7 @@ def call(body) {
                             } finally {
                                 undeployStack {
                                     dockerHost = "tcp://${this.env.PERF_SWARM_HOST}"
-                                    dockerDomain = env.DOCKER_PERF_DOMAIN
+                                    dockerDomain = this.env.DOCKER_PERF_DOMAIN
                                     vaultAddr = env.VAULT_ADDR
                                 }
                             }
