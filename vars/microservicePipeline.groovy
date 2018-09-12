@@ -114,8 +114,8 @@ def call(body) {
                                     vaultTokens = config.vaultTokens
                                     deployWaitTime = 120
                                     dockerHost = "tcp://${this.env.PERF_SWARM_HOST}"
-                                    dockerDomain = env.DOCKER_PERF_DOMAIN
-                                    vaultAddr = env.VAULT_ADDR
+                                    dockerDomain = this.env.DOCKER_PERF_DOMAIN
+                                    vaultAddr = this.env.VAULT_ADDR
                                     deployEnv = [
                                         "SPRING_PROFILE=aws-ci"
                                     ]
@@ -140,7 +140,7 @@ def call(body) {
                                 undeployStack {
                                     dockerHost = "tcp://${this.env.PERF_SWARM_HOST}"
                                     dockerDomain = this.env.DOCKER_PERF_DOMAIN
-                                    vaultAddr = env.VAULT_ADDR
+                                    vaultAddr = this.env.VAULT_ADDR
                                 }
                             }
                         }
