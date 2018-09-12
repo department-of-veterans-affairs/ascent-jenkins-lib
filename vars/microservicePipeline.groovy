@@ -91,7 +91,7 @@ def call(body) {
                                 testVaultTokenRole = config.testVaultTokenRole
                                 cucumberOpts = config.cucumberOpts
                                 options = config.intTestOptions
-                                keystore = "${pwd()}/docker_swarm.jks"
+                                keystore = "${this.env.DOCKER_CERT_LOCATION}/docker_swarm.jks"
                                 keystorePassword = "changeit"
                             }
                         } catch (ex) {
