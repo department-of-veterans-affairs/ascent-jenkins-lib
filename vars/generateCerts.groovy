@@ -52,8 +52,8 @@ def call(body) {
 
   // Load the key and certificate in a keystore
   sh "openssl pkcs12 -export -in ${env.DOCKER_CERT_LOCATION}/docker_swarm.crt -inkey ${env.DOCKER_CERT_LOCATION}/docker_swarm.key -name ${config.dockerDomainName} -out docker_swarm.p12 -password pass:changeit"
-  sh "keytool -importkeystore -deststorepass changeit -destkeystore docker_swarm.jks -srckeystore docker_swarm.p12 -srcstoretype PKCS12 -srcstorepass changeit"
-  def currentDir = pwd();
-
-  return "${currentDir}/docker_swarm.jks"
+  if (!fileExists("${env.DOCKER_CERT_LOCATION}/docker_swarm.jks")) {
+    sh "keytool -importkeystore -deststorepass changeit -destkeystore ${env.DOCKER_CERT_LOCATION}/docker_swarm.jks -srckeystore docker_swarm.p12 -srcstoretype PKCS12 -srcstorepass changeit"
+  }
+  return "${env.DOCKER_CERT_LOCATION}/docker_swarm.jks"
 }
