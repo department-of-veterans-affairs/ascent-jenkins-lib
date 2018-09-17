@@ -58,11 +58,14 @@ def call(body) {
     sh "keytool -delete -alias vault-pipeline -keystore $JAVA_HOME/jre/lib/security/cacerts -storepass changeit"
     sh "keytool -importcert -alias vault-pipeline -keystore $JAVA_HOME/jre/lib/security/cacerts -noprompt -storepass changeit -file ${env.DOCKER_CERT_LOCATION}/ca.crt"
   }
+  sh "keytool -list -alias vault-pipeline -keystore $JAVA_HOME/jre/lib/security/cacerts -storepass changeit"
 
   // Load the key and certificate in a keystore
   sh "openssl pkcs12 -export -in ${env.DOCKER_CERT_LOCATION}/docker_swarm.crt -inkey ${env.DOCKER_CERT_LOCATION}/docker_swarm.key -name ${config.dockerDomainName} -out docker_swarm.p12 -password pass:changeit"
   if (!fileExists("${env.DOCKER_CERT_LOCATION}/docker_swarm.jks")) {
     sh "keytool -importkeystore -deststorepass changeit -destkeystore ${env.DOCKER_CERT_LOCATION}/docker_swarm.jks -srckeystore docker_swarm.p12 -srcstoretype PKCS12 -srcstorepass changeit"
   }
+  sh "keytool -list -keystore ${env.DOCKER_CERT_LOCATION}/docker_swarm.jks -storepass changeit"
+  sh "mvn -version"
   return "${env.DOCKER_CERT_LOCATION}/docker_swarm.jks"
 }
