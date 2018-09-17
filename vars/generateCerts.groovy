@@ -56,9 +56,9 @@ def call(body) {
   sh "keytool -importcert -alias vault-pipeline -keystore $JAVA_HOME/jre/lib/security/cacerts -noprompt -storepass changeit -file ${env.DOCKER_CERT_LOCATION}/ca.crt"
 
   // Load the key and certificate in a keystore
-  sh "openssl pkcs12 -export -in ${env.DOCKER_CERT_LOCATION}/docker_swarm.crt -inkey ${env.DOCKER_CERT_LOCATION}/docker_swarm.key -name ${config.dockerDomainName} -out docker_swarm.p12 -password pass:mySourceK3ystore"
+  sh "openssl pkcs12 -export -in ${env.DOCKER_CERT_LOCATION}/docker_swarm.crt -inkey ${env.DOCKER_CERT_LOCATION}/docker_swarm.key -name ${config.dockerDomainName} -out docker_swarm.p12 -password pass:changeit"
   if (!fileExists("${env.DOCKER_CERT_LOCATION}/docker_swarm.jks")) {
-    sh "keytool -importkeystore -deststorepass changeit -destkeystore ${env.DOCKER_CERT_LOCATION}/docker_swarm.jks -srckeystore docker_swarm.p12 -srcstoretype PKCS12 -srcstorepass mySourceK3ystore"
+    sh "keytool -importkeystore -deststorepass changeit -destkeystore ${env.DOCKER_CERT_LOCATION}/docker_swarm.jks -srckeystore docker_swarm.p12 -srcstoretype PKCS12 -srcstorepass changeit"
   }
   return "${env.DOCKER_CERT_LOCATION}/docker_swarm.jks"
 }
