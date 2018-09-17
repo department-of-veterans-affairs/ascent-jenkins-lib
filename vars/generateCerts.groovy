@@ -51,9 +51,13 @@ def call(body) {
   }
 
   //Load the CA certificate into the trusetd keystore
-  echo "Java Home: $JAVA_HOME"
   echo "Importing CA certificate into $JAVA_HOME/jre/lib/security/cacerts"
-  sh "keytool -importcert -alias vault-pipeline -keystore $JAVA_HOME/jre/lib/security/cacerts -noprompt -storepass changeit -file ${env.DOCKER_CERT_LOCATION}/ca.crt"
+  try {
+    sh "keytool -importcert -alias vault-pipeline -keystore $JAVA_HOME/jre/lib/security/cacerts -noprompt -storepass changeit -file ${env.DOCKER_CERT_LOCATION}/ca.crt"
+  } catch(Exception ex) {
+    sh "keytool -delete -alias vault-pipeline -keystore $JAVA_HOME/jre/lib/security/cacerts -storepass changeit"
+    sh "keytool -importcert -alias vault-pipeline -keystore $JAVA_HOME/jre/lib/security/cacerts -noprompt -storepass changeit -file ${env.DOCKER_CERT_LOCATION}/ca.crt"
+  }
 
   // Load the key and certificate in a keystore
   sh "openssl pkcs12 -export -in ${env.DOCKER_CERT_LOCATION}/docker_swarm.crt -inkey ${env.DOCKER_CERT_LOCATION}/docker_swarm.key -name ${config.dockerDomainName} -out docker_swarm.p12 -password pass:changeit"
