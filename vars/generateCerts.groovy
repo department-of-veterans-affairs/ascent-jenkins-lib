@@ -50,6 +50,11 @@ def call(body) {
     sh "consul-template -once -config=/tmp/templates/consul-template-config.hcl -vault-addr=${config.vaultAddress} -vault-token=${JENKINS_VAULT_TOKEN}"
   }
 
+  //Load the CA certificate into the trusetd keystore
+  echo "Java Home: $JAVA_HOME"
+  echo "Importing CA certificate into $JAVA_HOME/jre/lib/security/cacerts"
+  sh "keytool -importcert -alias vault-pipeline -keystore $JAVA_HOME/jre/lib/security/cacerts -noprompt -storepass changeit -file ${env.DOCKER_CERT_LOCATION}/ca.crt"
+
   // Load the key and certificate in a keystore
   sh "openssl pkcs12 -export -in ${env.DOCKER_CERT_LOCATION}/docker_swarm.crt -inkey ${env.DOCKER_CERT_LOCATION}/docker_swarm.key -name ${config.dockerDomainName} -out docker_swarm.p12 -password pass:mySourceK3ystore"
   if (!fileExists("${env.DOCKER_CERT_LOCATION}/docker_swarm.jks")) {
