@@ -51,7 +51,7 @@ def call(body) {
             stage('Functional Testing') {
                 echo "Executing functional tests against ${config.serviceUrl}"
                 withEnv(deployEnv) {
-                    sh "${mvnCmd} integration-test -P inttest -Dbrowser=HtmlUnit -Dtest.env=ci -DbaseURL=${config.serviceUrl} -Djavax.net.ssl.keyStore=${config.keystore} -Djavax.net.ssl.keyStorePassword=${config.keystorePassword} -DX-Vault-Token=${env.VAULT_TOKEN} -Dvault.url.domain='${env.VAULT_ADDR}' -Dcucumber.options='${config.cucumberOpts}' ${config.options}"
+                    sh "${mvnCmd} integration-test -P inttest -Dbrowser=HtmlUnit -Dtest.env=ci -DbaseURL=${config.serviceUrl} -Djavax.net.ssl.keyStore=${config.keystore} -Djavax.net.ssl.keyStorePassword=${config.keystorePassword} -Djavax.net.ssl.trustStore=/usr/lib/jvm/java-8-openjdk-amd64/jre/lib/security/cacerts -Djavax.net.ssl.trustStorePassword=changeit -DX-Vault-Token=${env.VAULT_TOKEN} -Dvault.url.domain='${env.VAULT_ADDR}' -Dcucumber.options='${config.cucumberOpts}' ${config.options}"
                 }
             }
         } finally {
