@@ -16,8 +16,7 @@ def call(body) {
     body()
 
     def dockerCertPath = env.DOCKER_CERT_LOCATION
-    //def dockerSSLArgs = "--tlsverify --tlscacert=${dockerCertPath}/ca.crt --tlscert=${dockerCertPath}/docker_swarm.crt --tlskey=${dockerCertPath}/docker_swarm.key"
-    def dockerSSLArgs = ""
+    def dockerSSLArgs = "--tlsverify --tlscacert=${dockerCertPath}/ca.crt --tlscert=${dockerCertPath}/docker_swarm.crt --tlskey=${dockerCertPath}/docker_swarm.key"
 
     if (config.composeFiles == null) {
         error('No compose files defined for deployment')
