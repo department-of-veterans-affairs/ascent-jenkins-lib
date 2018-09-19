@@ -91,6 +91,8 @@ def call(body) {
                                 testVaultTokenRole = config.testVaultTokenRole
                                 cucumberOpts = config.cucumberOpts
                                 options = config.intTestOptions
+                                keystore = "${this.env.DOCKER_CERT_LOCATION}/docker_swarm.jks"
+                                keystorePassword = "changeit"
                             }
                         } catch (ex) {
                             echo "Failed due to ${ex}: ${ex.message}"
@@ -112,9 +114,13 @@ def call(body) {
                                     vaultTokens = config.vaultTokens
                                     deployWaitTime = 120
                                     dockerHost = "tcp://${this.env.PERF_SWARM_HOST}"
+                                    dockerDomain = this.env.DOCKER_PERF_DOMAIN
+                                    vaultAddr = this.env.VAULT_ADDR
                                     deployEnv = [
                                         "SPRING_PROFILE=aws-ci"
                                     ]
+
+
                                 }
 
                                 mavenPerformanceTest {
@@ -133,6 +139,8 @@ def call(body) {
                             } finally {
                                 undeployStack {
                                     dockerHost = "tcp://${this.env.PERF_SWARM_HOST}"
+                                    dockerDomain = this.env.DOCKER_PERF_DOMAIN
+                                    vaultAddr = this.env.VAULT_ADDR
                                 }
                             }
                         }
