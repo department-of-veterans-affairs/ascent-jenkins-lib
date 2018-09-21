@@ -21,7 +21,7 @@ def call(body) {
     }
 
     //Setup Maven command line options
-    def opts = "-Ddomain=${config.serviceHost} -Dport=${config.servicePort} -Dprotocol=${config.serviceProtocol}"
+    def opts = "-Ddomain=${config.serviceHost} -Dport=${config.servicePort} -Dprotocol=${config.serviceProtocol} -Djavax.net.ssl.keyStore=${config.keystore} -Djavax.net.ssl.keyStorePassword=${config.keystorePassword} -Djavax.net.ssl.trustStore=/usr/lib/jvm/java-8-openjdk-amd64/jre/lib/security/cacerts -Djavax.net.ssl.trustStorePassword=changeit"
     if (config.options != null) {
         opts = opts + " ${config.options}"
     }

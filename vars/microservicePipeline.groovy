@@ -130,6 +130,8 @@ def call(body) {
                                     servicePort = "${testEnvPort}"
                                     testVaultTokenRole = config.testVaultTokenRole
                                     options = config.perfTestOptions
+                                    keystore = "${this.env.DOCKER_CERT_LOCATION}/docker_swarm.jks"
+                                    keystorePassword = "changeit"
                                 }
                             } catch (ex) {
                                 echo "Failed due to ${ex}: ${ex.message}"
