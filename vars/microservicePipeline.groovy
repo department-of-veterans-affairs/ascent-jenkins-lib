@@ -125,7 +125,7 @@ def call(body) {
 
                                 mavenPerformanceTest {
                                     directory = config.directory
-                                    serviceProtocol = "http"
+                                    serviceProtocol = "https"
                                     serviceHost = "${this.env.PERF_SWARM_HOST}"
                                     servicePort = "${testEnvPort}"
                                     testVaultTokenRole = config.testVaultTokenRole
