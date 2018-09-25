@@ -33,7 +33,9 @@ def call(body) {
     if (config.vaultAddr == null) {
         config.vaultAddr = env.VAULT_ADDR
     }
-
+    if (config.vaultCredID == null) {
+        config.vaultCredID = "jenkins-vault"
+    }
     if (config.vaultRole == null) {
         config.vaultRole = 'ascent-platform'
     }
@@ -58,10 +60,10 @@ def call(body) {
     }
 
     stage("Requesting Vault Token for application") {
-        withCredentials([string(credentialsId: 'jenkins-vault', variable: 'JENKINS_VAULT_TOKEN')]) {
+        withCredentials([string(credentialsId: "${config.vaultCredID}", variable: 'JENKINS_VAULT_TOKEN')]) {
             for (x in config.vaultTokens.keySet()) {
                 def var = x
-                vaultToken = sh(returnStdout: true, script: "curl -k -s --header \"X-Vault-Token: ${JENKINS_VAULT_TOKEN}\" --request POST --data '{\"display_name\": \"testenv\"}' ${env.VAULT_ADDR}/v1/auth/token/create/${config.vaultTokens[var]}?ttl=${config.tokenTTL} | jq '.auth.client_token'").trim().replaceAll('"', '')
+                vaultToken = sh(returnStdout: true, script: "curl -k -s --header \"X-Vault-Token: ${JENKINS_VAULT_TOKEN}\" --request POST --data '{\"display_name\": \"testenv\"}' ${config.vaultAddr}/v1/auth/token/create/${config.vaultTokens[var]}?ttl=${config.tokenTTL} | jq '.auth.client_token'").trim().replaceAll('"', '')
                 deployEnv.add("${var}=${vaultToken}")
             }
         }
@@ -71,7 +73,7 @@ def call(body) {
       generateCerts {
         dockerHost = config.dockerHost
         dockerDomainName = config.dockerDomain
-        vaultCredID = "jenkins-vault"
+        vaultCredID = config.vaultCredID
         vaultAddress = config.vaultAddr
       }
     }
