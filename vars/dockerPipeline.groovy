@@ -25,8 +25,7 @@ def call(body) {
             pipelineTriggers(triggers),
             parameters ([
                 booleanParam(name: 'isRelease', defaultValue: false, description: 'Release this build?'),
-                string(name: 'releaseVersion', defaultValue: '', description: 'Provide the release version:'),
-                string(name: 'developmentVersion', defaultValue: '', description: 'Provide the next development version:')
+                string(name: 'releaseVersion', defaultValue: '', description: 'Provide the release version:')
             ]),
             buildDiscarder(logRotator(daysToKeepStr: '5', numToKeepStr: '5'))
         ])
@@ -34,6 +33,14 @@ def call(body) {
         try {
             stage('Checkout SCM') {
                 checkout scm
+            }
+
+            if (params.isRelease) {
+                //Execute maven release process and receive the Git Tag for the release
+                dockerRelease {
+                    directory = config.directory
+                    releaseVersion = this.params.releaseVersion
+                }
             }
             
             def builds = [:]
