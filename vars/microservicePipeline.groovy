@@ -160,7 +160,7 @@ def call(body) {
                             serviceName = config.serviceToTest
                             vaultTokens = config.vaultTokens
                             deployWaitTime = config.deployWaitTime
-                            dockerHost = env.CI_DOCKER_SWARM_MANAGER
+                            dockerHost = this.env.CI_DOCKER_SWARM_MANAGER
                             deployEnv = [
                                 "SPRING_PROFILE=aws-dev",
                                 "ES_HOST=${this.env.DEV_ES}"

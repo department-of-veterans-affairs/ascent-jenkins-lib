@@ -58,6 +58,22 @@ def call(body) {
             }
 
             parallel builds
+
+            //If all the tests have passed, deploy this build to the Dev environment
+            if (!isPullRequest() && currentBuild.result == null) {
+                def devEnvPort = deployStack {
+                    composeFiles = config.composeFiles
+                    stackName = config.stackName
+                    serviceName = config.serviceToTest
+                    vaultTokens = config.vaultTokens
+                    deployWaitTime = config.deployWaitTime
+                    dockerHost = this.env.CI_DOCKER_SWARM_MANAGER
+                    deployEnv = [
+                        "SPRING_PROFILE=aws-dev",
+                        "ES_HOST=${this.env.DEV_ES}"
+                    ]
+                }
+            }
         } catch (ex) {
             if (currentBuild.result == null) {
                 currentBuild.result = 'FAILED'
