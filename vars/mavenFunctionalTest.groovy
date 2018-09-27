@@ -15,9 +15,6 @@ def call(body) {
     if (config.vaultAddr == null) {
         config.vaultAddr = env.VAULT_ADDR
     }
-    if (config.vaultToken == null) {
-        config.vaultToken = env.VAULT_TOKEN
-    }
     if (config.vaultCredID == null) {
         config.vaultCredID = "jenkins-vault"
     }
@@ -60,7 +57,7 @@ def call(body) {
             stage('Functional Testing') {
                 echo "Executing functional tests against ${config.serviceUrl}"
                 withEnv(deployEnv) {
-                    sh "${mvnCmd} integration-test -P inttest -Dbrowser=HtmlUnit -Dtest.env=ci -DbaseURL=${config.serviceUrl} -Djavax.net.ssl.keyStore=${config.keystore} -Djavax.net.ssl.keyStorePassword=${config.keystorePassword} -Djavax.net.ssl.trustStore=/usr/lib/jvm/java-8-openjdk-amd64/jre/lib/security/cacerts -Djavax.net.ssl.trustStorePassword=changeit -DX-Vault-Token=${config.vaultToken} -Dvault.url.domain='${config.vaultAddr}' -Dcucumber.options='${config.cucumberOpts}' ${config.options}"
+                    sh "${mvnCmd} integration-test -P inttest -Dbrowser=HtmlUnit -Dtest.env=ci -DbaseURL=${config.serviceUrl} -Djavax.net.ssl.keyStore=${config.keystore} -Djavax.net.ssl.keyStorePassword=${config.keystorePassword} -Djavax.net.ssl.trustStore=/usr/lib/jvm/java-8-openjdk-amd64/jre/lib/security/cacerts -Djavax.net.ssl.trustStorePassword=changeit -DX-Vault-Token=${vaultToken} -Dvault.url.domain='${config.vaultAddr}' -Dcucumber.options='${config.cucumberOpts}' ${config.options}"
                 }
             }
         } finally {
