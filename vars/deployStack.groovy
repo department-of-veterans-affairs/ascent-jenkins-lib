@@ -8,7 +8,6 @@ def call(body) {
 
     def config = [:]
     def vaultToken = null
-    def stackName = stackName()
     def dockerFiles = ""
     def publishedPort = 8762
     body.resolveStrategy = Closure.DELEGATE_FIRST
@@ -45,6 +44,9 @@ def call(body) {
     if (config.tokenTTL == null) {
         config.tokenTTL = '30m'
     }
+    if (config.stackName == null) {
+        config.stackName = stackName()
+    }
 
     for (file in config.composeFiles) {
         if (fileExists(file)) {
@@ -78,9 +80,9 @@ def call(body) {
       }
     }
 
-    stage("Deploying Stack: ${stackName}") {
+    stage("Deploying Stack: ${config.stackName}") {
         withEnv(deployEnv) {
-            sh "docker ${dockerSSLArgs} --host ${config.dockerHost} stack deploy ${dockerFiles} ${stackName}"
+            sh "docker ${dockerSSLArgs} --host ${config.dockerHost} stack deploy ${dockerFiles} ${config.stackName}"
         }
 
         //Query docker every minute to see if deployment is complete
@@ -89,8 +91,8 @@ def call(body) {
         //     def deployDone = false
         //     waitUntil {
         //         sleep(30)
-        //         sh(script: "docker --host ${config.dockerHost} stack ps ${stackName} --format {{.CurrentState}}")
-        //         def result = sh(returnStdout: true, script: "docker --host ${config.dockerHost} stack ps ${stackName} --format {{.CurrentState}}")
+        //         sh(script: "docker --host ${config.dockerHost} stack ps ${config.stackName} --format {{.CurrentState}}")
+        //         def result = sh(returnStdout: true, script: "docker --host ${config.dockerHost} stack ps ${config.stackName} --format {{.CurrentState}}")
         //         deployDone = !(result.contains('Failed') || result.contains('Preparing') || result.contains('Starting'))
         //         echo "Deployment is done: ${deployDone}"
         //         return deployDone;
@@ -99,11 +101,11 @@ def call(body) {
 
         echo 'Sleep for a few minutes and cross our fingers that the services started. Need to find a more reliable way of checking container health.'
         sleep(config.deployWaitTime)
-        sh "docker ${dockerSSLArgs} --host ${config.dockerHost} stack ps ${stackName} --no-trunc"
+        sh "docker ${dockerSSLArgs} --host ${config.dockerHost} stack ps ${config.stackName} --no-trunc"
         echo 'Containers are successfully deployed'
 
         if (config.serviceName != null) {
-            def service = "${stackName}_${config.serviceName}"
+            def service = "${config.stackName}_${config.serviceName}"
             publishedPort = sh(returnStdout: true, script: "docker ${dockerSSLArgs} --host ${config.dockerHost} service inspect ${service} --format '{{range \$p, \$conf := .Endpoint.Ports}} {{(\$conf).PublishedPort}} {{end}}'").trim()
         }
     }
