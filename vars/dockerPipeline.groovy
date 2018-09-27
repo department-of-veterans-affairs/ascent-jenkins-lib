@@ -78,6 +78,7 @@ def call(body) {
             if (currentBuild.result == null) {
                 currentBuild.result = 'FAILED'
             }
+            echo "Failed due to ${ex}: ${ex.message}"
         } finally {
             //Send build notifications if needed
             notifyBuild(currentBuild.result)
