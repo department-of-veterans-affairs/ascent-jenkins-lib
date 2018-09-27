@@ -12,6 +12,10 @@ def call(body) {
     if (config.upstreamProjects != null) {
         triggers.add(upstream(threshold: 'SUCCESS', upstreamProjects: config.upstreamProjects))
     }
+    if (config.composeFiles == null) {
+        config.composeFiles = ["docker-compose.yml"]
+    }
+
 
     if (config.dockerBuilds == null) {
         config.dockerBuilds = [
@@ -145,6 +149,21 @@ def call(body) {
                                     vaultAddr = this.env.VAULT_ADDR
                                 }
                             }
+                        }
+                    }
+
+                    //If all the tests have passed, deploy this build to the Dev environment
+                    if (!isPullRequest() && currentBuild.result == null) {
+                        def devEnvPort = deployStack {
+                            composeFiles = config.composeFiles
+                            serviceName = config.serviceToTest
+                            vaultTokens = config.vaultTokens
+                            deployWaitTime = config.deployWaitTime
+                            dockerHost = env.CI_DOCKER_SWARM_MANAGER
+                            deployEnv = [
+                                "SPRING_PROFILE=aws-dev",
+                                "ES_HOST=${this.env.DEV_ES}"
+                            ]
                         }
                     }
                 }
