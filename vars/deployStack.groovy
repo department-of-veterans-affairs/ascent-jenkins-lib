@@ -47,6 +47,9 @@ def call(body) {
     if (config.stackName == null) {
         config.stackName = stackName()
     }
+    if (config.vaultTokens == null) {
+        config.vaultTokens = [:]
+    }
 
     for (file in config.composeFiles) {
         if (fileExists(file)) {
