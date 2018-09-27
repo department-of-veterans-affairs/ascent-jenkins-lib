@@ -156,6 +156,7 @@ def call(body) {
                     if (!isPullRequest() && currentBuild.result == null) {
                         def devEnvPort = deployStack {
                             composeFiles = config.composeFiles
+                            stackName = config.stackName
                             serviceName = config.serviceToTest
                             vaultTokens = config.vaultTokens
                             deployWaitTime = config.deployWaitTime
