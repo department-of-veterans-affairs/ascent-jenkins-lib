@@ -51,7 +51,7 @@ def call(body) {
         config.vaultTokens = [:]
     }
     if (config.networkName == null) {
-        config.networkName = 'ascent'
+        config.networkName = 'ascentnet'
     }
 
     for (file in config.composeFiles) {
