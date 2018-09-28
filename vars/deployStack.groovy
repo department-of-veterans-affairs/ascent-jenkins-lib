@@ -89,7 +89,7 @@ def call(body) {
     //Check to see if our networks are in place. If not, create them before deploying the stack.
     withEnv(deployEnv) {
         def networkId = sh(returnStdout: true, script: "docker ${dockerSSLArgs} --host ${config.dockerHost} network ls -f name=${config.networkName} -q")
-        if (networkId == null || networkId.allWhitespace()) {
+        if (networkId == null || networkId.isAllWhitespace()) {
             stage("Creating Network: ${config.networkName}") {
                 sh "docker ${dockerSSLArgs} --host ${config.dockerHost} network create -d overlay ${config.networkName}"
             }
