@@ -12,7 +12,7 @@ def call(body) {
     if (config.upstreamProjects != null) {
         triggers.add(upstream(threshold: 'SUCCESS', upstreamProjects: config.upstreamProjects))
     }
-     if (config.composeFiles == null) {
+     if (config.composeFiles == null && fileExists("docker-compose.yml")) {
         echo('No compose files defined for deployment. Defaulting to docker-compose.yml...')
         config.composeFiles = ["docker-compose.yml"]
     }
@@ -64,7 +64,7 @@ def call(body) {
             parallel builds
 
             //If all the tests have passed, deploy this build to the Dev environment
-            if (!isPullRequest() && currentBuild.result == null) {
+            if (!isPullRequest() && currentBuild.result == null && config.composeFiles != null) {
                 def devEnvPort = deployStack {
                     composeFiles = config.composeFiles
                     stackName = config.stackName
