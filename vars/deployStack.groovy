@@ -50,6 +50,9 @@ def call(body) {
     if (config.vaultTokens == null) {
         config.vaultTokens = [:]
     }
+    if (config.networkName == null) {
+        config.networkName = 'ascent'
+    }
 
     for (file in config.composeFiles) {
         if (fileExists(file)) {
@@ -81,6 +84,16 @@ def call(body) {
         vaultCredID = config.vaultCredID
         vaultAddress = config.vaultAddr
       }
+    }
+
+    //Check to see if our networks are in place. If not, create them before deploying the stack.
+    withEnv(deployEnv) {
+        def networkId = sh(returnStdout: true, script: "docker ${dockerSSLArgs} --host ${config.dockerHost} network ls -f name=${config.networkName} -q")
+        if (networkId == null || networkId.allWhitespace()) {
+            stage("Creating Network: ${config.networkName}") {
+                sh "docker ${dockerSSLArgs} --host ${config.dockerHost} network create -d overlay ${config.networkName}"
+            }
+        }
     }
 
     stage("Deploying Stack: ${config.stackName}") {
