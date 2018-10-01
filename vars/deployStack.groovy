@@ -62,7 +62,7 @@ def call(body) {
         }
     }
 
-    def deployEnv = ["DRVIER_TYPE=overlay"]
+    def deployEnv = ["DRVIER_TYPE=overlay", "VAULT_SCHEME=https"]
     if (config.deployEnv != null) {
         deployEnv.plus(config.deployEnv)
     }
