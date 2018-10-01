@@ -12,7 +12,7 @@ def call(body) {
     if (config.upstreamProjects != null) {
         triggers.add(upstream(threshold: 'SUCCESS', upstreamProjects: config.upstreamProjects))
     }
-    if (config.composeFiles == null && fileExists("docker-compose.yml")) {
+    if (config.composeFiles == null) {
         echo('No compose files defined for deployment. Defaulting to docker-compose.yml...')
         config.composeFiles = ["docker-compose.yml"]
     }
