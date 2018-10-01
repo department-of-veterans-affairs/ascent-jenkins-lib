@@ -68,7 +68,8 @@ def call(body) {
     }
     echo "Configured Port is: ${config.port}"
     if (config.port != null) {
-        deployEnv.plus(["PORT=${config.port}"])
+        echo "Adding port to env..."
+        deployEnv.add("PORT=${config.port}")
     }
     echo "Deploy Env is: ${deployEnv}"
 
