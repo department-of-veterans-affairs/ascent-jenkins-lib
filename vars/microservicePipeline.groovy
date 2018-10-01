@@ -84,6 +84,7 @@ def call(body) {
                                 serviceName = config.serviceToTest
                                 vaultTokens = config.vaultTokens
                                 deployWaitTime = config.deployWaitTime
+                                port = config.containerPort
                                 deployEnv = [
                                     "SPRING_PROFILE=aws-ci"
                                 ]
@@ -124,8 +125,7 @@ def call(body) {
                                     deployEnv = [
                                         "SPRING_PROFILE=aws-ci"
                                     ]
-
-
+                                    port = config.containerPort
                                 }
 
                                 mavenPerformanceTest {
