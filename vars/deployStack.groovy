@@ -66,9 +66,11 @@ def call(body) {
     if (config.deployEnv != null) {
         deployEnv.plus(config.deployEnv)
     }
+    echo "Configured Port is: ${config.port}"
     if (config.port != null) {
         deployEnv.plus(["PORT=${config.port}"])
     }
+    echo "Deploy Env is: ${deployEnv}"
 
     stage("Requesting Vault Token for application") {
         withCredentials([string(credentialsId: "${config.vaultCredID}", variable: 'JENKINS_VAULT_TOKEN')]) {
