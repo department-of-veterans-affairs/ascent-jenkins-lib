@@ -62,7 +62,7 @@ def call(body) {
         }
     }
 
-    def deployEnv = []
+    def deployEnv = ["DRVIER_TYPE=overlay"]
     if (config.deployEnv != null) {
         deployEnv.plus(config.deployEnv)
     }
