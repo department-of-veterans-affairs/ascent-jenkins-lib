@@ -64,7 +64,7 @@ def call(body) {
 
     def deployEnv = ["DRIVER_TYPE=overlay", "VAULT_SCHEME=https"]
     if (config.deployEnv != null) {
-        deployEnv.plus(config.deployEnv)
+        deployEnv.addAll(config.deployEnv)
     }
     echo "Configured Port is: ${config.port}"
     if (config.port != null) {
