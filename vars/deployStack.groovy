@@ -66,8 +66,8 @@ def call(body) {
     if (config.deployEnv != null) {
         deployEnv.plus(config.deployEnv)
     }
-    if (config.containerPort != null) {
-        deployEnv.plus(["PORT=${config.containerPort}"])
+    if (config.port != null) {
+        deployEnv.plus(["PORT=${config.port}"])
     }
 
     stage("Requesting Vault Token for application") {
