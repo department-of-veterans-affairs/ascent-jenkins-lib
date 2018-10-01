@@ -12,11 +12,6 @@ def call(body) {
     if (config.upstreamProjects != null) {
         triggers.add(upstream(threshold: 'SUCCESS', upstreamProjects: config.upstreamProjects))
     }
-    if (config.composeFiles == null && fileExists("docker-compose.yml")) {
-        echo('No compose files defined for deployment. Defaulting to docker-compose.yml...')
-        config.composeFiles = ["docker-compose.yml"]
-    }
-
 
     if (config.dockerBuilds == null) {
         config.dockerBuilds = [
@@ -40,6 +35,11 @@ def call(body) {
 
             stage('Checkout SCM') {
                 checkout scm
+            }
+
+            if (config.composeFiles == null && fileExists("docker-compose.yml")) {
+                echo('No compose files defined for deployment. Defaulting to docker-compose.yml...')
+                config.composeFiles = ["docker-compose.yml"]
             }
 
             if (params.isRelease) {
