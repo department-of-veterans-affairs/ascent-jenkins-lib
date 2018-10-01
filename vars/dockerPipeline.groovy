@@ -74,7 +74,7 @@ def call(body) {
                     deployWaitTime = config.deployWaitTime
                     dockerHost = this.env.CI_DOCKER_SWARM_MANAGER
                     deployEnv = [
-                        "SPRING_PROFILE=aws-dev",
+                        "SPRING_PROFILES_ACTIVE=aws-dev",
                         "ES_HOST=${this.env.DEV_ES}"
                     ]
                 }

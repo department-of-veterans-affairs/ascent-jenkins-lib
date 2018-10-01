@@ -86,7 +86,7 @@ def call(body) {
                                 deployWaitTime = config.deployWaitTime
                                 port = config.containerPort
                                 deployEnv = [
-                                    "SPRING_PROFILE=aws-ci"
+                                    "SPRING_PROFILES_ACTIVE=aws-ci"
                                 ]
                             }
 
@@ -123,7 +123,7 @@ def call(body) {
                                     dockerDomain = this.env.DOCKER_PERF_DOMAIN
                                     vaultAddr = this.env.VAULT_ADDR
                                     deployEnv = [
-                                        "SPRING_PROFILE=aws-ci"
+                                        "SPRING_PROFILES_ACTIVE=aws-ci"
                                     ]
                                     port = config.containerPort
                                 }
@@ -163,7 +163,7 @@ def call(body) {
                             deployWaitTime = config.deployWaitTime
                             dockerHost = this.env.CI_DOCKER_SWARM_MANAGER
                             deployEnv = [
-                                "SPRING_PROFILE=aws-dev",
+                                "SPRING_PROFILES_ACTIVE=aws-dev",
                                 "ES_HOST=${this.env.DEV_ES}"
                             ]
                         }
