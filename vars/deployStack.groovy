@@ -127,8 +127,13 @@ def call(body) {
         echo 'Containers are successfully deployed'
 
         if (config.serviceName != null) {
-            def service = "${config.stackName}_${config.serviceName}"
-            publishedPort = sh(returnStdout: true, script: "docker ${dockerSSLArgs} --host ${config.dockerHost} service inspect ${service} --format '{{range \$p, \$conf := .Endpoint.Ports}} {{(\$conf).PublishedPort}} {{end}}'").trim()
+            try {
+                def service = "${config.stackName}_${config.serviceName}"
+                publishedPort = sh(returnStdout: true, script: "docker ${dockerSSLArgs} --host ${config.dockerHost} service inspect ${service} --format '{{range \$p, \$conf := .Endpoint.Ports}} {{(\$conf).PublishedPort}} {{end}}'").trim()
+            } catch (ex) {
+                echo "Didn't find ${service} in stack. Returning default gateway port 8761."
+                publishedPort = 8762
+            }
         }
     }
 
