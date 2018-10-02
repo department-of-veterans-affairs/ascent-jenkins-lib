@@ -48,7 +48,7 @@ def call(body) {
                     releaseVersion = this.params.releaseVersion
                 }
             }
-            
+
             def builds = [:]
             for (x in config.dockerBuilds.keySet()) {
                 def image = x
@@ -79,6 +79,60 @@ def call(body) {
                     ]
                 }
             }
+
+            def deployments = [:]
+            // Deploy platform services to performance if dev deployment was successful and
+            //     if this is  a release build.
+            deployments["performance"] = {
+              if (currentBuild.result == null
+                            && params.isRelease
+                            && config.composeFiles != null
+                            && env.JOB_NAME.contains("ascent-")) {
+              stage("Deploy Platform Services to Perf"){
+                def perfEnvPort = deployStack {
+                  composeFiles = config.composeFiles
+                  stackName = config.stackName
+                  serviceName = config.serviceName
+                  vaultTokens = config.vaultTokens
+                  deployWaitTime = config.deployWaitTime
+                  dockerHost = "tcp://${this.env.PERF_SWARM_HOST}"
+                  dockerDomain = this.env.DOCKER_PERF_DOMAIN
+                  deployEnv = [
+                    "SPRING_PROFILES_ACTIVE=aws-ci",
+                    "RELEASE_VERSION=${this.params.releaseVersion}"
+                    "ES_HOST=${this.env.DEV_ES}"
+                  ]
+                }
+              }
+            }
+          }
+
+            // If deployment to dev passed and this  is a release build, then deploy to staging
+            deployments["staging"] = {
+              if (currentBuild.result == null && params.isRelease && config.composeFiles != null) {
+
+                def stageEnvPort = deployStack {
+                  composeFiles = config.composeFiles
+                  stackName = config.stackName
+                  serviceName = config.serviceName
+                  vaultTokens = config.vaultTokens
+                  deployWaitTime = config.deployWaitTime
+                  dockerHost = this.env.STAGING_DOCKER_SWARM_MANAGER
+                  dockerDomain = this.env.DOCKER_STAGE_DOMAIN
+                  vaultAddr = "https://${this.env.STAGING_VAULT_HOST}"
+                  vaultCredID = "staging-vault"
+                  deployEnv = [
+                    "SPRING_PROFILES_ACTIVE=aws-stage",
+                    "RELEASE_VERSION=${this.params.releaseVersion}"
+                    "ES_HOST=${this.env.STAGING_ES}"
+                    ]
+                  }
+                }
+            }
+
+          // deploy tp staging and perf at same time.
+          parallel deployments
+
         } catch (ex) {
             if (currentBuild.result == null) {
                 currentBuild.result = 'FAILED'
