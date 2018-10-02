@@ -169,6 +169,52 @@ def call(body) {
                             ]
                         }
                     }
+
+
+                  if (config.isPlatform == null) {
+                    config.isPlatform = false
+                  }
+                  // Deploy platform services to performance if dev deployment was successful and
+                  //     if this is  a release build.
+                  if (currentBuild.result == null
+                                  && params.isRelease
+                                  && config.composeFiles != null
+                                  && config.isPlatform ) {
+                    def perfEnvPort = deployStack {
+                      composeFiles = config.composeFiles
+                      stackName = config.stackName
+                      serviceName = config.serviceName
+                      vaultTokens = config.vaultTokens
+                      deployWaitTime = config.deployWaitTime
+                      dockerHost = this.env.TEST_DOCKER_SWARM_MANAGER
+                      dockerDomain = this.env.DOCKER_PERF_DOMAIN
+                      deployEnv = [
+                        "SPRING_PROFILES_ACTIVE=aws-dev",
+                        "RELEASE_VERSION=${this.params.releaseVersion}"
+                        "ES_HOST=${this.env.DEV_ES}"
+                      ]
+                    }                
+                  }
+
+                  // If deployment to dev passed and this  is a release build, then deploy to staging
+                  if (currentBuild.result == null && params.isRelease && config.composeFiles != null) {
+                    def stageEnvPort = deployStack {
+                      composeFiles = config.composeFiles
+                      stackName = config.stackName
+                      serviceName = config.serviceName
+                      vaultTokens = config.vaultTokens
+                      deployWaitTime = config.deployWaitTime
+                      dockerHost = this.env.STAGING_DOCKER_SWARM_MANAGER
+                      dockerDomain = this.env.DOCKER_STAGE_DOMAIN
+                      vaultAddr = "https://${this.env.STAGING_VAULT_HOST}"
+                      vaultCredID = "staging-vault"
+                      deployEnv = [
+                        "SPRING_PROFILES_ACTIVE=aws-stage",
+                        "RELEASE_VERSION=${this.params.releaseVersion}"
+                        "ES_HOST=${this.env.STAGING_ES}"
+                      ]
+                    }
+                  }
                 }
             }
         } catch (ex) {
