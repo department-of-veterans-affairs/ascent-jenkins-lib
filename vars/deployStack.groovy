@@ -131,7 +131,7 @@ def call(body) {
                 def service = "${config.stackName}_${config.serviceName}"
                 publishedPort = sh(returnStdout: true, script: "docker ${dockerSSLArgs} --host ${config.dockerHost} service inspect ${service} --format '{{range \$p, \$conf := .Endpoint.Ports}} {{(\$conf).PublishedPort}} {{end}}'").trim()
             } catch (ex) {
-                echo "Didn't find ${service} in stack. Returning default gateway port 8761."
+                echo "Didn't find ${config.serviceName} in stack. Returning default gateway port 8761."
                 publishedPort = 8762
             }
         }
