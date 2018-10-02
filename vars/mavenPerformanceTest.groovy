@@ -6,7 +6,7 @@ def call(body) {
     body.delegate = config
     body()
 
-    
+
     if (config.directory == null) {
         config.directory = '.'
     }
@@ -19,9 +19,15 @@ def call(body) {
     if (config.serviceProtocol == null) {
         config.serviceProtocol = 'http'
     }
+    if (config.vaultAddr == null) {
+        config.vaultAddr = env.VAULT_ADDR
+    }
+    if (config.vaultCredID == null) {
+        config.vaultCredID = "jenkins-vault"
+    }
 
     //Setup Maven command line options
-    def opts = "-Ddomain=${config.serviceHost} -Dport=${config.servicePort} -Dprotocol=${config.serviceProtocol}"
+    def opts = "-Ddomain=${config.serviceHost} -Dport=${config.servicePort} -Dprotocol=${config.serviceProtocol} -Djavax.net.ssl.keyStore=${config.keystore} -Djavax.net.ssl.keyStorePassword=${config.keystorePassword} -Djavax.net.ssl.trustStore=/usr/lib/jvm/java-8-openjdk-amd64/jre/lib/security/cacerts -Djavax.net.ssl.trustStorePassword=changeit"
     if (config.options != null) {
         opts = opts + " ${config.options}"
     }
@@ -42,11 +48,11 @@ def call(body) {
         def deployEnv = []
         if (config.testVaultTokenRole != null) {
             stage('Request Vault Token for testing') {
-                    withCredentials([string(credentialsId: 'jenkins-vault', variable: 'JENKINS_VAULT_TOKEN')]) {
-                    vaultToken = sh(returnStdout: true, script: "curl -k -s --header \"X-Vault-Token: ${JENKINS_VAULT_TOKEN}\" --request POST --data '{\"display_name\": \"testenv\"}' ${env.VAULT_ADDR}/v1/auth/token/create/${config.testVaultTokenRole}?ttl=30m | jq '.auth.client_token'").trim().replaceAll('"', '')
+                    withCredentials([string(credentialsId: "${config.vaultCredID}", variable: 'JENKINS_VAULT_TOKEN')]) {
+                    vaultToken = sh(returnStdout: true, script: "curl -k -s --header \"X-Vault-Token: ${JENKINS_VAULT_TOKEN}\" --request POST --data '{\"display_name\": \"testenv\"}' ${config.vaultAddr}/v1/auth/token/create/${config.testVaultTokenRole}?ttl=30m | jq '.auth.client_token'").trim().replaceAll('"', '')
                     deployEnv.add("VAULT_TOKEN=${vaultToken}")
                 }
-            } 
+            }
         }
 
 

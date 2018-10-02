@@ -44,7 +44,7 @@ def call(body) {
 
         try {
             stage('Unit Testing') {
-                sh "${mvnCmd} -Dmaven.test.failure.ignore=true test"
+                sh "${mvnCmd} -Dmaven.test.failure.ignore=true package"
             }
         } finally {
             step([$class: 'JUnitResultArchiver', testResults: '**/surefire-reports/*.xml', healthScaleFactor: 1.0, allowEmptyResults: true])
@@ -69,7 +69,7 @@ def call(body) {
                     def repoUrlBase = "https://github.com/"
                     def repo = env.CHANGE_URL.substring(env.CHANGE_URL.indexOf(repoUrlBase) + repoUrlBase.length(),env.CHANGE_URL.indexOf("/pull/"))
                     //Use Preview mode for PRs
-                    withCredentials([string(credentialsId: 'Github', variable: 'GITHUB_TOKEN')]) {
+                    withCredentials([string(credentialsId: 'github-token', variable: 'GITHUB_TOKEN')]) {
                         sh "${mvnCmd} -X -Dsonar.analysis.mode=preview -Dsonar.github.pullRequest=${env.CHANGE_ID} -Dsonar.github.oauth=${GITHUB_TOKEN}  -Dsonar.github.repository=${repo} sonar:sonar"
                     }
                 } else {

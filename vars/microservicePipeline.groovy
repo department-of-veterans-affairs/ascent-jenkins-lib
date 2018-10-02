@@ -37,6 +37,11 @@ def call(body) {
                 checkout scm
             }
 
+            if (config.composeFiles == null && fileExists("docker-compose.yml")) {
+                echo('No compose files defined for deployment. Defaulting to docker-compose.yml...')
+                config.composeFiles = ["docker-compose.yml"]
+            }
+
             if (params.isRelease) {
                 //Execute maven release process and receive the Git Tag for the release
                 mavenRelease {
@@ -79,6 +84,10 @@ def call(body) {
                                 serviceName = config.serviceToTest
                                 vaultTokens = config.vaultTokens
                                 deployWaitTime = config.deployWaitTime
+                                port = config.containerPort
+                                deployEnv = [
+                                    "SPRING_PROFILES_ACTIVE=aws-ci"
+                                ]
                             }
 
                             mavenFunctionalTest {
@@ -88,6 +97,8 @@ def call(body) {
                                 testVaultTokenRole = config.testVaultTokenRole
                                 cucumberOpts = config.cucumberOpts
                                 options = config.intTestOptions
+                                keystore = "${this.env.DOCKER_CERT_LOCATION}/docker_swarm.jks"
+                                keystorePassword = "changeit"
                             }
                         } catch (ex) {
                             echo "Failed due to ${ex}: ${ex.message}"
@@ -109,15 +120,24 @@ def call(body) {
                                     vaultTokens = config.vaultTokens
                                     deployWaitTime = 120
                                     dockerHost = "tcp://${this.env.PERF_SWARM_HOST}"
+                                    dockerDomain = this.env.DOCKER_PERF_DOMAIN
+                                    vaultAddr = this.env.VAULT_ADDR
+                                    deployEnv = [
+                                        "SPRING_PROFILES_ACTIVE=aws-ci",
+                                        "REPLICAS=3"
+                                    ]
+                                    port = config.containerPort
                                 }
 
                                 mavenPerformanceTest {
                                     directory = config.directory
-                                    serviceProtocol = "http"
+                                    serviceProtocol = "https"
                                     serviceHost = "${this.env.PERF_SWARM_HOST}"
                                     servicePort = "${testEnvPort}"
                                     testVaultTokenRole = config.testVaultTokenRole
                                     options = config.perfTestOptions
+                                    keystore = "${this.env.DOCKER_CERT_LOCATION}/docker_swarm.jks"
+                                    keystorePassword = "changeit"
                                 }
                             } catch (ex) {
                                 echo "Failed due to ${ex}: ${ex.message}"
@@ -127,8 +147,26 @@ def call(body) {
                             } finally {
                                 undeployStack {
                                     dockerHost = "tcp://${this.env.PERF_SWARM_HOST}"
+                                    dockerDomain = this.env.DOCKER_PERF_DOMAIN
+                                    vaultAddr = this.env.VAULT_ADDR
                                 }
                             }
+                        }
+                    }
+
+                    //If all the tests have passed, deploy this build to the Dev environment
+                    if (!isPullRequest() && currentBuild.result == null && config.composeFiles != null) {
+                        def devEnvPort = deployStack {
+                            composeFiles = config.composeFiles
+                            stackName = config.stackName
+                            serviceName = config.serviceToTest
+                            vaultTokens = config.vaultTokens
+                            deployWaitTime = config.deployWaitTime
+                            dockerHost = this.env.CI_DOCKER_SWARM_MANAGER
+                            deployEnv = [
+                                "SPRING_PROFILES_ACTIVE=aws-dev",
+                                "ES_HOST=${this.env.DEV_ES}"
+                            ]
                         }
                     }
                 }
@@ -137,6 +175,7 @@ def call(body) {
             if (currentBuild.result == null) {
                 currentBuild.result = 'FAILED'
             }
+            echo "Failed due to ${ex}: ${ex.message}"
         } finally {
             //Send build notifications if needed
             notifyBuild(currentBuild.result)

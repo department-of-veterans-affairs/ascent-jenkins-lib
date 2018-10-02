@@ -35,6 +35,19 @@ def call(body) {
             stage('Checkout SCM') {
                 checkout scm
             }
+
+            if (config.composeFiles == null && fileExists("docker-compose.yml")) {
+                echo('No compose files defined for deployment. Defaulting to docker-compose.yml...')
+                config.composeFiles = ["docker-compose.yml"]
+            }
+
+            if (params.isRelease) {
+                //Execute maven release process and receive the Git Tag for the release
+                dockerRelease {
+                    directory = config.directory
+                    releaseVersion = this.params.releaseVersion
+                }
+            }
             
             def builds = [:]
             for (x in config.dockerBuilds.keySet()) {
@@ -50,10 +63,27 @@ def call(body) {
             }
 
             parallel builds
+
+            //If all the tests have passed, deploy this build to the Dev environment
+            if (!isPullRequest() && currentBuild.result == null && config.composeFiles != null) {
+                def devEnvPort = deployStack {
+                    composeFiles = config.composeFiles
+                    stackName = config.stackName
+                    serviceName = config.serviceToTest
+                    vaultTokens = config.vaultTokens
+                    deployWaitTime = config.deployWaitTime
+                    dockerHost = this.env.CI_DOCKER_SWARM_MANAGER
+                    deployEnv = [
+                        "SPRING_PROFILES_ACTIVE=aws-dev",
+                        "ES_HOST=${this.env.DEV_ES}"
+                    ]
+                }
+            }
         } catch (ex) {
             if (currentBuild.result == null) {
                 currentBuild.result = 'FAILED'
             }
+            echo "Failed due to ${ex}: ${ex.message}"
         } finally {
             //Send build notifications if needed
             notifyBuild(currentBuild.result)

@@ -23,7 +23,7 @@ def call(body) {
         config.jmeterReportDirectory = 'target/jmeterReports'
     }
     if (config.serviceProtocol == null) {
-        config.serviceProtocol = 'http'
+        config.serviceProtocol = 'https'
     }
 
     //Setup JMeter command line options
