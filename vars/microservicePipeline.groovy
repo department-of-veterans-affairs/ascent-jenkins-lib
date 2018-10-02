@@ -123,7 +123,8 @@ def call(body) {
                                     dockerDomain = this.env.DOCKER_PERF_DOMAIN
                                     vaultAddr = this.env.VAULT_ADDR
                                     deployEnv = [
-                                        "SPRING_PROFILES_ACTIVE=aws-ci"
+                                        "SPRING_PROFILES_ACTIVE=aws-ci",
+                                        "REPLICAS=3"
                                     ]
                                     port = config.containerPort
                                 }
