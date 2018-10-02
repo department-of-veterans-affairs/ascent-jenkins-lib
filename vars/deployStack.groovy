@@ -8,7 +8,6 @@ def call(body) {
 
     def config = [:]
     def vaultToken = null
-    def stackName = stackName()
     def dockerFiles = ""
     def publishedPort = 8762
     body.resolveStrategy = Closure.DELEGATE_FIRST
@@ -45,6 +44,15 @@ def call(body) {
     if (config.tokenTTL == null) {
         config.tokenTTL = '30m'
     }
+    if (config.stackName == null) {
+        config.stackName = stackName()
+    }
+    if (config.vaultTokens == null) {
+        config.vaultTokens = [:]
+    }
+    if (config.networkName == null) {
+        config.networkName = 'ascentnet'
+    }
 
     for (file in config.composeFiles) {
         if (fileExists(file)) {
@@ -54,10 +62,16 @@ def call(body) {
         }
     }
 
-    def deployEnv = []
+    def deployEnv = ["DRIVER_TYPE=overlay", "VAULT_SCHEME=https"]
     if (config.deployEnv != null) {
-        deployEnv.plus(config.deployEnv)
+        deployEnv.addAll(config.deployEnv)
     }
+    echo "Configured Port is: ${config.port}"
+    if (config.port != null) {
+        echo "Adding port to env..."
+        deployEnv.add("PORT=${config.port}")
+    }
+    echo "Deploy Env is: ${deployEnv}"
 
     stage("Requesting Vault Token for application") {
         withCredentials([string(credentialsId: "${config.vaultCredID}", variable: 'JENKINS_VAULT_TOKEN')]) {
@@ -78,9 +92,19 @@ def call(body) {
       }
     }
 
-    stage("Deploying Stack: ${stackName}") {
+    //Check to see if our networks are in place. If not, create them before deploying the stack.
+    withEnv(deployEnv) {
+        def networkId = sh(returnStdout: true, script: "docker ${dockerSSLArgs} --host ${config.dockerHost} network ls -f label=gov.va.ascent.network=${config.networkName} -q")
+        if (networkId == null || networkId.isAllWhitespace()) {
+            stage("Creating Network: ${config.networkName}") {
+                sh "docker ${dockerSSLArgs} --host ${config.dockerHost} network create -d overlay --label gov.va.ascent.network=${config.networkName} ${config.networkName}"
+            }
+        }
+    }
+
+    stage("Deploying Stack: ${config.stackName}") {
         withEnv(deployEnv) {
-            sh "docker ${dockerSSLArgs} --host ${config.dockerHost} stack deploy ${dockerFiles} ${stackName}"
+            sh "docker ${dockerSSLArgs} --host ${config.dockerHost} stack deploy ${dockerFiles} ${config.stackName}"
         }
 
         //Query docker every minute to see if deployment is complete
@@ -89,8 +113,8 @@ def call(body) {
         //     def deployDone = false
         //     waitUntil {
         //         sleep(30)
-        //         sh(script: "docker --host ${config.dockerHost} stack ps ${stackName} --format {{.CurrentState}}")
-        //         def result = sh(returnStdout: true, script: "docker --host ${config.dockerHost} stack ps ${stackName} --format {{.CurrentState}}")
+        //         sh(script: "docker --host ${config.dockerHost} stack ps ${config.stackName} --format {{.CurrentState}}")
+        //         def result = sh(returnStdout: true, script: "docker --host ${config.dockerHost} stack ps ${config.stackName} --format {{.CurrentState}}")
         //         deployDone = !(result.contains('Failed') || result.contains('Preparing') || result.contains('Starting'))
         //         echo "Deployment is done: ${deployDone}"
         //         return deployDone;
@@ -99,12 +123,17 @@ def call(body) {
 
         echo 'Sleep for a few minutes and cross our fingers that the services started. Need to find a more reliable way of checking container health.'
         sleep(config.deployWaitTime)
-        sh "docker ${dockerSSLArgs} --host ${config.dockerHost} stack ps ${stackName} --no-trunc"
+        sh "docker ${dockerSSLArgs} --host ${config.dockerHost} stack ps ${config.stackName} --no-trunc"
         echo 'Containers are successfully deployed'
 
         if (config.serviceName != null) {
-            def service = "${stackName}_${config.serviceName}"
-            publishedPort = sh(returnStdout: true, script: "docker ${dockerSSLArgs} --host ${config.dockerHost} service inspect ${service} --format '{{range \$p, \$conf := .Endpoint.Ports}} {{(\$conf).PublishedPort}} {{end}}'").trim()
+            try {
+                def service = "${config.stackName}_${config.serviceName}"
+                publishedPort = sh(returnStdout: true, script: "docker ${dockerSSLArgs} --host ${config.dockerHost} service inspect ${service} --format '{{range \$p, \$conf := .Endpoint.Ports}} {{(\$conf).PublishedPort}} {{end}}'").trim()
+            } catch (ex) {
+                echo "Didn't find ${config.serviceName} in stack. Returning default gateway port 8761."
+                publishedPort = 8762
+            }
         }
     }
 

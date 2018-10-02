@@ -57,8 +57,13 @@ def call(body) {
             }
 
             stage("Remove ${config.imageName}") {
-                echo "Removing ${image.id}"
-                sh "docker -H ${env.DOCKER_HOST} rmi --force \$(docker -H ${env.DOCKER_HOST} images ${image.id} -q)"
+                try {
+                    echo "Removing ${image.id}"
+                    sh "docker -H ${env.DOCKER_HOST} rmi --force \$(docker -H ${env.DOCKER_HOST} images ${image.id} -q)"
+                } catch (ex) {
+                    //Its OK if it can't clean up an image. Sometime duplicate ids are returned and we
+                    //don't want to fail the pipeline because of this.
+                }
             }
     }
     
