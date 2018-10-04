@@ -119,7 +119,7 @@ def call(body) {
                                     composeFiles = config.perfEnvironment
                                     vaultTokens = config.vaultTokens
                                     deployWaitTime = 120
-                                    dockerHost = "tcp://${this.env.PERF_SWARM_HOST}"
+                                    dockerHost = "tcp://${this.env.PERF_SWARM_HOST}:2376"
                                     dockerDomain = this.env.DOCKER_PERF_DOMAIN
                                     vaultAddr = this.env.VAULT_ADDR
                                     deployEnv = [
