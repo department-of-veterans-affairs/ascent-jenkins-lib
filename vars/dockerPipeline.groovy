@@ -19,6 +19,10 @@ def call(body) {
         ]
     }
 
+    if (config.replicas == null) {
+        config.replicas = 3
+    }
+
     node {
         properties([
             disableConcurrentBuilds(),
@@ -95,12 +99,13 @@ def call(body) {
                   serviceName = config.serviceName
                   vaultTokens = config.vaultTokens
                   deployWaitTime = config.deployWaitTime
-                  dockerHost = "tcp://${this.env.PERF_SWARM_HOST}"
+                  dockerHost = "tcp://${this.env.PERF_SWARM_HOST}:2376"
                   dockerDomain = this.env.DOCKER_PERF_DOMAIN
                   deployEnv = [
                     "SPRING_PROFILES_ACTIVE=aws-ci",
-                    "RELEASE_VERSION=${this.params.releaseVersion}"
-                    "ES_HOST=${this.env.DEV_ES}"
+                    "RELEASE_VERSION=${this.params.releaseVersion}",
+                    "ES_HOST=${this.env.DEV_ES}",
+                    "REPLICAS=${config.replicas}"
                   ]
                 }
               }
@@ -123,8 +128,9 @@ def call(body) {
                   vaultCredID = "staging-vault"
                   deployEnv = [
                     "SPRING_PROFILES_ACTIVE=aws-stage",
-                    "RELEASE_VERSION=${this.params.releaseVersion}"
-                    "ES_HOST=${this.env.STAGING_ES}"
+                    "RELEASE_VERSION=${this.params.releaseVersion}",
+                    "ES_HOST=${this.env.STAGING_ES}",
+                    "REPLICAS=${config.replicas}"
                     ]
                   }
                 }
