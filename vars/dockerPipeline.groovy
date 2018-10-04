@@ -87,7 +87,7 @@ def call(body) {
             def deployments = [:]
             // Deploy platform services to performance if dev deployment was successful and
             //     if this is  a release build.
-            deployments["performance"] = {
+            deployments["Performance"] = {
               if (currentBuild.result == null
                             && params.isRelease
                             && config.composeFiles != null
@@ -113,7 +113,7 @@ def call(body) {
           }
 
             // If deployment to dev passed and this  is a release build, then deploy to staging
-            deployments["staging"] = {
+            deployments["Staging"] = {
               if (currentBuild.result == null && params.isRelease && config.composeFiles != null) {
 
                 def stageEnvPort = deployStack {

@@ -19,6 +19,10 @@ def call(body) {
         ]
     }
 
+    if (config.replicas == null) {
+        config.replicas = 3
+    }
+
     node {
         properties([
             disableConcurrentBuilds(),
@@ -174,7 +178,7 @@ def call(body) {
                   def deployments = [:]
                   // Deploy platform services to performance if dev deployment was successful and
                   //     if this is  a release build.
-                  deployments["performance"] = {
+                  deployments["Performance"] = {
                     if (currentBuild.result == null
                                   && params.isRelease
                                   && config.composeFiles != null
@@ -186,12 +190,13 @@ def call(body) {
                         serviceName = config.serviceName
                         vaultTokens = config.vaultTokens
                         deployWaitTime = config.deployWaitTime
-                        dockerHost = "tcp://${this.env.PERF_SWARM_HOST}"
+                        dockerHost = "tcp://${this.env.PERF_SWARM_HOST}:2376"
                         dockerDomain = this.env.DOCKER_PERF_DOMAIN
                         deployEnv = [
                           "SPRING_PROFILES_ACTIVE=aws-ci",
-                          "RELEASE_VERSION=${this.params.releaseVersion}"
-                          "ES_HOST=${this.env.DEV_ES}"
+                          "RELEASE_VERSION=${this.params.releaseVersion}",
+                          "ES_HOST=${this.env.DEV_ES}",
+                          "REPLICAS=${config.replicas}"
                         ]
                       }
                     }
@@ -199,7 +204,7 @@ def call(body) {
                 }
 
                   // If deployment to dev passed and this  is a release build, then deploy to staging
-                  deployments["staging"] = {
+                  deployments["Staging"] = {
                     if (currentBuild.result == null && params.isRelease && config.composeFiles != null) {
                     def stageEnvPort = deployStack {
                       composeFiles = config.composeFiles
@@ -213,8 +218,9 @@ def call(body) {
                       vaultCredID = "staging-vault"
                       deployEnv = [
                         "SPRING_PROFILES_ACTIVE=aws-stage",
-                        "RELEASE_VERSION=${this.params.releaseVersion}"
-                        "ES_HOST=${this.env.STAGING_ES}"
+                        "RELEASE_VERSION=${this.params.releaseVersion}",
+                        "ES_HOST=${this.env.STAGING_ES}",
+                        "REPLICAS=${config.replicas}"
                       ]
                     }
                   }
