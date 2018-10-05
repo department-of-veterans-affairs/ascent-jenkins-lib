@@ -52,6 +52,9 @@ def call(body) {
     if (config.networkName == null) {
         config.networkName = 'ascentnet'
     }
+    if(config.keystoreAlias == null) {
+        config.keystoreAlias = config.dockerDomain
+    }
 
     for (file in config.composeFiles) {
         if (fileExists(file)) {
@@ -88,6 +91,7 @@ def call(body) {
         dockerDomainName = config.dockerDomain
         vaultCredID = config.vaultCredID
         vaultAddress = config.vaultAddr
+        keystoreAlias = config.keystoreAlias
       }
     }
 

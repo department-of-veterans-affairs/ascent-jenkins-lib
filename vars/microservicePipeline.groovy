@@ -88,6 +88,7 @@ def call(body) {
                                 serviceName = config.serviceToTest
                                 vaultTokens = config.vaultTokens
                                 deployWaitTime = config.deployWaitTime
+                                keystoreAlias = "dev"
                                 port = config.containerPort
                                 deployEnv = [
                                     "SPRING_PROFILES_ACTIVE=aws-ci"
@@ -125,6 +126,7 @@ def call(body) {
                                     deployWaitTime = 120
                                     dockerHost = "tcp://${this.env.PERF_SWARM_HOST}:2376"
                                     dockerDomain = this.env.DOCKER_PERF_DOMAIN
+                                    keystoreAlias = "perf"
                                     vaultAddr = this.env.VAULT_ADDR
                                     deployEnv = [
                                         "SPRING_PROFILES_ACTIVE=aws-ci",
@@ -165,6 +167,7 @@ def call(body) {
                             stackName = config.stackName
                             serviceName = config.serviceToTest
                             vaultTokens = config.vaultTokens
+                            keystoreAlias = "dev"
                             deployWaitTime = config.deployWaitTime
                             dockerHost = this.env.CI_DOCKER_SWARM_MANAGER
                             deployEnv = [
@@ -188,6 +191,7 @@ def call(body) {
                                 stackName = config.stackName
                                 serviceName = config.serviceName
                                 vaultTokens = config.vaultTokens
+                                keystoreAlias = "perf"
                                 deployWaitTime = config.deployWaitTime
                                 dockerHost = "tcp://${this.env.PERF_SWARM_HOST}:2376"
                                 dockerDomain = this.env.DOCKER_PERF_DOMAIN
@@ -212,6 +216,7 @@ def call(body) {
                       deployWaitTime = config.deployWaitTime
                       dockerHost = this.env.STAGING_DOCKER_SWARM_MANAGER
                       dockerDomain = this.env.DOCKER_STAGE_DOMAIN
+                      keystoreAlias = "stage"
                       vaultAddr = "https://${this.env.STAGING_VAULT_HOST}"
                       vaultCredID = "staging-vault"
                       deployEnv = [
