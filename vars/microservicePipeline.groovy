@@ -19,6 +19,10 @@ def call(body) {
         ]
     }
 
+    if (config.replicas == null) {
+        config.replicas = 3
+    }
+
     node {
         properties([
             disableConcurrentBuilds(),
@@ -169,8 +173,63 @@ def call(body) {
                             ]
                         }
                     }
+
+
+                  def deployments = [:]
+                  // Deploy platform services to performance if dev deployment was successful and
+                  //     if this is  a release build.
+                  deployments["Performance"] = {
+                    if (currentBuild.result == null
+                                  && params.isRelease
+                                  && config.composeFiles != null
+                                  && env.JOB_NAME.contains("ascent-")) {
+                    stage("Deploy Platform Services to Perf"){
+                      def perfEnvPort = deployStack {
+                        composeFiles = config.composeFiles
+                        stackName = config.stackName
+                        serviceName = config.serviceName
+                        vaultTokens = config.vaultTokens
+                        deployWaitTime = config.deployWaitTime
+                        dockerHost = "tcp://${this.env.PERF_SWARM_HOST}:2376"
+                        dockerDomain = this.env.DOCKER_PERF_DOMAIN
+                        deployEnv = [
+                          "SPRING_PROFILES_ACTIVE=aws-ci",
+                          "RELEASE_VERSION=${this.params.releaseVersion}",
+                          "ES_HOST=${this.env.DEV_ES}",
+                          "REPLICAS=${config.replicas}"
+                        ]
+                      }
+                    }
+                  }
                 }
+
+                  // If deployment to dev passed and this  is a release build, then deploy to staging
+                  deployments["Staging"] = {
+                    if (currentBuild.result == null && params.isRelease && config.composeFiles != null) {
+                    def stageEnvPort = deployStack {
+                      composeFiles = config.composeFiles
+                      stackName = config.stackName
+                      serviceName = config.serviceName
+                      vaultTokens = config.vaultTokens
+                      deployWaitTime = config.deployWaitTime
+                      dockerHost = this.env.STAGING_DOCKER_SWARM_MANAGER
+                      dockerDomain = this.env.DOCKER_STAGE_DOMAIN
+                      vaultAddr = "https://${this.env.STAGING_VAULT_HOST}"
+                      vaultCredID = "staging-vault"
+                      deployEnv = [
+                        "SPRING_PROFILES_ACTIVE=aws-stage",
+                        "RELEASE_VERSION=${this.params.releaseVersion}",
+                        "ES_HOST=${this.env.STAGING_ES}",
+                        "REPLICAS=${config.replicas}"
+                      ]
+                    }
+                  }
+                }
+
+                parallel deployments
+
             }
+          }
         } catch (ex) {
             if (currentBuild.result == null) {
                 currentBuild.result = 'FAILED'
