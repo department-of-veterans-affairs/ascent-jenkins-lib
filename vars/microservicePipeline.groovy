@@ -183,20 +183,21 @@ def call(body) {
                   if (env.JOB_NAME.contains("ascent-")) {
                     deployments["Performance"] = {
                         stage("Deploy Platform Services to Perf"){
-                        def perfEnvPort = deployStack {
-                            composeFiles = config.composeFiles
-                            stackName = config.stackName
-                            serviceName = config.serviceName
-                            vaultTokens = config.vaultTokens
-                            deployWaitTime = config.deployWaitTime
-                            dockerHost = "tcp://${this.env.PERF_SWARM_HOST}:2376"
-                            dockerDomain = this.env.DOCKER_PERF_DOMAIN
-                            deployEnv = [
-                            "SPRING_PROFILES_ACTIVE=aws-ci",
-                            "RELEASE_VERSION=${this.params.releaseVersion}",
-                            "ES_HOST=${this.env.DEV_ES}",
-                            "REPLICAS=${config.replicas}"
-                            ]
+                            def perfEnvPort = deployStack {
+                                composeFiles = config.composeFiles
+                                stackName = config.stackName
+                                serviceName = config.serviceName
+                                vaultTokens = config.vaultTokens
+                                deployWaitTime = config.deployWaitTime
+                                dockerHost = "tcp://${this.env.PERF_SWARM_HOST}:2376"
+                                dockerDomain = this.env.DOCKER_PERF_DOMAIN
+                                deployEnv = [
+                                "SPRING_PROFILES_ACTIVE=aws-ci",
+                                "RELEASE_VERSION=${this.params.releaseVersion}",
+                                "ES_HOST=${this.env.DEV_ES}",
+                                "REPLICAS=${config.replicas}"
+                                ]
+                            }
                         }
                     }
                   }
