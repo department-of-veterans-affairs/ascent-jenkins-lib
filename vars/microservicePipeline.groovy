@@ -184,6 +184,7 @@ def call(body) {
                   if (prodVersion != null && config.composeFiles != null) {
                     stage ('Prod Deployment') {
                       echo "IF there were a prod deployment, it would happen HERE!"
+                      echo "release version: prodVersion"
                       // def prodEnvPort = deployStack {
                       //   composeFiles = config.composeFiles
                       //   stackName = config.stackName
