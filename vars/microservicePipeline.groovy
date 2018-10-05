@@ -27,9 +27,19 @@ def call(body) {
                 booleanParam(name: 'isRelease', defaultValue: false, description: 'Release this build?'),
                 string(name: 'releaseVersion', defaultValue: '', description: 'Provide the release version:'),
                 string(name: 'developmentVersion', defaultValue: '', description: 'Provide the next development version:')
+                booleanParam(name: 'isProdDeployment', defaultValue: false, description: 'Deploy this build to Production?')
             ]),
             buildDiscarder(logRotator(daysToKeepStr: '5', numToKeepStr: '5'))
         ])
+
+        def prodVersion = null
+
+        if(params.isProdDeployment){
+          prodVersion = input (
+            id: 'prodUserInput', message: 'Deploying to Production after build...', parameters: [
+              [$class: 'TextParameterDefinition', description: 'Version to Release', name: 'releaseVersion']
+          ])
+        }
 
         try {
 
@@ -170,6 +180,31 @@ def call(body) {
                         }
                     }
                 }
+                // If user defined a prod version to release, then release specified version to Production
+                deployments["prod"] = {
+                  if (prodVersion != null && config.composeFiles != null) {
+                    def prodEnvPort = deployStack {
+                      composeFiles = config.composeFiles
+                      stackName = config.stackName
+                      serviceName = config.serviceName
+                      vaultTokens = config.vaultTokens
+                      deployWaitTime = config.deployWaitTime
+                      dockerHost = this.env.PROD_DOCKER_SWARM_MANAGER
+                      dockerDomain = this.env.DOCKER_PROD_DOMAIN
+                      vaultAddr = "https://${this.env.PROD_VAULT_HOST}"
+                      vaultCredID = "prod-vault"
+                      deployEnv = [
+                        "SPRING_PROFILES_ACTIVE=aws-prod",
+                        "RELEASE_VERSION=${this.prodVersion}",
+                        "ES_HOST=${this.env.PROD_ES}",
+                        "REPLICAS=3"
+                      ]
+                    }
+                  }
+                }
+
+                parallel deployments
+
             }
         } catch (ex) {
             if (currentBuild.result == null) {
