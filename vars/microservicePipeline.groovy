@@ -183,23 +183,24 @@ def call(body) {
                 // If user defined a prod version to release, then release specified version to Production
                 deployments["prod"] = {
                   if (prodVersion != null && config.composeFiles != null) {
-                    def prodEnvPort = deployStack {
-                      composeFiles = config.composeFiles
-                      stackName = config.stackName
-                      serviceName = config.serviceName
-                      vaultTokens = config.vaultTokens
-                      deployWaitTime = config.deployWaitTime
-                      dockerHost = this.env.PROD_DOCKER_SWARM_MANAGER
-                      dockerDomain = this.env.DOCKER_PROD_DOMAIN
-                      vaultAddr = "https://${this.env.PROD_VAULT_HOST}"
-                      vaultCredID = "prod-vault"
-                      deployEnv = [
-                        "SPRING_PROFILES_ACTIVE=aws-prod",
-                        "RELEASE_VERSION=${this.prodVersion}",
-                        "ES_HOST=${this.env.PROD_ES}",
-                        "REPLICAS=3"
-                      ]
-                    }
+                    echo "IF there were a prod deployment, it would happen HERE!"
+                    // def prodEnvPort = deployStack {
+                    //   composeFiles = config.composeFiles
+                    //   stackName = config.stackName
+                    //   serviceName = config.serviceName
+                    //   vaultTokens = config.vaultTokens
+                    //   deployWaitTime = config.deployWaitTime
+                    //   dockerHost = this.env.PROD_DOCKER_SWARM_MANAGER
+                    //   dockerDomain = this.env.DOCKER_PROD_DOMAIN
+                    //   vaultAddr = "https://${this.env.PROD_VAULT_HOST}"
+                    //   vaultCredID = "prod-vault"
+                    //   deployEnv = [
+                    //     "SPRING_PROFILES_ACTIVE=aws-prod",
+                    //     "RELEASE_VERSION=${this.prodVersion}",
+                    //     "ES_HOST=${this.env.PROD_ES}",
+                    //     "REPLICAS=3"
+                    //   ]
+                    // }
                   }
                 }
 
