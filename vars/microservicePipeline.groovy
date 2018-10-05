@@ -181,7 +181,6 @@ def call(body) {
                     }
                 }
                 // If user defined a prod version to release, then release specified version to Production
-                deployments["prod"] = {
                   if (prodVersion != null && config.composeFiles != null) {
                     echo "IF there were a prod deployment, it would happen HERE!"
                     // def prodEnvPort = deployStack {
@@ -203,8 +202,6 @@ def call(body) {
                     // }
                   }
                 }
-
-                parallel deployments
 
             }
         } catch (ex) {
