@@ -102,7 +102,7 @@ def call(body) {
                                 testVaultTokenRole = config.testVaultTokenRole
                                 cucumberOpts = config.cucumberOpts
                                 options = config.intTestOptions
-                                keystore = "${this.env.DOCKER_CERT_LOCATION}/docker_swarm.jks"
+                                keystore = "${this.env.DOCKER_CERT_LOCATION}/functionalTesting.jks"
                                 keystorePassword = "changeit"
                             }
                         } catch (ex) {
@@ -142,7 +142,7 @@ def call(body) {
                                     servicePort = "${testEnvPort}"
                                     testVaultTokenRole = config.testVaultTokenRole
                                     options = config.perfTestOptions
-                                    keystore = "${this.env.DOCKER_CERT_LOCATION}/docker_swarm.jks"
+                                    keystore = "${this.env.DOCKER_CERT_LOCATION}/perfTesting.jks"
                                     keystorePassword = "changeit"
                                 }
                             } catch (ex) {
