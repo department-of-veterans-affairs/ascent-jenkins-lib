@@ -88,7 +88,7 @@ def call(body) {
                                 serviceName = config.serviceToTest
                                 vaultTokens = config.vaultTokens
                                 deployWaitTime = config.deployWaitTime
-                                keystoreAlias = "dev"
+                                keystoreAlias = "functionalTesting"
                                 port = config.containerPort
                                 deployEnv = [
                                     "SPRING_PROFILES_ACTIVE=aws-ci"
@@ -124,9 +124,9 @@ def call(body) {
                                     composeFiles = config.perfEnvironment
                                     vaultTokens = config.vaultTokens
                                     deployWaitTime = 120
-                                    dockerHost = "tcp://${this.env.PERF_SWARM_HOST}:2376"
+                                    dockerHost = "tcp:// ${this.env.PERF_SWARM_HOST}:2376"
                                     dockerDomain = this.env.DOCKER_PERF_DOMAIN
-                                    keystoreAlias = "perf"
+                                    keystoreAlias = "perfTesting"
                                     vaultAddr = this.env.VAULT_ADDR
                                     deployEnv = [
                                         "SPRING_PROFILES_ACTIVE=aws-ci",
