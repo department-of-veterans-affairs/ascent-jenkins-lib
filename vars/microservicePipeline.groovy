@@ -201,8 +201,6 @@ def call(body) {
                     //   ]
                     // }
                   }
-                }
-
             }
         } catch (ex) {
             if (currentBuild.result == null) {
