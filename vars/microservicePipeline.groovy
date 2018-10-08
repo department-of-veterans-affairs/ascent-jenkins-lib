@@ -111,7 +111,7 @@ def call(body) {
                                 currentBuild.result = 'FAILED'
                             }
                         } finally {
-                            undeployStack {}
+                            undeployStack { certFileName = "functionalTesting" }
                         }
                     }
 
@@ -155,6 +155,7 @@ def call(body) {
                                     dockerHost = "tcp://${this.env.PERF_SWARM_HOST}:2376"
                                     dockerDomain = this.env.DOCKER_PERF_DOMAIN
                                     vaultAddr = this.env.VAULT_ADDR
+                                    certFileName = "perfTesting"
                                 }
                             }
                         }

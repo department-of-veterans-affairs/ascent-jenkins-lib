@@ -24,6 +24,11 @@ def call(body) {
         config.vaultAddr = env.VAULT_ADDR
     }
 
+    if (config.certFileName == null) {
+      currentBuild.result = 'ABORTED'
+      error('Aborting pipeline cert file name not provided')
+    }
+
     stage("Retrieving Docker Certificates") {
       generateCerts {
         dockerHost = config.dockerHost
@@ -34,7 +39,7 @@ def call(body) {
     }
 
     def dockerCertPath = env.DOCKER_CERT_LOCATION
-    def dockerSSLArgs = "--tlsverify --tlscacert=${dockerCertPath}/ca.crt --tlscert=${dockerCertPath}/docker_swarm.crt --tlskey=${dockerCertPath}/docker_swarm.key"
+    def dockerSSLArgs = "--tlsverify --tlscacert=${dockerCertPath}/${config.certFileName}_ca.crt --tlscert=${dockerCertPath}/${config.certFileName}.crt --tlskey=${dockerCertPath}/${config.certFileName}.key"
 
     stage("Undeploying Stack: ${stackName}") {
         sh "docker ${dockerSSLArgs} --host ${config.dockerHost} stack rm ${stackName}"
