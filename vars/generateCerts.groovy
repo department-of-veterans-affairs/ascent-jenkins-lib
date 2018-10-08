@@ -29,7 +29,7 @@ def call(body) {
   }
 
   if(config.caFileName == null) {
-    config.caFileName = "${config.keystoreAlias}_ca"
+    config.caFileName = config.keystoreAlias
   }
 
   if(config.certFileName == null) {
@@ -64,10 +64,10 @@ def call(body) {
   //Load the CA certificate into the trusetd keystore
   echo "Importing CA certificate into /usr/lib/jvm/java-8-openjdk-amd64/jre/lib/security/cacerts"
   try {
-    sh "keytool -importcert -alias ${config.keystoreAlias} -keystore /usr/lib/jvm/java-8-openjdk-amd64/jre/lib/security/cacerts -noprompt -storepass changeit -file ${env.DOCKER_CERT_LOCATION}/${config.caFileName}.crt"
+    sh "keytool -importcert -alias ${config.keystoreAlias} -keystore /usr/lib/jvm/java-8-openjdk-amd64/jre/lib/security/cacerts -noprompt -storepass changeit -file ${env.DOCKER_CERT_LOCATION}/${config.caFileName}_ca.crt"
   } catch(Exception ex) {
     sh "keytool -delete -alias ${config.keystoreAlias} -keystore /usr/lib/jvm/java-8-openjdk-amd64/jre/lib/security/cacerts -storepass changeit"
-    sh "keytool -importcert -alias ${config.keystoreAlias} -keystore /usr/lib/jvm/java-8-openjdk-amd64/jre/lib/security/cacerts -noprompt -storepass changeit -file ${env.DOCKER_CERT_LOCATION}/${config.caFileName}.crt"
+    sh "keytool -importcert -alias ${config.keystoreAlias} -keystore /usr/lib/jvm/java-8-openjdk-amd64/jre/lib/security/cacerts -noprompt -storepass changeit -file ${env.DOCKER_CERT_LOCATION}/${config.caFileName}_ca.crt"
   }
   sh "keytool -list -alias ${config.keystoreAlias} -keystore /usr/lib/jvm/java-8-openjdk-amd64/jre/lib/security/cacerts -storepass changeit"
 
