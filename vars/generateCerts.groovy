@@ -59,6 +59,7 @@ def call(body) {
   // Get our Certificates
   withCredentials([string(credentialsId: "${config.vaultCredID}", variable: 'JENKINS_VAULT_TOKEN')]) {
     sh "consul-template -once -config=/tmp/templates/consul-template-config.hcl -vault-addr=${config.vaultAddress} -vault-token=${JENKINS_VAULT_TOKEN}"
+    sh "ls ${env.DOCKER_CERT_LOCATION}"
   }
 
   //Load the CA certificate into the trusetd keystore
