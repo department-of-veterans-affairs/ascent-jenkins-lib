@@ -29,7 +29,7 @@ def call(body) {
   }
 
   if(config.caFileName == null) {
-    config.caFilePrefix = config.keystoreAlias
+    config.caFileName = "${config.keystoreAlias}_ca"
   }
 
   if(config.certFileName == null) {
