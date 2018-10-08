@@ -53,8 +53,8 @@ def call(body) {
   sh "sed -i s?DOCKER_HOST_NAME?${config.dockerDomainName}?g /tmp/templates/docker_swarm.key.tpl"
   sh "sed -i s?DOCKER_HOST_IP?${DOCKER_IP_ADDRESS}?g /tmp/templates/docker_swarm.key.tpl"
   // edit the placement of the certificates
-  sh "sed -i s?CERT_FILE_NAME?${config.certFileName}?g /tmp/templates/consul-template-config.hcl"
-  sh "sed -i s?CA_FILE_NAME?${config.caFileName}?g /tmp/templates/consul-template-config.hcl"
+  sh "sed -i s?\\\\[CERT_FILE_NAME\\\\]?${config.certFileName}?g /tmp/templates/consul-template-config.hcl"
+  sh "sed -i s?\\\\[CA_FILE_NAME\\\\]?${config.caFileName}?g /tmp/templates/consul-template-config.hcl"
 
   // Get our Certificates
   withCredentials([string(credentialsId: "${config.vaultCredID}", variable: 'JENKINS_VAULT_TOKEN')]) {
