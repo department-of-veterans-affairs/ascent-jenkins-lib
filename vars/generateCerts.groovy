@@ -79,5 +79,11 @@ def call(body) {
   }
   sh "keytool -list -keystore ${env.DOCKER_CERT_LOCATION}/${config.certFileName}.jks -storepass changeit"
   sh "mvn -version"
+
+  echo "Resetting the consul template"
+  // edit the placement of the certificates
+  sh "sed -i s?${config.caFileName}_ca?[CA_FILE_NAME]_ca?g /tmp/templates/consul-template-config.hcl"
+  sh "sed -i s?${config.certFileName}?[CERT_FILE_NAME]?g /tmp/templates/consul-template-config.hcl"
+
   return "${env.DOCKER_CERT_LOCATION}/${config.certFileName}.jks"
 }
