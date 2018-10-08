@@ -88,6 +88,7 @@ def call(body) {
                                 serviceName = config.serviceToTest
                                 vaultTokens = config.vaultTokens
                                 deployWaitTime = config.deployWaitTime
+                                keystoreAlias = "functionalTesting"
                                 port = config.containerPort
                                 deployEnv = [
                                     "SPRING_PROFILES_ACTIVE=aws-ci"
@@ -101,7 +102,7 @@ def call(body) {
                                 testVaultTokenRole = config.testVaultTokenRole
                                 cucumberOpts = config.cucumberOpts
                                 options = config.intTestOptions
-                                keystore = "${this.env.DOCKER_CERT_LOCATION}/docker_swarm.jks"
+                                keystore = "${this.env.DOCKER_CERT_LOCATION}/functionalTesting.jks"
                                 keystorePassword = "changeit"
                             }
                         } catch (ex) {
@@ -123,8 +124,9 @@ def call(body) {
                                     composeFiles = config.perfEnvironment
                                     vaultTokens = config.vaultTokens
                                     deployWaitTime = 120
-                                    dockerHost = "tcp://${this.env.PERF_SWARM_HOST}:2376"
+                                    dockerHost = "tcp:// ${this.env.PERF_SWARM_HOST}:2376"
                                     dockerDomain = this.env.DOCKER_PERF_DOMAIN
+                                    keystoreAlias = "perfTesting"
                                     vaultAddr = this.env.VAULT_ADDR
                                     deployEnv = [
                                         "SPRING_PROFILES_ACTIVE=aws-ci",
@@ -140,7 +142,7 @@ def call(body) {
                                     servicePort = "${testEnvPort}"
                                     testVaultTokenRole = config.testVaultTokenRole
                                     options = config.perfTestOptions
-                                    keystore = "${this.env.DOCKER_CERT_LOCATION}/docker_swarm.jks"
+                                    keystore = "${this.env.DOCKER_CERT_LOCATION}/perfTesting.jks"
                                     keystorePassword = "changeit"
                                 }
                             } catch (ex) {
@@ -165,6 +167,7 @@ def call(body) {
                             stackName = config.stackName
                             serviceName = config.serviceToTest
                             vaultTokens = config.vaultTokens
+                            keystoreAlias = "dev"
                             deployWaitTime = config.deployWaitTime
                             dockerHost = this.env.CI_DOCKER_SWARM_MANAGER
                             deployEnv = [
@@ -188,6 +191,7 @@ def call(body) {
                                 stackName = config.stackName
                                 serviceName = config.serviceName
                                 vaultTokens = config.vaultTokens
+                                keystoreAlias = "perf"
                                 deployWaitTime = config.deployWaitTime
                                 dockerHost = "tcp://${this.env.PERF_SWARM_HOST}:2376"
                                 dockerDomain = this.env.DOCKER_PERF_DOMAIN
@@ -212,6 +216,7 @@ def call(body) {
                       deployWaitTime = config.deployWaitTime
                       dockerHost = this.env.STAGING_DOCKER_SWARM_MANAGER
                       dockerDomain = this.env.DOCKER_STAGE_DOMAIN
+                      keystoreAlias = "stage"
                       vaultAddr = "https://${this.env.STAGING_VAULT_HOST}"
                       vaultCredID = "staging-vault"
                       deployEnv = [
