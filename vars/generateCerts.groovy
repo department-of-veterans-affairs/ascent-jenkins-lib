@@ -40,6 +40,7 @@ def call(body) {
   def consulTemplateConfigFile =  "${tmpDir}/${config.keystoreAlias}-config.hcl"
 
   def DOCKER_IP_ADDRESS = config.dockerHost[6..-6]
+  DOCKER_IP_ADDRESS = DOCKER_IP_ADDRESS.trim()   // remove trailing whitespace just in case
   print "ip address: ${DOCKER_IP_ADDRESS}"
   // ------ populate dynamic templates in jenkins slave
   // CA
