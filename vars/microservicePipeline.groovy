@@ -224,7 +224,9 @@ def call(body) {
                         "SPRING_PROFILES_ACTIVE=aws-stage",
                         "RELEASE_VERSION=${this.params.releaseVersion}",
                         "ES_HOST=${this.env.STAGING_ES}",
-                        "REPLICAS=${config.replicas}"
+                        "REPLICAS=${config.replicas}",
+                        "VAULT_PORT=443",
+                        "VAULT_HOST=${this.env.STAGING_VAULT_HOST}"
                       ]
                     }
                   }
