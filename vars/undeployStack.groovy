@@ -7,7 +7,6 @@
 def call(body) {
 
     def config = [:]
-    def stackName = stackName()
     body.resolveStrategy = Closure.DELEGATE_FIRST
     body.delegate = config
     body()
@@ -22,6 +21,10 @@ def call(body) {
 
     if (config.vaultAddr == null) {
         config.vaultAddr = env.VAULT_ADDR
+    }
+
+    if (config.stackName == null) {
+        config.stackName = stackName()
     }
 
     if (config.certFileName == null) {
@@ -41,8 +44,11 @@ def call(body) {
     def dockerCertPath = env.DOCKER_CERT_LOCATION
     def dockerSSLArgs = "--tlsverify --tlscacert=${dockerCertPath}/${config.certFileName}_ca.crt --tlscert=${dockerCertPath}/${config.certFileName}.crt --tlskey=${dockerCertPath}/${config.certFileName}.key"
 
-    stage("Undeploying Stack: ${stackName}") {
-        sh "docker ${dockerSSLArgs} --host ${config.dockerHost} stack rm ${stackName}"
+    stage("Undeploying Stack: ${config.stackName}") {
+        def stackExists = sh(returnStdout: true, script: "docker ${dockerSSLArgs} --host ${config.dockerHost} stack ls | grep ${config.stackName}")
+        if (stackExists?.trim()) {
+            sh "docker ${dockerSSLArgs} --host ${config.dockerHost} stack rm ${config.stackName}"
+        }
     }
 
 }
