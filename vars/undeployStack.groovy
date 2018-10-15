@@ -34,11 +34,6 @@ def call(body) {
         config.stackName = stackName()
     }
 
-    if (config.certFileName == null) {
-      currentBuild.result = 'ABORTED'
-      error('Aborting pipeline cert file name not provided')
-    }
-
     stage("Retrieving Docker Certificates") {
       generateCerts {
         dockerHost = config.dockerHost
