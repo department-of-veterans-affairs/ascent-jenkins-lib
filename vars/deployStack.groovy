@@ -14,9 +14,6 @@ def call(body) {
     body.delegate = config
     body()
 
-    def dockerCertPath = env.DOCKER_CERT_LOCATION
-    def dockerSSLArgs = "--tlsverify --tlscacert=${dockerCertPath}/ca.crt --tlscert=${dockerCertPath}/docker_swarm.crt --tlskey=${dockerCertPath}/docker_swarm.key"
-
     if (config.composeFiles == null) {
         error('No compose files defined for deployment')
     }
@@ -52,6 +49,12 @@ def call(body) {
     if (config.networkName == null) {
         config.networkName = 'ascentnet'
     }
+    if(config.keystoreAlias == null) {
+        config.keystoreAlias = config.dockerDomain
+    }
+    if(config.certFileName == null) {
+      config.certFileName = config.keystoreAlias
+    }
 
     for (file in config.composeFiles) {
         if (fileExists(file)) {
@@ -60,6 +63,10 @@ def call(body) {
             error(file + 'was not found')
         }
     }
+
+    def dockerCertPath = env.DOCKER_CERT_LOCATION
+    def dockerSSLArgs = "--tlsverify --tlscacert=${dockerCertPath}/${config.certFileName}_ca.crt --tlscert=${dockerCertPath}/${config.certFileName}.crt --tlskey=${dockerCertPath}/${config.certFileName}.key"
+
 
     def deployEnv = ["DRIVER_TYPE=overlay", "VAULT_SCHEME=https"]
     if (config.deployEnv != null) {
@@ -70,6 +77,9 @@ def call(body) {
         echo "Adding port to env..."
         deployEnv.add("PORT=${config.port}")
     }
+
+    deployEnv.add("VAULT_ADDR=${config.vaultAddr}")
+
     echo "Deploy Env is: ${deployEnv}"
 
     stage("Requesting Vault Token for application") {
@@ -88,6 +98,7 @@ def call(body) {
         dockerDomainName = config.dockerDomain
         vaultCredID = config.vaultCredID
         vaultAddress = config.vaultAddr
+        keystoreAlias = config.keystoreAlias
       }
     }
 
