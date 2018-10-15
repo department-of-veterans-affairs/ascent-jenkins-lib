@@ -34,6 +34,10 @@ def call(body) {
         config.stackName = stackName()
     }
 
+    if (config.certFileName == null) {
+      config.certFileName = config.keystoreAlias
+    }
+
     stage("Retrieving Docker Certificates") {
       generateCerts {
         dockerHost = config.dockerHost
