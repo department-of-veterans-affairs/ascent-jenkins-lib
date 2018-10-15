@@ -52,8 +52,8 @@ def call(body) {
     def dockerSSLArgs = "--tlsverify --tlscacert=${dockerCertPath}/${config.certFileName}_ca.crt --tlscert=${dockerCertPath}/${config.certFileName}.crt --tlskey=${dockerCertPath}/${config.certFileName}.key"
 
     stage("Undeploying Stack: ${config.stackName}") {
-        def stackExists = sh(returnStdout: true, script: "docker ${dockerSSLArgs} --host ${config.dockerHost} stack ls | grep ${config.stackName}")
-        if (stackExists?.trim()) {
+        def stackExists = sh(returnStatus: true, script: "docker ${dockerSSLArgs} --host ${config.dockerHost} stack ls | grep ${config.stackName}")
+        if (stackExists == 0) {
             sh "docker ${dockerSSLArgs} --host ${config.dockerHost} stack rm ${config.stackName}"
         }
     }
