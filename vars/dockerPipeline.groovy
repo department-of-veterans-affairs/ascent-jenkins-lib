@@ -73,7 +73,7 @@ def call(body) {
                 //Since we use latest in Dev environment, we need to undeploy the container first to make
                 //sure it gets updated
                 undeployStack {
-                    certFileName = "dev"
+                    keystoreAlias = "dev"
                     stackName = config.stackName
                 }
 

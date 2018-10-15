@@ -23,6 +23,13 @@ def call(body) {
         config.vaultAddr = env.VAULT_ADDR
     }
 
+    if (config.vaultCredID == null) {
+        config.vaultCredID = "jenkins-vault"
+    }
+    if(config.keystoreAlias == null) {
+        config.keystoreAlias = config.dockerDomain
+    }
+
     if (config.stackName == null) {
         config.stackName = stackName()
     }
@@ -36,8 +43,9 @@ def call(body) {
       generateCerts {
         dockerHost = config.dockerHost
         dockerDomainName = config.dockerDomain
-        vaultCredID = "jenkins-vault"
+        vaultCredID = config.vaultCredID
         vaultAddress = config.vaultAddr
+        keystoreAlias = config.keystoreAlias
       }
     }
 
