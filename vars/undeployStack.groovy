@@ -7,7 +7,6 @@
 def call(body) {
 
     def config = [:]
-    def stackName = stackName()
     body.resolveStrategy = Closure.DELEGATE_FIRST
     body.delegate = config
     body()
@@ -24,25 +23,39 @@ def call(body) {
         config.vaultAddr = env.VAULT_ADDR
     }
 
+    if (config.vaultCredID == null) {
+        config.vaultCredID = "jenkins-vault"
+    }
+    if(config.keystoreAlias == null) {
+        config.keystoreAlias = config.dockerDomain
+    }
+
+    if (config.stackName == null) {
+        config.stackName = stackName()
+    }
+
     if (config.certFileName == null) {
-      currentBuild.result = 'ABORTED'
-      error('Aborting pipeline cert file name not provided')
+      config.certFileName = config.keystoreAlias
     }
 
     stage("Retrieving Docker Certificates") {
       generateCerts {
         dockerHost = config.dockerHost
         dockerDomainName = config.dockerDomain
-        vaultCredID = "jenkins-vault"
+        vaultCredID = config.vaultCredID
         vaultAddress = config.vaultAddr
+        keystoreAlias = config.keystoreAlias
       }
     }
 
     def dockerCertPath = env.DOCKER_CERT_LOCATION
     def dockerSSLArgs = "--tlsverify --tlscacert=${dockerCertPath}/${config.certFileName}_ca.crt --tlscert=${dockerCertPath}/${config.certFileName}.crt --tlskey=${dockerCertPath}/${config.certFileName}.key"
 
-    stage("Undeploying Stack: ${stackName}") {
-        sh "docker ${dockerSSLArgs} --host ${config.dockerHost} stack rm ${stackName}"
+    stage("Undeploying Stack: ${config.stackName}") {
+        def stackExists = sh(returnStatus: true, script: "docker ${dockerSSLArgs} --host ${config.dockerHost} stack ls | grep ${config.stackName}")
+        if (stackExists == 0) {
+            sh "docker ${dockerSSLArgs} --host ${config.dockerHost} stack rm ${config.stackName}"
+        }
     }
 
 }

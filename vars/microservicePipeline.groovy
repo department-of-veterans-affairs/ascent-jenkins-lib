@@ -163,6 +163,14 @@ def call(body) {
 
                     //If all the tests have passed, deploy this build to the Dev environment
                     if (!isPullRequest() && currentBuild.result == null && config.composeFiles != null) {
+                        //Since we use latest in Dev environment, we need to undeploy the container first to make
+                        //sure it gets updated
+                        undeployStack {
+                            keystoreAlias = "dev"
+                            stackName = config.stackName
+                        }
+
+
                         def devEnvPort = deployStack {
                             composeFiles = config.composeFiles
                             stackName = config.stackName
