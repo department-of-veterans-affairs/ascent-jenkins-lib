@@ -77,6 +77,9 @@ def call(body) {
         echo "Adding port to env..."
         deployEnv.add("PORT=${config.port}")
     }
+
+    deployEnv.add("VAULT_ADDR=${config.vaultAddr}")
+
     echo "Deploy Env is: ${deployEnv}"
 
     stage("Requesting Vault Token for application") {
