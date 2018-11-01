@@ -9,9 +9,6 @@ def call(body) {
     if (config.directory == null) {
         config.directory = '.'
     }
-    if (config.upstreamProjects != null) {
-        triggers.add(upstream(threshold: 'SUCCESS', upstreamProjects: config.upstreamProjects))
-    }
 
     if (config.dockerBuilds == null) {
         config.dockerBuilds = [
