@@ -27,15 +27,6 @@ def call(body) {
 
     dir("${config.directory}") {
 
-        stage('Debug') {
-            echo "Branch Name: ${env.BRANCH_NAME}"
-            echo "Change ID: ${env.CHANGE_ID}"
-            echo "Change URL: ${env.CHANGE_URL}"
-            echo "Change Target: ${env.CHANGE_TARGET}"
-            echo "ChangeSet Size: ${currentBuild.changeSets.size()}"
-            echo "Pull Request?: ${isPullRequest()}"
-        }
-
         stage('Maven Build') {
             withCredentials([usernamePassword(credentialsId: 'nexus', usernameVariable: 'DEPLOY_USER', passwordVariable: 'DEPLOY_PASSWORD')]) {
                 sh "${mvnCmd} -U clean compile test-compile"
@@ -44,7 +35,9 @@ def call(body) {
 
         try {
             stage('Unit Testing') {
-                sh "${mvnCmd} -Dmaven.test.failure.ignore=true package"
+                withMaven() {
+                    sh "${mvnCmd} -Dmaven.test.failure.ignore=true package"
+                }
             }
         } finally {
             step([$class: 'JUnitResultArchiver', testResults: '**/surefire-reports/*.xml', healthScaleFactor: 1.0, allowEmptyResults: true])
