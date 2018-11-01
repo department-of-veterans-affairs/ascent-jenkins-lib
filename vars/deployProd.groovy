@@ -70,6 +70,8 @@ def call(body) {
       }
 
       stage('Push to master branch'){
+        // Commit to master
+        sh "git commit -a -m \"Merge tag ${config.prodVersion} with master\""
         //Push the release version to master branch
         sh "git push https://${GIT_USERNAME}:${GIT_PASSWORD}@${urlMinusProtocol} master"
       }
