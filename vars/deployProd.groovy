@@ -35,7 +35,44 @@ def call(body) {
 
 
   stage('Checkout Tag') {
-    sh "git checkout tags/${config.prodVersion}"
+    sh "git checkout master"
+  }
+
+  def url = ''
+  def urlMinusProtocol = ''
+  withCredentials([usernamePassword(credentialsId: 'github', passwordVariable: 'GIT_PASSWORD', usernameVariable: 'GIT_USERNAME')]) {
+      stage('Check master branch') {
+          url = sh(returnStdout: true, script: 'git config remote.origin.url').trim()
+          urlMinusProtocol = url.substring(url.indexOf('://')+3)
+
+          sh "git fetch --no-tags --progress https://${GIT_USERNAME}:${GIT_PASSWORD}@${urlMinusProtocol} +refs/tags/${config.prodVersion}:refs/remotes/origin/master"
+
+          //Compare to master branch to look for any unmerged changes in the tag
+          def commitsBehind = sh(returnStdout: true, script: "git rev-list --right-only --count refs/tags/${config.prodVersion}...remotes/origin/master").trim().toInteger()
+          if (commitsBehind > 0) {
+              error("Master Branch has changesets not included in this tag ${config.prodVersion}. Please merge master into the tag before deploying to prod.")
+          } else {
+              echo "Tag ${config.prodVersion} is up to date with changesets on master. Proceeding with release..."
+          }
+
+          //Let's do the same thing with master too, just in case
+          def commitsBehind = sh(returnStdout: true, script: "git rev-list --right-only --count refs/heads/master...remotes/origin/master").trim().toInteger()
+          if (commitsBehind > 0) {
+              error("Master Branch has changesets not included in this branch. Please merge master into this branch before deploying to prod.")
+          } else {
+              echo "Branch is up to date with changesets on master. Proceeding with release..."
+          }
+
+          sh "git fetch https://${GIT_USERNAME}:${GIT_PASSWORD}@${urlMinusProtocol} +refs/tags/${config.prodVersion}:refs/tags/${config.prodVersion}"
+
+          // Merge tag into master
+          sh "git merge tags/${config.prodVersion}"
+      }
+
+      stage('Push to master branch'){
+        //Push the release version to master branch
+        sh "git push https://${GIT_USERNAME}:${GIT_PASSWORD}@${urlMinusProtocol} master"
+      }
   }
 
   def keystoreAlias = "prod"
@@ -53,7 +90,7 @@ def call(body) {
       vaultAddr = "https://${this.env.PROD_VAULT_HOST}"
       vaultCredID = "prodvault"
       deployEnv = [
-        "SPRING_PROFILES_ACTIVE=awsprod",
+        "SPRING_PROFILES_ACTIVE=aws-prod",
         "RELEASE_VERSION=${this.prodVersion}",
         "ES_HOST=${this.env.PROD_ES}",
         "REPLICAS=3"
@@ -86,13 +123,6 @@ def call(body) {
     //     keystore = "${this.env.DOCKER_CERT_LOCATION}/${keystoreAlias}.jks"
     //     keystorePassword = "changeit"
     // }
-  }
-
-  stage('Push to Master') {
-    withCredentials([usernamePassword(credentialsId: 'github', passwordVariable: 'GIT_PASSWORD', usernameVariable: 'GIT_USERNAME')]) {
-        //Push the release version to master branch
-        sh "git push https://${GIT_USERNAME}:${GIT_PASSWORD}@${urlMinusProtocol} master"
-    }
   }
 
 }
