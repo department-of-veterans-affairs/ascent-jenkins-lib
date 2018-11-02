@@ -1,16 +1,13 @@
 def call(body) {
 
     def config = [:]
-    def triggers = []
+    def triggers = [snapshotDependencies()]
     body.resolveStrategy = Closure.DELEGATE_FIRST
     body.delegate = config
     body()
 
     if (config.directory == null) {
         config.directory = '.'
-    }
-    if (config.upstreamProjects != null) {
-        triggers.add(upstream(threshold: 'SUCCESS', upstreamProjects: config.upstreamProjects))
     }
 
     node {

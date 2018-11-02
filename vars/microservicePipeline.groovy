@@ -1,7 +1,7 @@
 def call(body) {
 
     def config = [:]
-    def triggers = []
+    def triggers = [snapshotDependencies()]
     body.resolveStrategy = Closure.DELEGATE_FIRST
     body.delegate = config
     body()
