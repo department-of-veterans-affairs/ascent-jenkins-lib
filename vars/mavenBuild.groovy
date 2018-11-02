@@ -35,9 +35,7 @@ def call(body) {
 
         try {
             stage('Unit Testing') {
-                withMaven() {
-                    sh "${mvnCmd} -Dmaven.test.failure.ignore=true package"
-                }
+                sh "${mvnCmd} -Dmaven.test.failure.ignore=true package"
             }
         } finally {
             step([$class: 'JUnitResultArchiver', testResults: '**/surefire-reports/*.xml', healthScaleFactor: 1.0, allowEmptyResults: true])
@@ -86,7 +84,9 @@ def call(body) {
             }
             stage('Deploy to Repository') {
                 withCredentials([usernamePassword(credentialsId: 'nexus', usernameVariable: 'DEPLOY_USER', passwordVariable: 'DEPLOY_PASSWORD')]) {
-                    sh "${mvnCmd} deploy"
+                    withMaven() {
+                        sh "${mvnCmd} deploy"
+                    }
                 }
             }
         }
