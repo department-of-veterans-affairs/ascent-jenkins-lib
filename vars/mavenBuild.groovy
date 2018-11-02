@@ -27,15 +27,6 @@ def call(body) {
 
     dir("${config.directory}") {
 
-        stage('Debug') {
-            echo "Branch Name: ${env.BRANCH_NAME}"
-            echo "Change ID: ${env.CHANGE_ID}"
-            echo "Change URL: ${env.CHANGE_URL}"
-            echo "Change Target: ${env.CHANGE_TARGET}"
-            echo "ChangeSet Size: ${currentBuild.changeSets.size()}"
-            echo "Pull Request?: ${isPullRequest()}"
-        }
-
         stage('Maven Build') {
             withCredentials([usernamePassword(credentialsId: 'nexus', usernameVariable: 'DEPLOY_USER', passwordVariable: 'DEPLOY_PASSWORD')]) {
                 sh "${mvnCmd} -U clean compile test-compile"
@@ -93,7 +84,9 @@ def call(body) {
             }
             stage('Deploy to Repository') {
                 withCredentials([usernamePassword(credentialsId: 'nexus', usernameVariable: 'DEPLOY_USER', passwordVariable: 'DEPLOY_PASSWORD')]) {
-                    sh "${mvnCmd} deploy"
+                    withMaven() {
+                        sh "${mvnCmd} deploy"
+                    }
                 }
             }
         }
