@@ -197,6 +197,7 @@ def call(body) {
                               ]
                           }
                       }
+                  }
 
                   // Deploy platform services to performance if dev deployment was successful and
                   //     if this is  a release build.
@@ -254,6 +255,7 @@ def call(body) {
                     parallel deployments
                   }
               }
+            }
         } catch (ex) {
             if (currentBuild.result == null) {
                 currentBuild.result = 'FAILED'
