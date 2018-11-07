@@ -49,7 +49,7 @@ def call(body) {
         if(isConflict) {
           // abort the merge
           sh "git merge --abort"
-          error("Conflict between tag ${config.prodVersion} and master!"
+          error("Conflict between tag ${config.prodVersion} and master!")
         }
       }
   }
