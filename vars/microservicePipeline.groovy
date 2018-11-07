@@ -254,7 +254,6 @@ def call(body) {
                     parallel deployments
                   }
               }
-            }
         } catch (ex) {
             if (currentBuild.result == null) {
                 currentBuild.result = 'FAILED'
