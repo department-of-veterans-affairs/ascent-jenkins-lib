@@ -40,7 +40,7 @@ def call(body) {
         url = sh(returnStdout: true, script: 'git config remote.origin.url').trim()
         urlMinusProtocol = url.substring(url.indexOf('://')+3)
         sh "git fetch --progress https://${GIT_USERNAME}:${GIT_PASSWORD}@${urlMinusProtocol} +refs/heads/master:refs/remotes/origin/master"
-        sh "git checkout master"
+        sh "git checkout -b master origin/master"
         // Get the tags from the origin repo
         //sh "git fetch --tags origin"
         // Do a local merge without committing anything, checking for conflicts
