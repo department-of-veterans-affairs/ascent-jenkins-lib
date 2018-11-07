@@ -50,7 +50,7 @@ def call(body) {
             if(params.isProdDeployment) {
               deployProd {
                 prodVersion = this.params.productionVersion
-                composeFiles = this.composeFiles
+                composeFiles = config.composeFiles
                 stackName = config.stackName
                 serviceName = config.serviceName
                 vaultTokens = config.vaultTokens
