@@ -44,8 +44,9 @@ def call(body) {
         // Get the tags from the origin repo
         //sh "git fetch --tags origin"
         // Do a local merge without committing anything, checking for conflicts
-          def isConflict =  sh(returnStdout: true, script:"git merge --no-commit --no-ff tags/${config.prodVersion} | grep CONFLICT").matches("CONFLICT.*")
-        if(isConflict) {
+        try {
+          sh("git merge --no-commit --no-ff tags/${config.prodVersion} | grep -v CONFLICT")
+        } catch (ex) {
           // abort the merge
           sh "git merge --abort"
           error("Conflict between tag ${config.prodVersion} and master!")
