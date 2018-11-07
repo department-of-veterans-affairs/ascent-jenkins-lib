@@ -33,17 +33,16 @@ def call(body) {
       config.directory = '.'
   }
 
-
-  stage('Checkout Tag') {
-    sh "git checkout master"
-  }
-
   def url = ''
   def urlMinusProtocol = ''
   withCredentials([usernamePassword(credentialsId: 'github', passwordVariable: 'GIT_PASSWORD', usernameVariable: 'GIT_USERNAME')]) {
       stage('Check for conflicts') {
+        url = sh(returnStdout: true, script: 'git config remote.origin.url').trim()
+        urlMinusProtocol = url.substring(url.indexOf('://')+3)
+        sh "git fetch --progress https://${GIT_USERNAME}:${GIT_PASSWORD}@${urlMinusProtocol} +refs/heads/master:refs/remotes/origin/master"
+        sh "git checkout master"
         // Get the tags from the origin repo
-          sh "git fetch --tags origin"
+        //sh "git fetch --tags origin"
         // Do a local merge without committing anything, checking for conflicts
           def isConflict =  sh(returnStdout: true, script:"git merge --no-commit --no-ff tags/${config.prodVersion} | grep CONFLICT").matches("CONFLICT.*")
         if(isConflict) {
