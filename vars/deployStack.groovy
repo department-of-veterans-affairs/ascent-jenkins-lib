@@ -134,6 +134,7 @@ def call(body) {
         echo 'Sleep for a few minutes and cross our fingers that the services started. Need to find a more reliable way of checking container health.'
         sleep(config.deployWaitTime)
         sh "docker ${dockerSSLArgs} --host ${config.dockerHost} stack ps ${config.stackName} --no-trunc"
+        sh "docker ${dockerSSLArgs} --host ${config.dockerHost} stack services ${config.stackName}"
         echo 'Containers are successfully deployed'
 
         if (config.serviceName != null) {
