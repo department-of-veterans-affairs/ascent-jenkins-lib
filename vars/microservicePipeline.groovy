@@ -38,13 +38,13 @@ def call(body) {
         ])
 
         try {
+            stage('Checkout SCM') {
+                checkout scm
+            }
+
             if (config.composeFiles == null && fileExists("docker-compose.yml")) {
                 echo('No compose files defined for deployment. Defaulting to docker-compose.yml...')
                 config.composeFiles = ["docker-compose.yml"]
-            }
-
-            stage('Checkout SCM') {
-                checkout scm
             }
 
             if(params.isProdDeployment) {
