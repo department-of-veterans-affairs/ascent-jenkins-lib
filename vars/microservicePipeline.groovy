@@ -43,6 +43,10 @@ def call(body) {
                 config.composeFiles = ["docker-compose.yml"]
             }
 
+            stage('Checkout SCM') {
+                checkout scm
+            }
+
             if(params.isProdDeployment) {
               deployProd {
                 prodVersion = this.params.productionVersion
@@ -53,9 +57,6 @@ def call(body) {
                 directory = config.directory
               }
             } else {
-              stage('Checkout SCM') {
-                  checkout scm
-              }
 
               if (params.isRelease) {
                   //Execute maven release process and receive the Git Tag for the release
