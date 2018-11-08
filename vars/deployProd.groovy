@@ -47,9 +47,10 @@ def call(body) {
         try {
           sh("git merge --no-commit --no-ff tags/${config.prodVersion} 2>&1 | grep -v CONFLICT")
         } catch (ex) {
+          error("Conflict between tag ${config.prodVersion} and master!")
+        } finally {
           // abort the merge
           sh "git merge --abort"
-          error("Conflict between tag ${config.prodVersion} and master!")
         }
       }
   }
@@ -59,7 +60,7 @@ def call(body) {
   stage('Deploy to Production') {
     println("Checkout tags/${config.prodVersion}")
     // Deploy from the tag
-    sh "git checkout tags/${config.prodVersion}"
+    sh "git checkout -b ${config.prodVersion} tags/${config.prodVersion}"
     def prodEnvPort = deployStack {
       composeFiles = config.composeFiles
       stackName = config.stackName
@@ -73,7 +74,7 @@ def call(body) {
       vaultCredID = "prodvault"
       deployEnv = [
         "SPRING_PROFILES_ACTIVE=aws-prod",
-        "RELEASE_VERSION=${this.prodVersion}",
+        "RELEASE_VERSION=${config.prodVersion}",
         "ES_HOST=${this.env.PROD_ES}",
         "REPLICAS=3"
       ]
