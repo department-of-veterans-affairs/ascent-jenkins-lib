@@ -45,7 +45,7 @@ def call(body) {
         //sh "git fetch --tags origin"
         // Do a local merge without committing anything, checking for conflicts
         try {
-          sh("git merge --no-commit --no-ff tags/${config.prodVersion} | grep -v CONFLICT")
+          sh("git merge --no-commit --no-ff tags/${config.prodVersion} 2>&1 | grep -v CONFLICT")
         } catch (ex) {
           // abort the merge
           sh "git merge --abort"
@@ -97,16 +97,15 @@ def call(body) {
         url = sh(returnStdout: true, script: 'git config remote.origin.url').trim()
         urlMinusProtocol = url.substring(url.indexOf('://')+3)
         sh "git checkout master"
-        def isNoMerge = sh(returnStdout: true, script:"git merge --no-commit --no-ff tags/${config.prodVersion}").matches("Already up to date.*")
-
-        // Abort the local changes if the tag is up to date with the master
-        if(isNoMerge) {
-          sh "git merge --abort"
-        } else {
+        try {
+          sh "git merge --no-commit --no-ff tags/${config.prodVersion} 2>&1 | grep -v Already up to date."
           // Go ahead and commit if the tag has changes
           sh "git commit -a -m \"Merge tag ${config.prodVersion} into master\""
           //Push the merged in tag to master branch
           sh "git push https://${GIT_USERNAME}:${GIT_PASSWORD}@${urlMinusProtocol} master"
+        } catch (ex) {
+          //Exception means that master already has the tag changes. There is nothing to merge.
+          sh "git merge --abort"
         }
       }
     }
