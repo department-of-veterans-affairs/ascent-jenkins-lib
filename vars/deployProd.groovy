@@ -71,7 +71,7 @@ def call(body) {
       dockerHost = this.env.PROD_DOCKER_SWARM_MANAGER
       dockerDomain = this.env.DOCKER_PROD_DOMAIN
       vaultAddr = "https://${this.env.PROD_VAULT_HOST}"
-      vaultCredID = "prodvault"
+      vaultCredID = "prod-vault"
       deployEnv = [
         "SPRING_PROFILES_ACTIVE=aws-prod",
         "RELEASE_VERSION=${config.prodVersion}",
@@ -130,10 +130,10 @@ def call(body) {
         dockerHost = this.env.PROD_DOCKER_SWARM_MANAGER
         dockerDomain = this.env.DOCKER_PROD_DOMAIN
         vaultAddr = "https://${this.env.PROD_VAULT_HOST}"
-        vaultCredID = "prodvault"
+        vaultCredID = "prod-vault"
         deployEnv = [
           "SPRING_PROFILES_ACTIVE=aws-prod",
-          "RELEASE_VERSION=${this.prodVersion}",
+          "RELEASE_VERSION=${config.prodVersion}",
           "ES_HOST=${this.env.PROD_ES}",
           "REPLICAS=3"
         ]
