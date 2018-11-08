@@ -99,7 +99,7 @@ def call(body) {
         urlMinusProtocol = url.substring(url.indexOf('://')+3)
         sh "git checkout master"
         try {
-          sh "git merge --no-commit --no-ff tags/${config.prodVersion} 2>&1 | grep -v Already up to date."
+          sh "git merge --no-commit --no-ff tags/${config.prodVersion} 2>&1 | grep -v 'Already up to date.''"
           // Go ahead and commit if the tag has changes
           sh "git commit -a -m \"Merge tag ${config.prodVersion} into master\""
           //Push the merged in tag to master branch
