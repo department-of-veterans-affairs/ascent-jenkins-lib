@@ -21,7 +21,7 @@ def call(body) {
     }
 
     if (config.vaultTokens == null) {
-        config.vaultTokens = []
+        config.vaultTokens = [:]
     }
 
     node {
