@@ -20,6 +20,10 @@ def call(body) {
         config.replicas = 3
     }
 
+    if (config.vaultTokens == null) {
+        config.vaultTokens = [:]
+    }
+
     node {
         properties([
             disableConcurrentBuilds(),
