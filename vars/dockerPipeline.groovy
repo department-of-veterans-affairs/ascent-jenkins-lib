@@ -30,7 +30,9 @@ def call(body) {
             parameters ([
                 booleanParam(name: 'isRelease', defaultValue: false, description: 'Release this build?'),
                 string(name: 'releaseVersion', defaultValue: '', description: 'Provide the release version:'),
-                string(name: 'developmentVersion', defaultValue: '', description: 'Provide the next development version:')
+                string(name: 'developmentVersion', defaultValue: '', description: 'Provide the next development version:'),
+                booleanParam(name: 'isProdDeployment', defaultValue: false, description: 'Deploy this build to Production?'),
+                string(name: 'productionVersion', defaultValue: '', description: 'Provide the version to deploy to production:')
             ]),
             buildDiscarder(logRotator(daysToKeepStr: '5', numToKeepStr: '5'))
         ])
@@ -45,104 +47,115 @@ def call(body) {
                 config.composeFiles = ["docker-compose.yml"]
             }
 
-            if (params.isRelease) {
-                //Execute maven release process and receive the Git Tag for the release
-                dockerRelease {
-                    directory = config.directory
-                    releaseVersion = this.params.releaseVersion
-                }
-            }
+            if (params.isProdDeployment) {
+              deployProd {
+                prodVersion = this.params.productionVersion
+                composeFiles = config.composeFiles
+                stackName = config.stackName
+                serviceName = config.serviceName
+                vaultTokens = config.vaultTokens
+                directory = config.directory
+              }
+            } else {
 
-            def builds = [:]
-            for (x in config.dockerBuilds.keySet()) {
-                def image = x
-                builds[image] = {
-                    echo "Image Name: ${image}"
-                    dockerBuild {
-                        directory = config.dockerBuilds[image]
-                        imageName = image
-                        version = this.params.releaseVersion
+                if (params.isRelease) {
+                    //Execute maven release process and receive the Git Tag for the release
+                    dockerRelease {
+                        directory = config.directory
+                        releaseVersion = this.params.releaseVersion
                     }
                 }
-            }
 
-            parallel builds
-
-            //If all the tests have passed, deploy this build to the Dev environment
-            if (!isPullRequest() && currentBuild.result == null && config.composeFiles != null) {
-                //Since we use latest in Dev environment, we need to undeploy the container first to make
-                //sure it gets updated
-                undeployStack {
-                    keystoreAlias = "dev"
-                    stackName = config.stackName
-                }
-
-                def devEnvPort = deployStack {
-                    composeFiles = config.composeFiles
-                    stackName = config.stackName
-                    serviceName = config.serviceToTest
-                    vaultTokens = config.vaultTokens
-                    deployWaitTime = config.deployWaitTime
-                    dockerHost = this.env.CI_DOCKER_SWARM_MANAGER
-                    deployEnv = [
-                        "SPRING_PROFILES_ACTIVE=aws-dev",
-                        "ES_HOST=${this.env.DEV_ES}"
-                    ]
-                }
-            }
-
-            // Deploy platform services to performance if dev deployment was successful and
-            //     if this is  a release build.
-            if (currentBuild.result == null
-                && params.isRelease
-                && config.composeFiles != null)  {
-                def deployments = [:]
-                if (env.JOB_NAME.contains("ascent-")) {
-                    deployments["Performance"] = {
-                        stage("Deploy Platform Services to Perf"){
-                            def perfEnvPort = deployStack {
-                                composeFiles = config.composeFiles
-                                stackName = config.stackName
-                                serviceName = config.serviceName
-                                vaultTokens = config.vaultTokens
-                                deployWaitTime = config.deployWaitTime
-                                dockerHost = "tcp://${this.env.PERF_SWARM_HOST}:2376"
-                                dockerDomain = this.env.DOCKER_PERF_DOMAIN
-                                deployEnv = [
-                                "SPRING_PROFILES_ACTIVE=aws-ci",
-                                "RELEASE_VERSION=${this.params.releaseVersion}",
-                                "ES_HOST=${this.env.DEV_ES}",
-                                "REPLICAS=${config.replicas}"
-                                ]
-                            }
+                def builds = [:]
+                for (x in config.dockerBuilds.keySet()) {
+                    def image = x
+                    builds[image] = {
+                        echo "Image Name: ${image}"
+                        dockerBuild {
+                            directory = config.dockerBuilds[image]
+                            imageName = image
+                            version = this.params.releaseVersion
                         }
                     }
                 }
 
-                // If deployment to dev passed and this  is a release build, then deploy to staging
-                deployments["Staging"] = {
-                    def stageEnvPort = deployStack {
+                parallel builds
+
+                //If all the tests have passed, deploy this build to the Dev environment
+                if (!isPullRequest() && currentBuild.result == null && config.composeFiles != null) {
+                    //Since we use latest in Dev environment, we need to undeploy the container first to make
+                    //sure it gets updated
+                    undeployStack {
+                        keystoreAlias = "dev"
+                        stackName = config.stackName
+                    }
+
+                    def devEnvPort = deployStack {
                         composeFiles = config.composeFiles
                         stackName = config.stackName
-                        serviceName = config.serviceName
+                        serviceName = config.serviceToTest
                         vaultTokens = config.vaultTokens
                         deployWaitTime = config.deployWaitTime
-                        dockerHost = this.env.STAGING_DOCKER_SWARM_MANAGER
-                        dockerDomain = this.env.DOCKER_STAGE_DOMAIN
-                        vaultAddr = "https://${this.env.STAGING_VAULT_HOST}"
-                        vaultCredID = "staging-vault"
+                        dockerHost = this.env.CI_DOCKER_SWARM_MANAGER
                         deployEnv = [
-                        "SPRING_PROFILES_ACTIVE=aws-stage",
-                        "RELEASE_VERSION=${this.params.releaseVersion}",
-                        "ES_HOST=${this.env.STAGING_ES}",
-                        "REPLICAS=${config.replicas}"
+                            "SPRING_PROFILES_ACTIVE=aws-dev",
+                            "ES_HOST=${this.env.DEV_ES}"
                         ]
                     }
                 }
 
-                parallel deployments
-            }
+                // Deploy platform services to performance if dev deployment was successful and
+                //     if this is  a release build.
+                if (currentBuild.result == null
+                    && params.isRelease
+                    && config.composeFiles != null)  {
+                    def deployments = [:]
+                    if (env.JOB_NAME.contains("ascent-")) {
+                        deployments["Performance"] = {
+                            stage("Deploy Platform Services to Perf"){
+                                def perfEnvPort = deployStack {
+                                    composeFiles = config.composeFiles
+                                    stackName = config.stackName
+                                    serviceName = config.serviceName
+                                    vaultTokens = config.vaultTokens
+                                    deployWaitTime = config.deployWaitTime
+                                    dockerHost = "tcp://${this.env.PERF_SWARM_HOST}:2376"
+                                    dockerDomain = this.env.DOCKER_PERF_DOMAIN
+                                    deployEnv = [
+                                    "SPRING_PROFILES_ACTIVE=aws-ci",
+                                    "RELEASE_VERSION=${this.params.releaseVersion}",
+                                    "ES_HOST=${this.env.DEV_ES}",
+                                    "REPLICAS=${config.replicas}"
+                                    ]
+                                }
+                            }
+                        }
+                    }
 
+                    // If deployment to dev passed and this  is a release build, then deploy to staging
+                    deployments["Staging"] = {
+                        def stageEnvPort = deployStack {
+                            composeFiles = config.composeFiles
+                            stackName = config.stackName
+                            serviceName = config.serviceName
+                            vaultTokens = config.vaultTokens
+                            deployWaitTime = config.deployWaitTime
+                            dockerHost = this.env.STAGING_DOCKER_SWARM_MANAGER
+                            dockerDomain = this.env.DOCKER_STAGE_DOMAIN
+                            vaultAddr = "https://${this.env.STAGING_VAULT_HOST}"
+                            vaultCredID = "staging-vault"
+                            deployEnv = [
+                            "SPRING_PROFILES_ACTIVE=aws-stage",
+                            "RELEASE_VERSION=${this.params.releaseVersion}",
+                            "ES_HOST=${this.env.STAGING_ES}",
+                            "REPLICAS=${config.replicas}"
+                            ]
+                        }
+                    }
+
+                    parallel deployments
+                }
+            }
         } catch (ex) {
             if (currentBuild.result == null) {
                 currentBuild.result = 'FAILED'
