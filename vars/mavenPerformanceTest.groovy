@@ -86,7 +86,7 @@ def call(body) {
 
             //Publish Jmeter logs for debugging failing tests
             archiveArtifacts(
-                artifacts: "**/target/jmeter/logs/*.jmx.log",
+                artifacts: "**/*.jmx.log",
                 allowEmptyArchive: true
             )
         }
