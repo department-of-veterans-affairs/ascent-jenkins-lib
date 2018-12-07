@@ -83,6 +83,12 @@ def call(body) {
                     reportName: "${reportName}"
                 ])
             }
+
+            //Publish Jmeter logs for debugging failing tests
+            archiveArtifacts(
+                artifacts: "**/target/jmeter/logs/*.jmx.log",
+                allowEmptyArchive: true
+            )
         }
     }
 }
