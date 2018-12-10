@@ -66,6 +66,13 @@ def call(body) {
                 }
             }
         } finally {
+
+            //Publish Jmeter logs for debugging failing tests
+            archiveArtifacts(
+                artifacts: "**/target/jmeter/logs/*.jmx.log",
+                allowEmptyArchive: true
+            )
+            
             //If performance test results exist, then publish those to Jenkins
             //get list of all report directories
             def reportDirs = sh(returnStdout: true, script: "ls -d -1 */target/jmeter/reports/*").split( "\\r?\\n" )
@@ -83,12 +90,6 @@ def call(body) {
                     reportName: "${reportName}"
                 ])
             }
-
-            //Publish Jmeter logs for debugging failing tests
-            archiveArtifacts(
-                artifacts: "**/target/jmeter/logs/*.jmx.log",
-                allowEmptyArchive: true
-            )
         }
     }
 }
