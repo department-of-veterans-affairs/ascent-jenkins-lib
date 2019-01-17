@@ -67,6 +67,7 @@ def call(body) {
             }
         } catch (ex) {
           echo "Perf testing failed, continuing the pipeline."
+          currentBuild.result = 'UNSTABLE'
         }finally {
 
             //Publish Jmeter logs for debugging failing tests
