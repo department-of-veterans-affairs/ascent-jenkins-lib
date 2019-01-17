@@ -148,16 +148,21 @@ def call(body) {
                                       port = config.containerPort
                                   }
 
-                                  mavenPerformanceTest {
-                                      directory = config.directory
-                                      serviceProtocol = "https"
-                                      serviceHost = "${this.env.PERF_SWARM_HOST}"
-                                      servicePort = "${testEnvPort}"
-                                      testVaultTokenRole = config.testVaultTokenRole
-                                      options = config.perfTestOptions
-                                      keystore = "${this.env.DOCKER_CERT_LOCATION}/perfTesting.jks"
-                                      keystorePassword = "changeit"
+                                  try {
+                                    mavenPerformanceTest {
+                                        directory = config.directory
+                                        serviceProtocol = "https"
+                                        serviceHost = "${this.env.PERF_SWARM_HOST}"
+                                        servicePort = "${testEnvPort}"
+                                        testVaultTokenRole = config.testVaultTokenRole
+                                        options = config.perfTestOptions
+                                        keystore = "${this.env.DOCKER_CERT_LOCATION}/perfTesting.jks"
+                                        keystorePassword = "changeit"
+                                    }
+                                  } catch (exc) {
+                                    echo "Perf tests failed. Continuing"
                                   }
+                                  
                               } catch (ex) {
                                   echo "Failed due to ${ex}: ${ex.message}"
                                   if (currentBuild.result == null) {
