@@ -65,14 +65,16 @@ def call(body) {
                     }
                 }
             }
-        } finally {
+        } catch (ex) {
+          echo "Perf testing failed, continuing the pipeline."
+        }finally {
 
             //Publish Jmeter logs for debugging failing tests
             archiveArtifacts(
                 artifacts: "**/target/jmeter/logs/*.jmx.log",
                 allowEmptyArchive: true
             )
-            
+
             //If performance test results exist, then publish those to Jenkins
             //get list of all report directories
             def reportDirs = sh(returnStdout: true, script: "ls -d -1 */target/jmeter/reports/*").split( "\\r?\\n" )
