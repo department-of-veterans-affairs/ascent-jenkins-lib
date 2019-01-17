@@ -162,7 +162,7 @@ def call(body) {
                                   } catch (exc) {
                                     echo "Perf tests failed. Continuing"
                                   }
-                                  
+
                               } catch (ex) {
                                   echo "Failed due to ${ex}: ${ex.message}"
                                   if (currentBuild.result == null) {
@@ -180,7 +180,7 @@ def call(body) {
                       }
 
                       //If all the tests have passed, deploy this build to the Dev environment
-                      if (!isPullRequest() && currentBuild.result == null && config.composeFiles != null) {
+                      if (!isPullRequest() && (currentBuild.result == null || currentBuild.result == 'UNSTABLE') && config.composeFiles != null) {
                           //Since we use latest in Dev environment, we need to undeploy the container first to make
                           //sure it gets updated
                           undeployStack {
