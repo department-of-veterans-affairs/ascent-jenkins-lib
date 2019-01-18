@@ -128,6 +128,8 @@ def call(body) {
                           }
                       }
 
+                      def isPerfFailure = false
+
                       if (!isPullRequest() && config.perfEnvironment != null) {
                           //Aquire a lock on the performance environment so that only one performance test executes at a time
                           lock('perf-env') {
@@ -161,6 +163,7 @@ def call(body) {
                                     }
                                   } catch (exc) {
                                     echo "Perf tests failed. Continuing"
+                                    isPerfFailure = true
                                   }
 
                               } catch (ex) {
@@ -179,8 +182,8 @@ def call(body) {
                           }
                       }
 
-                      //If all the tests have passed, deploy this build to the Dev environment
-                      if (!isPullRequest() && (currentBuild.result == null || currentBuild.result == 'UNSTABLE') && config.composeFiles != null) {
+                      //If at least all the tests except for perf have passed, deploy this build to the Dev environment
+                      if (!isPullRequest() && (currentBuild.result == null || (currentBuild.result == 'UNSTABLE' && isPerfFailure == true)) && config.composeFiles != null) {
                           //Since we use latest in Dev environment, we need to undeploy the container first to make
                           //sure it gets updated
                           undeployStack {
