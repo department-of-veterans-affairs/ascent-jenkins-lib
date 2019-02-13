@@ -8,9 +8,10 @@ def call(String buildStatus = 'STARTED') {
   def colorName = 'RED'
   def colorCode = '#FF0000'
   def subject = "${buildStatus}: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]'"
-  def summary = """${subject} &lt;br /&gt; &lt;b&gt;&lt;a href="${env.RUN_DISPLAY_URL}"&gt;Review Build Results&lt;/a&gt;&lt;/b&gt;"""
-  def details = """&lt;p&gt;${buildStatus}: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]':&lt;/p&gt;
-    &lt;p&gt;Check console output at "&lt;a href="${env.BUILD_URL}"&gt;${env.JOB_NAME} [${env.BUILD_NUMBER}]&lt;/a&gt;"&lt;/p&gt;"""
+  def summary = """${subject}
+                   ${env.RUN_DISPLAY_URL}"""
+  def details = """${buildStatus}: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]':
+    Check console output at ${env.BUILD_URL}${env.JOB_NAME} [${env.BUILD_NUMBER}]"""
 
   // Override default values based on build status
   if (buildStatus == 'STARTED') {
