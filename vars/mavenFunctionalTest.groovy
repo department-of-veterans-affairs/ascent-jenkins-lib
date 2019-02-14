@@ -19,7 +19,7 @@ def call(body) {
         config.vaultCredID = "jenkins-vault"
     }
     if (config.cucumberReportDirectory == null) {
-        config.cucumberReportDirectory = 'target'
+        config.cucumberReportDirectory = 'target/site'
     }
     if (config.cucumberOpts == null) {
         config.cucumberOpts = ''
